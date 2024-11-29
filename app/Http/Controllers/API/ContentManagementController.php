@@ -36,6 +36,7 @@ use App\Models\WeightPlasticAntweight;
 use App\Models\WeightSportsman;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ContentManagementController extends Controller
 {
@@ -199,32 +200,19 @@ class ContentManagementController extends Controller
      *
      * @return response()
      */
-    // public function getServiceDetails(Request $request)
-    // {
-    //     $serviceData = Service::where('id', $request->id)
-    //         ->orderBy('id', 'DESC')
-    //         ->first();
-
-    //     if ($serviceData) {
-    //         $serviceData->service_image = asset('cms_images/services/' . $serviceData->service_image);
-    //         $response = [
-    //             'success' => true,
-    //             'message' => 'Service details retrieved successfully.',
-    //             'data' => $serviceData,
-    //         ];
-    //         return response()->json($response, 200);
-    //     } else {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'No service details found!',
-    //         ], 200);
-    //     }
-    // }
     public function getServiceDetails(Request $request)
     {
-        $request->validate([
+        $validate = Validator::make($request->all(), [
             'id' => 'required|integer',
         ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
 
         $serviceData = Service::where('id', $request->query('id'))
             ->orderBy('id', 'DESC')
@@ -1164,6 +1152,52 @@ class ContentManagementController extends Controller
                 'success' => false,
                 'message' => 'No data found!',
             ], 200);
+        }
+    }
+
+    /**
+     * Write code on this method for save contact details
+     *
+     * @return response()
+     */
+    public function contactUs(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'name' => 'required|string|max:100',
+            'email' => 'required|string|email|max:150',
+            'subject' => 'required|string|max:150',
+            'message' => 'required|string|max:255',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        // Prepare data for insertion
+        $contactData = [
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'subject' => $request->input('subject'),
+            'message' => $request->input('message'),
+        ];
+
+        $inserted = DB::table('contact_us')->insert($contactData);
+
+        // Check if the record was successfully inserted
+        if ($inserted) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Thank you for contacting us!',
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save your message. Please try again later.',
+            ], 500);
         }
     }
 }

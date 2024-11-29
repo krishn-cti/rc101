@@ -117,4 +117,6 @@ Route::controller(ContentManagementController::class)->group(function () {
     Route::get('get-all-weight-hobbyweight', 'getAllHobbyweight');
     Route::get('get-all-weight-plastic-antweight', 'getAllPlasticAntweight');
     Route::get('get-all-weight-sportsman', 'getAllSportsman');
+
+    Route::post('contact-us', 'contactUs');
 });
