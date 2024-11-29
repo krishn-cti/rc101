@@ -285,8 +285,10 @@ class RegisterController extends BaseController
     public function updateProfile(Request $request)
     {
         $user = $request->user();
+
+        // Validate the incoming request
         $validate = Validator::make($request->all(), [
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => [
                 'required',
                 'string',
@@ -294,9 +296,10 @@ class RegisterController extends BaseController
                 'max:250',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'number' => 'numeric|digits_between:8,15',
-            'password' => 'string|min:8',
-            'confirm_password' => 'same:password'
+            'number' => 'nullable|numeric|digits_between:8,15',
+            'password' => 'nullable|string|min:8',
+            'confirm_password' => 'nullable|same:password',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($validate->fails()) {
@@ -307,38 +310,39 @@ class RegisterController extends BaseController
             ], 403);
         }
 
-        $user->name = $request->name ? $request->name : $user->name;
-        $user->email = $request->email ? $request->email : $user->email;
-        $user->number = $request->number ? $request->number : $user->number;
-        $user->show_password = $request->password ? $request->password : $user->password;
-        $user->password = $request->password ? Hash::make($request->password) : $user->password;
+        // Update user details
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->number = $request->number ?? $user->number;
+
+        if ($request->password) {
+            $user->show_password = $request->password;
+            $user->password = Hash::make($request->password);
+        }
 
         // Check if profile image is provided
         if ($request->hasFile('profile_image')) {
-            // Delete the previous image if it exists
-            // dd($user->profile_image);
-            if ($request->profile_image) {
-                // $previousImagePath = public_path($user->profile_image);
-                // $profileImageName = basename($previousImagePath);
-                // if ($profileImageName) {
-                //     unlink(public_path('profile_images') . '/' . $profileImageName);
-                // }
-                $fileName = uniqid() . '.' . $request->file('profile_image')->getClientOriginalExtension();
-                $request->file('profile_image')->move(public_path('profile_images'), $fileName);
-                $user->profile_image = $fileName;
+            // Delete the previous profile image if it exists
+            if ($user->profile_image && file_exists(public_path('profile_images/' . $user->profile_image))) {
+                unlink(public_path('profile_images/' . $user->profile_image));
             }
+
+            // Upload the new profile image
+            $fileName = uniqid() . '.' . $request->file('profile_image')->getClientOriginalExtension();
+            $request->file('profile_image')->move(public_path('profile_images'), $fileName);
+            $user->profile_image = $fileName;
         }
 
         $user->save();
 
-        $response = [
+        // Prepare and return the response
+        return response()->json([
             'success' => true,
             'message' => 'User details updated successfully.',
             'data' => $user,
-        ];
-
-        return response()->json($response, 200);
+        ], 200);
     }
+
 
     /**
      * get logged in user details from application.

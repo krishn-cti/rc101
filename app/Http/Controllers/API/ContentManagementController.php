@@ -446,7 +446,7 @@ class ContentManagementController extends Controller
 
         if ($toolsTradeData->isNotEmpty()) {
             $toolsTradeData->transform(function ($toolsTrade) {
-                $toolsTrade->tools_tarde_image = asset('cms_images/' . $toolsTrade->tools_tarde_image);
+                $toolsTrade->tools_trade_image = asset('cms_images/' . $toolsTrade->tools_trade_image);
                 return $toolsTrade;
             });
 
