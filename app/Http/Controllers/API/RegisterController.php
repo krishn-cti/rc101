@@ -1,0 +1,409 @@
+<?php
+
+namespace App\Http\Controllers\API;
+
+use Illuminate\Http\Request;
+use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\User;
+use App\Models\UserAddress;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+
+class RegisterController extends BaseController
+{
+    /**
+     * Register a new user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'name' => 'required|string|max:250',
+            'email' => 'required|string|email:rfc,dns|max:250|unique:users,email',
+            'number' => 'required|numeric|digits_between:10,15',
+            'password' => 'required|string|min:8',
+            'confirm_password' => 'required|same:password'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'number' => $request->number,
+            'show_password' => $request->password,
+            'password' => Hash::make($request->password)
+        ])->sendEmailVerificationNotification();
+
+        // $data['token'] = $user->createToken($request->email)->plainTextToken;
+        $data['user'] = $user;
+
+        $response = [
+            'success' => true,
+            'message' => 'User is created and verification link sent on your email id.',
+        ];
+
+        return response()->json($response, 201);
+    }
+
+    /**
+     * Authenticate the user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function login(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        // Check email exist
+        $user = User::where('email', $request->email)->first();
+
+        // Check password
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $data['token'] = $user->createToken($request->email)->plainTextToken;
+        $data['user'] = $user;
+
+        $response = [
+            'success' => true,
+            'message' => 'User is logged in successfully.',
+            'data' => $data,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    /**
+     * Authenticate the user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function forgotPassword11(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'email' => 'required|string|email'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        $user = DB::table('users')->where('email', '=', $request->email)->first();
+
+        //Check if the user exists
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => "User does not exist"
+            ], 400);
+        }
+
+        //Create Password Reset Token
+        DB::table('password_resets')->insert([
+            'email' => $request->email,
+            'token' => Str::random(64),
+            'created_at' => Carbon::now()
+        ]);
+        //Get the token just created above
+        $tokenData = DB::table('password_resets')
+            ->where('email', $request->email)->first();
+
+        if (Password::sendResetEmail($request->email, $tokenData->token)) {
+            return response()->json([
+                'success' => true,
+                'message' => "Please check your email for a password reset link.",
+                'token' => $tokenData->token
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => "A Network Error occurred. Please try again."
+            ], 400);
+        }
+    }
+
+    /**
+     * Authenticate the user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function forgotPassword(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'email' => 'required|string|email'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        $verify = User::where('email', $request->email)->exists();
+
+        if ($verify) {
+            $userData = DB::table('password_resets')->where('email', $request->email)->first();
+            // dd($userData);
+            // $token = Str::random(64);
+            // $password_reset = DB::table('password_resets')->insert([
+            //     'email' => $request->email,
+            //     'token' =>  $token,
+            //     'created_at' => Carbon::now()
+            // ]);
+
+            // if ($password_reset) {
+            // Mail::send('auth.forgot_password', ['token' => $token], function($message) use($request){
+            //     $message->to($request->email);
+            //     $message->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'));
+            //     $message->subject('Reset Password');
+            // });
+
+            // Password::sendResetLink($request->all());
+            if ($userData) {
+                Password::sendResetLink(
+                    $request->only('email')
+                );
+                return response()->json([
+                    'success' => true,
+                    'message' => "Please check your email for a password reset link."
+                ], 200);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => "This email does not exist"
+            ], 400);
+        }
+    }
+
+    /**
+     * Authenticate the user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function resetPassword(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'token' => 'required',
+            'email' => 'required|email',
+            'new_password' => 'required|string|min:8',
+            'confirm_password' => 'required|same:new_password'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        $update = DB::table('password_resets')->where(['email' => $request->email, 'token' => $request->token])->first();
+
+        if (!$update) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid token provided!'
+            ], 400);
+        }
+
+        $user = User::where('email', $request->email)->update([
+            'show_password' => $request->password,
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        // Delete password_resets record
+        DB::table('password_resets')->where(['email' => $request->email])->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your password has been successfully changed!'
+        ], 200);
+    }
+
+    /**
+     * Log out the user from application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        $user->tokens()->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'User is logged out successfully'
+        ], 200);
+    }
+
+    /**
+     * Log out the user from application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        $validate = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => [
+                'required',
+                'string',
+                'email:rfc,dns',
+                'max:250',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'number' => 'numeric|digits_between:8,15',
+            'password' => 'string|min:8',
+            'confirm_password' => 'same:password'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        $user->name = $request->name ? $request->name : $user->name;
+        $user->email = $request->email ? $request->email : $user->email;
+        $user->number = $request->number ? $request->number : $user->number;
+        $user->show_password = $request->password ? $request->password : $user->password;
+        $user->password = $request->password ? Hash::make($request->password) : $user->password;
+
+        // Check if profile image is provided
+        if ($request->hasFile('profile_image')) {
+            // Delete the previous image if it exists
+            // dd($user->profile_image);
+            if ($request->profile_image) {
+                // $previousImagePath = public_path($user->profile_image);
+                // $profileImageName = basename($previousImagePath);
+                // if ($profileImageName) {
+                //     unlink(public_path('profile_images') . '/' . $profileImageName);
+                // }
+                $fileName = uniqid() . '.' . $request->file('profile_image')->getClientOriginalExtension();
+                $request->file('profile_image')->move(public_path('profile_images'), $fileName);
+                $user->profile_image = $fileName;
+            }
+        }
+
+        $user->save();
+
+        $response = [
+            'success' => true,
+            'message' => 'User details updated successfully.',
+            'data' => $user,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    /**
+     * get logged in user details from application.
+     * @return \Illuminate\Http\Response
+     */
+    public function getMyProfile(Request $request)
+    {
+        $user = $request->user();
+        return response()->json([
+            'success' => true,
+            'message' => 'User details fetched successfully',
+            'data' => $user
+        ], 200);
+    }
+
+    /**
+     * get logged in user addresses from application.
+     * @return \Illuminate\Http\Response
+     */
+    public function getMyAddresses(Request $request)
+    {
+        $user_id = $request->user()->id;
+        $users = User::with('userAddresses')
+            ->where('users.id', $user_id)
+            ->first();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User addresses fetched successfully',
+            'data' => $users
+        ], 200);
+    }
+
+    /**
+     * delete logged in user's address from application.
+     * @return \Illuminate\Http\Response
+     */
+    public function removeBillingAddress(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'address_id' => 'required'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        $userAddress = UserAddress::where('user_id', $request->user()->id)
+            ->where('id', $request->address_id)
+            ->first();
+
+        if ($userAddress) {
+            $userAddress->delete();
+            $message = 'User billing address removed successfully';
+        } else {
+            $message = 'User address not found';
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message
+        ], 200);
+    }
+}
