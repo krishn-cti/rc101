@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
-use App\Models\User;
-use App\Models\UserAddress;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Http\Request;
+use App\Models\UserAddress;
 use Illuminate\Support\Str;
+use App\Models\User;
 use Carbon\Carbon;
 
 class RegisterController extends BaseController
@@ -25,8 +24,8 @@ class RegisterController extends BaseController
     public function register(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'name' => 'required|string|max:250',
-            'email' => 'required|string|email:rfc,dns|max:250|unique:users,email',
+            'name' => 'required|string|max:150',
+            'email' => 'required|string|email:rfc,dns|max:150|unique:users,email',
             'number' => 'required|numeric|digits_between:10,15',
             'password' => 'required|string|min:8',
             'confirm_password' => 'required|same:password'
@@ -289,13 +288,7 @@ class RegisterController extends BaseController
         // Validate the incoming request
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'string',
-                'email:rfc,dns',
-                'max:250',
-                Rule::unique('users')->ignore($user->id),
-            ],
+            'email' => 'required|string|email:rfc,dns|max:150|unique:users,email,' . $user->id,
             'number' => 'nullable|numeric|digits_between:8,15',
             'password' => 'nullable|string|min:8',
             'confirm_password' => 'nullable|same:password',

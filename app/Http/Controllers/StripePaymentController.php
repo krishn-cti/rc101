@@ -37,8 +37,8 @@ class StripePaymentController extends Controller
             ]);
 
             $sessionData = $stripe->checkout->sessions->create([
-                'success_url' => 'http://localhost:3000/CT01/advanced_react/thankyou',
-                'cancel_url' => 'http://localhost:3000/CT01/advanced_react/order-cancel',
+                'success_url' => env('FRONT_URL') . '/order-success',
+                'cancel_url' => env('FRONT_URL') . '/order-cancel',
                 'line_items' => [
                     [
                         'price' => $priceData->id,
@@ -49,10 +49,10 @@ class StripePaymentController extends Controller
             ]);
             dd($sessionData);
             // Payment successful, redirect to thank you page
-            return redirect('http://localhost:3000/CT01/advanced_react/thankyou');
+            return redirect(env('FRONT_URL') . '/order-success');
         } catch (Stripe\Exception\ApiErrorException $e) {
             // Payment failed, redirect to order-cancel page
-            return redirect('http://localhost:3000/CT01/advanced_react/order-cancel');
+            return redirect(env('FRONT_URL') . '/order-cancel');
         }        
     }
 }

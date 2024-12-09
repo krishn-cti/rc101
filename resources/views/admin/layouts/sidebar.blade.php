@@ -38,6 +38,10 @@
                         <a href="{{ url('list-user') }}"><i class='bx bx-group'></i> Users</a>
                     </li>
 
+                    <li class="menu-header-title {{ request()->is('list-order') ? 'active' : '' }} ps-0">
+                        <a href="{{ url('list-order') }}"><i class='bx bx-receipt'></i> Orders</a>
+                    </li>
+
                     <li class="menu-header-title treeview ps-0 {{ request()->is('cms/*') ? 'menu-open active' : '' }}">
                         <a href="javascript:void(0)">
                             <i class='bx bx-book-content'></i> <span>CMS</span>
@@ -59,7 +63,7 @@
 
                                 <li class="menu-header-title treeview ps-0 {{ request()->is('cms/league', 'cms/tournament-list', 'cms/tournament-add', 'cms/tournament-edit/*', 'cms/presentation-list', 'cms/presentation-add', 'cms/presentation-edit/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
-                                        <i class='bx bx-book-content'></i> <span>League/Tournament</span>
+                                        <i class='bx bx-trophy' ></i> <span>League/Tournament</span>
                                         <i class="fa fa-angle-right"></i>
                                     </a>
 
