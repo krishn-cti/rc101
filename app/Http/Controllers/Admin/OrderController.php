@@ -61,7 +61,7 @@ class OrderController extends Controller
                             return 'Rejected';
                         }else if($row->status == 3 ){
                             return 'Cancelled';
-                        }else if($row->status == 2 ){
+                        }else if($row->status == 4 ){
                             return 'Failed';
                         }
                     })

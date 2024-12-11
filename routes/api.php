@@ -9,6 +9,7 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ContentManagementController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,8 +31,12 @@ Route::controller(RegisterController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
     Route::post('forgot-password', 'forgotPassword');
-    Route::post('reset-password', 'resetPassword')->name('reset.password');
+    // Route::post('reset-password', 'resetPassword')->name('password.update');
+
 });
+
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 Route::get('email/verify/{id}', [VerificationController::class, 'verify'])->name('verification.verify');
 Route::get('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');

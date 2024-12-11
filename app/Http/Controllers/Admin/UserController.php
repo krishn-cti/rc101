@@ -124,19 +124,22 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->number = $request->number;
-
+        
         if ($request->hasFile('profile_image')) {
             // Check if there's an existing image and delete it
-            if ($user->profile_image && file_exists(public_path('profile_images/' . $user->getRawOriginal('profile_image')))) {
-                unlink(public_path('profile_images/' . $user->getRawOriginal('profile_image')));
+            $existingImage = $user->getRawOriginal('profile_image');
+            $existingImagePath = public_path('profile_images/' . $existingImage);
+        
+            if ($existingImage && file_exists($existingImagePath)) {
+                unlink($existingImagePath);
             }
-
+        
             // Save the new image
             $profile_image = $request->file('profile_image');
             $fileName = uniqid() . '.' . $profile_image->getClientOriginalExtension();
             $profile_image->move(public_path('profile_images'), $fileName);
             $user->profile_image = $fileName;
-        }
+        }        
 
         if ($user->save()) {
             return redirect('list-user')->with('success_msg', 'User updated successfully!');

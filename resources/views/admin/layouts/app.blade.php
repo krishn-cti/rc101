@@ -4,6 +4,7 @@
 
 <head>
     <meta charset="utf-8">
+    <link rel="icon" type="image/x-icon" href="{{asset('admin/img/logo/logo.png')}}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Title -->
     <title>{{config('app.name')}} | Admin</title>

@@ -96,8 +96,9 @@ class ProductController extends Controller
             'related_name' => 'required|string|max:100',
             'category_id' => 'required',
             'sub_category_id' => 'required',
-            'price' => 'required|numeric',
-            'quantity' => 'required|integer',
+            'price' => 'required|numeric|min:1',
+            'discount' => 'nullable|numeric|lt:price',
+            // 'quantity' => 'required|numeric|min:1',
             'description' => 'required|string|max:255',
             'thumbnail' => 'required|image|max:2048', // 2MB
             'images.*' => 'image|max:2048', // 2MB per image
@@ -110,14 +111,14 @@ class ProductController extends Controller
         // Update the user's profile information
         // $user = Auth::user();
         $product = new Product();
-        $product->sku = Str::random(16);
+        $product->sku = strtoupper(Str::random(16));
         $product->product_name = $request->product_name;
         $product->related_name = $request->related_name;
         $product->description = $request->description;
         $product->long_description = $request->long_description;
         $product->price = $request->price;
         $product->discount = $request->discount;
-        $product->quantity = $request->quantity;
+        // $product->quantity = $request->quantity;
         $product->category_id = $request->category_id;
         $product->sub_category_id = $request->sub_category_id;
         $product->save();
@@ -191,8 +192,9 @@ class ProductController extends Controller
             'related_name' => 'required|string|max:100',
             'category_id' => 'required',
             'sub_category_id' => 'required',
-            'price' => 'required|numeric',
-            'quantity' => 'required|integer',
+            'price' => 'required|numeric|min:1',
+            'discount' => 'nullable|numeric|lt:price',
+            // 'quantity' => 'required|numeric|min:1',
             'description' => 'required|string|max:255',
             'thumbnail' => 'nullable|image|max:2048', // Optional during update
             'images.*' => 'image|max:2048', // 2MB per image
@@ -211,7 +213,7 @@ class ProductController extends Controller
         $product->long_description = $request->long_description;
         $product->price = $request->price;
         $product->discount = $request->discount;
-        $product->quantity = $request->quantity;
+        // $product->quantity = $request->quantity;
         $product->category_id = $request->category_id;
         $product->sub_category_id = $request->sub_category_id;
         $product->save();

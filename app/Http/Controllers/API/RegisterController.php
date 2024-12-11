@@ -12,6 +12,7 @@ use App\Models\UserAddress;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends BaseController
 {
@@ -79,11 +80,25 @@ class RegisterController extends BaseController
             ], 403);
         }
 
-        // Check email exist
+        // Check email existence
         $user = User::where('email', $request->email)->first();
 
-        // Check password
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        // Check email verification and password
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        if (is_null($user->email_verified_at)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email is not verified. Please verify your email to log in.'
+            ], 403);
+        }
+
+        if (!Hash::check($request->password, $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials'
@@ -162,7 +177,7 @@ class RegisterController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function forgotPassword(Request $request)
+    public function forgotPassword12(Request $request)
     {
         $validate = Validator::make($request->all(), [
             'email' => 'required|string|email'
@@ -171,6 +186,50 @@ class RegisterController extends BaseController
         if ($validate->fails()) {
             return response()->json([
                 'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        $verify = User::where('email', $request->email)->exists();
+
+        if ($verify) {
+            $userData = DB::table('password_resets')->where('email', $request->email)->first();
+
+            if (!$userData) {
+                $token = Str::random(64);
+                DB::table('password_resets')->insert([
+                    'email' => $request->email,
+                    'token' => $token,
+                    'created_at' => Carbon::now()
+                ]);
+            } else {
+                $token = $userData->token;
+            }
+
+            Password::sendResetLink($request->only('email'));
+
+            return response()->json([
+                'success' => true,
+                'message' => "Please check your email for a password reset link."
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => "This email does not exist"
+            ], 400);
+        }
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'email' => 'required|string|email'
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'status' => 'failed',
                 'message' => 'Validation Error!',
                 'data' => $validate->errors(),
             ], 403);
@@ -196,15 +255,14 @@ class RegisterController extends BaseController
             // });
 
             // Password::sendResetLink($request->all());
-            if ($userData) {
-                Password::sendResetLink(
-                    $request->only('email')
-                );
-                return response()->json([
-                    'success' => true,
-                    'message' => "Please check your email for a password reset link."
-                ], 200);
-            }
+            Password::sendResetLink(
+                $request->only('email')
+            );
+            return response()->json([
+                'success' => true,
+                'message' => "Please check your email for a password reset link."
+            ], 200);
+            // }
         } else {
             return response()->json([
                 'success' => false,
@@ -219,6 +277,35 @@ class RegisterController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    // public function resetPassword(Request $request)
+    // {
+    //     $validate = Validator::make($request->all(), [
+    //         'token' => 'required',
+    //         'email' => 'required|email',
+    //         'new_password' => 'required|string|min:8',
+    //         'confirm_password' => 'required|same:new_password'
+    //     ]);
+
+    //     if ($validate->fails()) {
+    //         return back()->withErrors($validate)->withInput(); // Return errors to Blade
+    //     }
+
+    //     $update = DB::table('password_resets')->where(['email' => $request->email, 'token' => $request->token])->first();
+
+    //     if (!$update) {
+    //         return back()->withErrors(['email' => 'Invalid token provided!'])->withInput(); // Handle error for invalid token
+    //     }
+
+    //     $user = User::where('email', $request->email)->update([
+    //         'password' => Hash::make($request->new_password)
+    //     ]);
+
+    //     // Delete password_resets record
+    //     DB::table('password_resets')->where(['email' => $request->email])->delete();
+
+    //     return redirect()->route('login')->with('status', 'Your password has been successfully changed!');
+    // }
+
     public function resetPassword(Request $request)
     {
         $validate = Validator::make($request->all(), [
@@ -230,7 +317,7 @@ class RegisterController extends BaseController
 
         if ($validate->fails()) {
             return response()->json([
-                'success' => false,
+                'status' => 'failed',
                 'message' => 'Validation Error!',
                 'data' => $validate->errors(),
             ], 403);

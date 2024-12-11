@@ -26,7 +26,7 @@
                                                 <th>Product Name</th>
                                                 <th>Price</th>
                                                 <th>Discount</th>
-                                                <th>Quantity</th>
+                                                <!-- <th>Quantity</th> -->
                                                 <th>Category</th>
                                                 <th>Sub Category</th>
                                                 <!-- <th>Sku</th> -->
@@ -70,10 +70,10 @@
                     data: 'discount',
                     name: 'discount'
                 },
-                {
-                    data: 'quantity',
-                    name: 'quantity'
-                },
+                // {
+                //     data: 'quantity',
+                //     name: 'quantity'
+                // },
                 {
                     data: 'category',
                     name: 'category'

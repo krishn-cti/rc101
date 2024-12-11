@@ -46,7 +46,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3">
                                                     <label for="" class="mb-2">Product Name</label>
-                                                    <input type="text" class="form-control ct_input" name="product_name" placeholder="Product Name">
+                                                    <input type="text" class="form-control ct_input" name="product_name" placeholder="Product Name"  value="{{ old('product_name') }}">
                                                     @error('product_name')
                                                     <div class="text text-danger mt-2">{{ $message }}</div>
                                                     @enderror
@@ -55,7 +55,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3">
                                                     <label for="" class="mb-2">Related Name</label>
-                                                    <input type="text" class="form-control ct_input" name="related_name" placeholder="Related Name">
+                                                    <input type="text" class="form-control ct_input" name="related_name" placeholder="Related Name"  value="{{ old('related_name') }}">
                                                     @error('related_name')
                                                     <div class="text text-danger mt-2">{{ $message }}</div>
                                                     @enderror
@@ -90,7 +90,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3">
                                                     <label for="" class="mb-2">Price</label>
-                                                    <input type="number" class="form-control ct_input" name="price" placeholder="Price">
+                                                    <input type="number" class="form-control ct_input" name="price" id="price" placeholder="Price" value="{{ old('price') }}">
                                                     @error('price')
                                                     <div class="text text-danger mt-2">{{ $message }}</div>
                                                     @enderror
@@ -99,13 +99,13 @@
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3">
                                                     <label for="" class="mb-2">Discount</label>
-                                                    <input type="number" class="form-control ct_input" name="discount" placeholder="Discount">
+                                                    <input type="number" class="form-control ct_input" name="discount" placeholder="Discount" value="{{ old('discount') }}">
                                                     @error('discount')
                                                     <div class="text text-danger mt-2">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <!-- <div class="col-md-6">
                                                 <div class="form-group mb-3">
                                                     <label for="" class="mb-2">Quantity</label>
                                                     <input type="number" class="form-control ct_input" name="quantity" placeholder="Quantity">
@@ -113,11 +113,11 @@
                                                     <div class="text text-danger mt-2">{{ $message }}</div>
                                                     @enderror
                                                 </div>
-                                            </div>
+                                            </div> -->
                                             <div class="col-md-12">
                                                 <div class="form-group mb-3">
                                                     <label for="" class="mb-2">Short Description</label>
-                                                    <textarea rows="4" class="form-control ct_input" name="description" placeholder="Short Description"></textarea>
+                                                    <textarea rows="4" class="form-control ct_input" name="description" placeholder="Short Description">{{ old('description') }}</textarea>
                                                     @error('description')
                                                     <div class="text text-danger mt-2">{{ $message }}</div>
                                                     @enderror
@@ -126,7 +126,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group mb-3">
                                                     <label for="long_description" class="mb-2">Long Description</label>
-                                                    <textarea id="long_description" rows="4" class="form-control" name="long_description"></textarea>
+                                                    <textarea id="long_description" rows="4" class="form-control" name="long_description">{{ old('long_description') }}</textarea>
                                                     @error('long_description')
                                                     <div class="text text-danger mt-2">{{ $message }}</div>
                                                     @enderror
@@ -247,6 +247,13 @@
 </script>
 <script>
     $(document).ready(function() {
+        $.validator.addMethod("lessThanPrice", function(value, element, params) {
+            if (!value) return true;
+            var price = parseFloat($(params).val());
+            var discount = parseFloat(value);
+            return discount < price;
+        }, "Discount must be less than the price.");
+
         $('#addProduct').validate({
             ignore: [],
             rules: {
@@ -269,10 +276,16 @@
                 },
                 price: {
                     required: true,
+                    number: true,
                 },
-                quantity: {
-                    required: true,
+                discount: {
+                    number: true,
+                    lessThanPrice: "#price"
                 },
+                // quantity: {
+                //     required: true,
+                //     number: true,
+                // },
                 description: {
                     required: true,
                     maxlength: 255,
@@ -290,8 +303,18 @@
                 },
                 category_id: 'Please select category.',
                 sub_category_id: 'Please select sub category.',
-                price: 'Please enter price.',
-                quantity: 'Please enter quantity.',
+                price: {
+                    required: 'Please enter price.',
+                    number: 'Please enter a valid number for price.',
+                },
+                discount: {
+                    number: 'Please enter a valid number for discount.',
+                    lessThanPrice: 'Discount must be less than the price.',
+                },
+                // quantity: {
+                //     required: 'Please enter quantity.',
+                //     number: 'Please enter a valid number for quantity.',
+                // },
                 description: {
                     required: 'Please enter short description.',
                     maxlength: 'Description cannot exceed 255 characters.',
