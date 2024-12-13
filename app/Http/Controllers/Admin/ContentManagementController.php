@@ -19,12 +19,15 @@ class ContentManagementController extends Controller
     public function updateHome(Request $request)
     {
         $request->validate([
+            'banner_title' => 'nullable|string|max:100',
+            'banner_sub_title' => 'nullable|string|max:255',
             'banner_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'youtube_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $cmsHomeData = [
             'banner_title' => $request->input('banner_title', ''),
+            'banner_sub_title' => $request->input('banner_sub_title', ''),
             'banner_text' => $request->input('banner_text', ''),
             'media_content' => $request->input('media_content', ''),
             'link' => $request->input('link', ''),

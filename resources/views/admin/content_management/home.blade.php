@@ -32,6 +32,13 @@
                                         @enderror
                                     </div>
                                     <div class="mb-3">
+                                        <label for="banner_sub_title"><strong>Banner Sub Title</strong></label>
+                                        <textarea name="banner_sub_title" id="banner_sub_title" class="form-control ct_input" rows="4" placeholder="Banner Sub Title">{{ old('banner_sub_title', $homeBanner->banner_sub_title ?? '') }}</textarea>
+                                        @error('banner_sub_title')
+                                        <div class="text text-danger mt-2">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
                                         <label for="banner_text"><strong>Banner Text</strong></label>
                                         <textarea name="banner_text" id="banner_text" class="form-control" cols="30" rows="5" placeholder="Banner Description" required>{{ old('banner_text', $homeBanner->banner_text ?? '') }}</textarea>
                                         @error('banner_text')
@@ -141,6 +148,10 @@
             rules: {
                 banner_title: {
                     required: true,
+                    maxlength: 100,
+                },
+                banner_sub_title: {
+                    maxlength: 255,
                 },
                 link: {
                     required: true,
@@ -156,7 +167,13 @@
                 },
             },
             messages: {
-                banner_title: 'Please enter banner title.',
+                banner_title: {
+                    required: "Please enter banner title.",
+                    maxlength: "The banner title must not exceed 100 characters.",
+                },
+                banner_sub_title: {
+                    maxlength: 'The banner sub title must not exceed 255 characters.',
+                },
                 link: {
                     required: 'Please enter YouTube link.',
                     validYouTubeLink: 'Please enter a valid YouTube link.',
