@@ -1,11 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
+
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
 <style>
-    i{
-        cursor:pointer;
+    i {
+        cursor: pointer;
+    }
+
+    .error {
+        color: red;
+        font-size: 0.9em;
     }
 </style>
 <div class="container">
@@ -15,59 +22,40 @@
                 <div class="card-header">{{ __('Reset Password') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('password.update') }}">
+                    <form id="reset-password-form" method="POST" action="{{ route('password.update') }}">
                         @csrf
 
                         <input type="hidden" name="token" value="{{ $token }}">
 
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control ct_input @error('email') is-invalid @enderror" name="email" value="{{ $email ?? old('email') }}" required autocomplete="email" autofocus>
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
+                        <div class="form-group">
+                            <label for="email">{{ __('Email Address') }}</label>
+                            <input id="email" type="email" class="form-control" name="email" value="{{ $email ?? old('email') }}" required readonly autocomplete="email" autofocus>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6 input-group">
+                        <div class="form-group">
+                            <label for="password">{{ __('Password') }}</label>
+                            <div class="input-group">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text"><i class="fas fa-eye-slash" id="eye" data-target="password"></i></div>
                                 </div>
-                                <input id="password" type="password" class="form-control ct_input @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
+                                <input id="password" type="password" class="form-control" name="password" required autocomplete="new-password">
                             </div>
                         </div>
 
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6 input-group">
+                        <div class="form-group">
+                            <label for="password-confirm">{{ __('Confirm Password') }}</label>
+                            <div class="input-group">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text"><i class="fas fa-eye-slash" id="c_eye" data-target="password-confirm"></i></div>
                                 </div>
-                                <input id="password-confirm" type="password" class="form-control ct_input" name="password_confirmation" required autocomplete="new-password">
+                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
                             </div>
                         </div>
 
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Reset Password') }}
-                                </button>
-                            </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                {{ __('Reset Password') }}
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -77,11 +65,57 @@
 </div>
 
 <script>
-    $(function(){
-        $('#eye, #c_eye').click(function(){
-            var targetField = $(this).hasClass('fa-eye-slash') ? 'text' : 'password';
+    $(function () {
+        // Toggle password visibility
+        $('#eye, #c_eye').click(function () {
+            const targetField = $(this).hasClass('fa-eye-slash') ? 'text' : 'password';
             $(this).toggleClass('fa-eye-slash fa-eye');
             $('#' + $(this).data('target')).attr('type', targetField);
+        });
+
+        // jQuery validation for the form
+        $('#reset-password-form').validate({
+            rules: {
+                email: {
+                    required: true,
+                    email: true
+                },
+                password: {
+                    required: true,
+                    minlength: 8
+                },
+                password_confirmation: {
+                    required: true,
+                    equalTo: '#password'
+                }
+            },
+            messages: {
+                email: {
+                    required: "Please enter your email address.",
+                    email: "Please enter a valid email address."
+                },
+                password: {
+                    required: "Please provide a new password.",
+                    minlength: "Your password must be at least 8 characters long."
+                },
+                password_confirmation: {
+                    required: "Please confirm your password.",
+                    equalTo: "Password confirmation does not match."
+                }
+            },
+            errorPlacement: function (error, element) {
+                if (element.closest('.input-group').length) {
+                    error.insertAfter(element.closest('.input-group'));
+                } else {
+                    error.insertAfter(element);
+                }
+            },
+            highlight: function (element) {
+                $(element).addClass('is-invalid');
+            },
+            unhighlight: function (element) {
+                $(element).removeClass('is-invalid');
+            }
         });
     });
 </script>

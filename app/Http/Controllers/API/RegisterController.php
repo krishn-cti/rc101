@@ -229,7 +229,7 @@ class RegisterController extends BaseController
 
         if ($validate->fails()) {
             return response()->json([
-                'status' => 'failed',
+                'success' => false,
                 'message' => 'Validation Error!',
                 'data' => $validate->errors(),
             ], 403);
@@ -238,31 +238,11 @@ class RegisterController extends BaseController
         $verify = User::where('email', $request->email)->exists();
 
         if ($verify) {
-            $userData = DB::table('password_resets')->where('email', $request->email)->first();
-            // dd($userData);
-            // $token = Str::random(64);
-            // $password_reset = DB::table('password_resets')->insert([
-            //     'email' => $request->email,
-            //     'token' =>  $token,
-            //     'created_at' => Carbon::now()
-            // ]);
-
-            // if ($password_reset) {
-            // Mail::send('auth.forgot_password', ['token' => $token], function($message) use($request){
-            //     $message->to($request->email);
-            //     $message->from(env('MAIL_FROM_ADDRESS'), env('APP_NAME'));
-            //     $message->subject('Reset Password');
-            // });
-
-            // Password::sendResetLink($request->all());
-            Password::sendResetLink(
-                $request->only('email')
-            );
+            Password::sendResetLink($request->only('email'));
             return response()->json([
                 'success' => true,
                 'message' => "Please check your email for a password reset link."
             ], 200);
-            // }
         } else {
             return response()->json([
                 'success' => false,
@@ -306,39 +286,77 @@ class RegisterController extends BaseController
     //     return redirect()->route('login')->with('status', 'Your password has been successfully changed!');
     // }
 
+    // public function resetPassword(Request $request)
+    // {
+    //     $validate = Validator::make($request->all(), [
+    //         'token' => 'required',
+    //         'email' => 'required|email',
+    //         'new_password' => 'required|string|min:8',
+    //         'confirm_password' => 'required|same:new_password'
+    //     ]);
+
+    //     if ($validate->fails()) {
+    //         return response()->json([
+    //             'status' => 'failed',
+    //             'message' => 'Validation Error!',
+    //             'data' => $validate->errors(),
+    //         ], 403);
+    //     }
+
+    //     $update = DB::table('password_resets')->where(['email' => $request->email, 'token' => $request->token])->first();
+
+    //     if (!$update) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Invalid token provided!'
+    //         ], 400);
+    //     }
+
+    //     $user = User::where('email', $request->email)->update([
+    //         'show_password' => $request->password,
+    //         'password' => Hash::make($request->new_password)
+    //     ]);
+
+    //     // Delete password_resets record
+    //     DB::table('password_resets')->where(['email' => $request->email])->delete();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => 'Your password has been successfully changed!'
+    //     ], 200);
+    // }
+
     public function resetPassword(Request $request)
     {
         $validate = Validator::make($request->all(), [
-            'token' => 'required',
-            'email' => 'required|email',
-            'new_password' => 'required|string|min:8',
-            'confirm_password' => 'required|same:new_password'
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|min:8|confirmed',
         ]);
 
         if ($validate->fails()) {
             return response()->json([
-                'status' => 'failed',
-                'message' => 'Validation Error!',
-                'data' => $validate->errors(),
-            ], 403);
-        }
-
-        $update = DB::table('password_resets')->where(['email' => $request->email, 'token' => $request->token])->first();
-
-        if (!$update) {
-            return response()->json([
                 'success' => false,
-                'message' => 'Invalid token provided!'
+                'message' => 'Validation Error!',
+                'errors' => $validate->errors(),
             ], 400);
         }
 
-        $user = User::where('email', $request->email)->update([
-            'show_password' => $request->password,
-            'password' => Hash::make($request->new_password)
-        ]);
+        // Verify if the token matches the one stored in the database
+        $resetRecord = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+        if (!$resetRecord || !Hash::check($request->token, $resetRecord->token)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired token provided!'
+            ], 400);
+        }
 
-        // Delete password_resets record
-        DB::table('password_resets')->where(['email' => $request->email])->delete();
+        // Update the user's password
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        // Delete the password reset record
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return response()->json([
             'success' => true,
