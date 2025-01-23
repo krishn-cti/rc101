@@ -251,7 +251,7 @@ class ProductController extends BaseController
         }
 
         $productReviewData = ProductReview::where('product_id', $request->product_id)
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $request->auth_user->id)
             ->first();
 
         if ($productReviewData) {
@@ -262,7 +262,7 @@ class ProductController extends BaseController
         } else {
             $productReview = new ProductReview();
             $productReview->product_id = $request->product_id;
-            $productReview->user_id = $request->user()->id;
+            $productReview->user_id = $request->auth_user->id;
             $productReview->rating = $request->rating;
             $productReview->review_text = $request->review_text;
             $isSavedRating = $productReview->save();

@@ -18,7 +18,7 @@ class CartController extends Controller
     public function getCartDetails(Request $request)
     {
         $cartItems = Cart::with(['productImages', 'productDetails'])
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $request->auth_user->id)
             ->latest()
             ->get();
         // dd($cartItems);
@@ -60,7 +60,7 @@ class CartController extends Controller
             ], 403);
         }
 
-        $userId = $request->user()->id;
+        $userId = $request->auth_user->id;
 
         $cartItem = Cart::where('user_id', $userId)
             ->where('product_id', $request->product_id)
@@ -107,7 +107,7 @@ class CartController extends Controller
             ], 403);
         }
 
-        $cartItem = Cart::where('user_id', $request->user()->id)
+        $cartItem = Cart::where('user_id', $request->auth_user->id)
             ->where('product_id', $request->product_id)
             ->first();
 
@@ -146,7 +146,7 @@ class CartController extends Controller
             ], 403);
         }
 
-        $cartItem = Cart::where('user_id', $request->user()->id)
+        $cartItem = Cart::where('user_id', $request->auth_user->id)
             ->where('product_id', $request->product_id)
             ->first();
 

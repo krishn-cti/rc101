@@ -55,7 +55,7 @@ class AdminController extends Controller
         $currentDate = Carbon::now();
 
         $data['totalProduct'] = Product::count();
-        $data['totalUser'] = User::where('role_id', 2)->count();
+        $data['totalUser'] = User::whereNotNull('google_id')->count();
         $data['totalOrder'] = Order::count();
         $data['totalTodaySales'] = str_replace('.00', '', number_format(
             Order::whereDate('created_at', $today)

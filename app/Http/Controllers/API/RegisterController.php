@@ -372,7 +372,7 @@ class RegisterController extends BaseController
      */
     public function logout(Request $request)
     {
-        $user = $request->user();
+        $user = $request->auth_user;
         $user->tokens()->delete();
         return response()->json([
             'success' => true,
@@ -388,7 +388,7 @@ class RegisterController extends BaseController
      */
     public function updateProfile(Request $request)
     {
-        $user = $request->user();
+        $user = $request->auth_user;
 
         // Validate the incoming request
         $validate = Validator::make($request->all(), [
@@ -448,7 +448,7 @@ class RegisterController extends BaseController
      */
     public function getMyProfile(Request $request)
     {
-        $user = $request->user();
+        $user = $request->auth_user;
         return response()->json([
             'success' => true,
             'message' => 'User details fetched successfully',
@@ -462,9 +462,10 @@ class RegisterController extends BaseController
      */
     public function getMyAddresses(Request $request)
     {
-        $user_id = $request->user()->id;
+        $userId = $request->auth_user->id;
+        // $user_id = $request->user()->id;
         $users = User::with('userAddresses')
-            ->where('users.id', $user_id)
+            ->where('users.id', $userId)
             ->first();
 
         return response()->json([
@@ -492,7 +493,7 @@ class RegisterController extends BaseController
             ], 403);
         }
 
-        $userAddress = UserAddress::where('user_id', $request->user()->id)
+        $userAddress = UserAddress::where('user_id', $request->auth_user->id)
             ->where('id', $request->address_id)
             ->first();
 

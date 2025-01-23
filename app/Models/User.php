@@ -21,6 +21,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'role_id',
+        'google_classroom_role',
+        'google_id',
+        'google_token',
+        'google_refresh_token',
+        'google_profile_image',
         'default_address_id',
         'profile_image',
         'email',
@@ -71,6 +76,26 @@ class User extends Authenticatable
             // If $value is null or empty, return the URL of the default user avatar image
             return asset('admin/img/bg-img/no-user.webp');
         }
+    }
+
+    public function getNumberAttribute($value)
+    {
+        return $value ?? "#N/A";
+    }
+
+    public function isAdmin()
+    {
+        return $this->role_id === 1;
+    }
+
+    public function isStudent()
+    {
+        return $this->role_id === 2;
+    }
+
+    public function isTeacher()
+    {
+        return $this->role_id === 3;
     }
 
 }

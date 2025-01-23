@@ -27,9 +27,10 @@
                                             <th>No</th>
                                             <th>Profile</th>
                                             <th>Name</th>
+                                            <th>Role</th>
                                             <th>Email</th>
-                                            <th>Number</th>
-                                            <th width="100px">Action</th>
+                                            <!-- <th>Number</th> -->
+                                            <!-- <th width="100px">Action</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -55,9 +56,10 @@
                 {data: 'serial_number', name: 'serial_number'}, // Change 'id' to 'serial_number'
                 {data: 'profile_image', name: 'profile_image'},
                 {data: 'name', name: 'name'},
+                {data: 'role', name: 'role'},
                 {data: 'email', name: 'email'},
-                {data: 'number', name: 'number'},
-                {data: 'action', name: 'action', orderable: false, searchable: false},
+                // {data: 'number', name: 'number'},
+                // {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });
     });

@@ -9,6 +9,8 @@ use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\VerificationController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ContentManagementController;
+use App\Http\Controllers\API\GoogleClassroomController;
+use App\Http\Controllers\API\GoogleController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
@@ -24,6 +26,42 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// Routes of google login for teachers and students
+Route::controller(GoogleController::class)->prefix('auth/google')->group(function () {
+    Route::get('login/{role}', 'loginToGoogle')->name('google.login');
+    Route::get('callback/{google_login_role}', 'handleGoogleCallback');
+});
+
+// Route::prefix('google-classroom')->group(function () {
+//     Route::get('list-courses', [GoogleClassroomController::class, 'listCourses']);
+//     Route::post('create-course', [GoogleClassroomController::class, 'createCourse']);
+//     Route::post('create-assignment', [GoogleClassroomController::class, 'createAssignment']);
+// });
+
+
+Route::prefix('google-classroom')->group(function () {
+    // Routes for Teachers
+    Route::middleware(['google.auth:teacher'])->group(function () {
+        Route::get('list-courses', [GoogleClassroomController::class, 'listCourses']);
+        Route::post('create-course', [GoogleClassroomController::class, 'createCourse']);
+        Route::get('list-students', [GoogleClassroomController::class, 'listStudents']);
+        Route::post('add-student', [GoogleClassroomController::class, 'addStudent']);
+        Route::post('list-assignments', [GoogleClassroomController::class, 'listAssignments']);
+        Route::post('create-assignment', [GoogleClassroomController::class, 'createAssignment']);
+        Route::get('teacher-dashboard', [GoogleClassroomController::class, 'teacherDashboard']);
+    });
+
+    // Routes for Students
+    Route::middleware(['google.auth:student'])->group(function () {
+        // google classroom routes for students
+        Route::post('invitations', [GoogleClassroomController::class, 'getStudentInvitations']);
+        Route::post('accept-invitation', [GoogleClassroomController::class, 'acceptInvitation']);
+        Route::post('delete-invitation', [GoogleClassroomController::class, 'deleteInvitation']);
+        Route::post('join-class', [GoogleClassroomController::class, 'joinClass']);
+        Route::get('courses', [GoogleClassroomController::class, 'getStudentCourses']);
+    });
 });
 
 // Public routes of authtication
@@ -49,7 +87,8 @@ Route::controller(ProductController::class)->group(function () {
 });
 
 // Protected routes of product, cart and logout
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('google.auth:student')->group(function () {
+    // other routes for students
     Route::post('/logout', [RegisterController::class, 'logout']);
     Route::post('/update-profile', [RegisterController::class, 'updateProfile']);
     Route::get('/get-my-profile', [RegisterController::class, 'getMyProfile']);
@@ -95,7 +134,7 @@ Route::controller(ContentManagementController::class)->group(function () {
     Route::get('get-all-tools-trade', 'getAllToolsTrade');
     Route::get('get-glossary-term', 'getGlossaryTerm');
     Route::get('get-privacy-policy', 'getPrivacyPolicy');
-    
+
     // Routes for Weight clasess
     Route::get('get-all-lesson-3d-modeling', 'getAllLesson3dModeling');
     Route::get('get-all-lesson-3d-printing', 'getAllLesson3dPrinting');
@@ -113,7 +152,7 @@ Route::controller(ContentManagementController::class)->group(function () {
     Route::get('get-all-lesson-soldering', 'getAllLessonSoldering');
     Route::get('get-all-lesson-thinkercad', 'getAllLessonThinkercad');
     Route::get('get-all-lesson-weapon-physics', 'getAllLessonWeaponPhysics');
-    
+
     // Routes for Weight clasess
     Route::get('get-all-weight-antweight', 'getAllAntweight');
     Route::get('get-all-weight-beetleweight', 'getAllBeetleweight');

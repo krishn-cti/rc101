@@ -21,7 +21,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::where('role_id', 2)
+            $data = User::whereNotNull('google_id')
                 ->where('status', 1)
                 ->orderBy('id', 'DESC')
                 ->get();
@@ -33,19 +33,26 @@ class UserController extends Controller
                     return ++$index;
                 })
                 ->addColumn('profile_image', function ($row) {
-                    return '<img src="' . $row->profile_image . '" alt="Profile Image" class="td_img_50">';
+                    if (basename($row->profile_image) == "no-user.webp" && $row->google_profile_image != null) {
+                        return '<img src="' . $row->google_profile_image . '" alt="Profile Image" class="td_img_50">';
+                    } else {
+                        return '<img src="' . $row->profile_image . '" alt="Profile Image" class="td_img_50">';
+                    }
                 })
+                ->addColumn('role', function ($row) {
+                    return ucfirst($row->google_classroom_role);
+                })
+                // for edit action button
+                // <a href="' . url('edit-user/' . $row->id) . '">
+                //             <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
+                //             </lord-icon>
+                //         </a>
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
-                        <a href="' . url('edit-user/' . $row->id) . '">
-                                        <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
-                                        </lord-icon>
-                                    </a>
-                        <a href="javascript:;"  title="Delete" onclick="deleteConfirm(' . $row->id . ')"><lord-icon src="https://cdn.lordicon.com/drxwpfop.json"
-                        trigger="hover"
-                        colors="primary:#ff0000,secondary:#ff0000"
-                        style="width:20px;height:20px">
-                    </lord-icon></a>
+                        <a href="javascript:;"  title="Delete" onclick="deleteConfirm(' . $row->id . ')">
+                            <lord-icon src="https://cdn.lordicon.com/drxwpfop.json" trigger="hover" colors="primary:#ff0000,secondary:#ff0000" style="width:20px;height:20px">
+                            </lord-icon>
+                        </a>
                      </div>';
                     return $btn;
                 })
@@ -124,22 +131,22 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->number = $request->number;
-        
+
         if ($request->hasFile('profile_image')) {
             // Check if there's an existing image and delete it
             $existingImage = $user->getRawOriginal('profile_image');
             $existingImagePath = public_path('profile_images/' . $existingImage);
-        
+
             if ($existingImage && file_exists($existingImagePath)) {
                 unlink($existingImagePath);
             }
-        
+
             // Save the new image
             $profile_image = $request->file('profile_image');
             $fileName = uniqid() . '.' . $profile_image->getClientOriginalExtension();
             $profile_image->move(public_path('profile_images'), $fileName);
             $user->profile_image = $fileName;
-        }        
+        }
 
         if ($user->save()) {
             return redirect('list-user')->with('success_msg', 'User updated successfully!');

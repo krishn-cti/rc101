@@ -26,7 +26,7 @@ class OrderController extends Controller
     public function getMyOrders(Request $request)
     {
         $orderItems = Order::with(['productImages', 'productDetails'])
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $request->auth_user->id)
             ->latest()
             ->get();
 
@@ -72,7 +72,7 @@ class OrderController extends Controller
             ], 403);
         }
 
-        $userId = $request->user()->id;
+        $userId = $request->auth_user->id;
         $grandTotal = $request->total_order_price;
 
         $cartItems = Cart::with('productDetails')->where('user_id', $userId)->get();
@@ -160,7 +160,7 @@ class OrderController extends Controller
      */
     public function createOrder(Request $request)
     {
-        $userId = $request->user()->id;
+        $userId = $request->auth_user->id;
         $cartItems = Cart::where('user_id', $userId)->get();
         if ($cartItems->isEmpty()) {
             return response()->json([
@@ -225,7 +225,7 @@ class OrderController extends Controller
                 'data' => $validate->errors(),
             ], 403);
         }
-        $userId = $request->user()->id;
+        $userId = $request->auth_user->id;
         $transactionId = $request->transaction_id;
 
         if ($userId && $transactionId) {
@@ -250,12 +250,12 @@ class OrderController extends Controller
                     unset($transaction->product_id);
                 }
 
-                $order['billingAddress'] = UserAddress::where('id', $request->user()->default_address_id)->first();
+                $order['billingAddress'] = UserAddress::where('id', $request->auth_user->default_address_id)->first();
                 $order['userOrderItems'] = $userOrderItems;
                 $order['orderItems'] = $orderItems;
                 $order['orderStatus'] = $request->status;
 
-                $emails = [$request->user()->email, $order['billingAddress']->email];
+                $emails = [$request->auth_user->email, $order['billingAddress']->email];
                 $validEmails = array_filter($emails, function ($email) {
                     return filter_var($email, FILTER_VALIDATE_EMAIL);
                 });

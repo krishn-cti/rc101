@@ -35,7 +35,7 @@
                     </li>
 
                     <li class="menu-header-title {{ request()->is('list-user', 'add-user', 'edit-user/*') ? 'active' : '' }} ps-0">
-                        <a href="{{ url('list-user') }}"><i class='bx bx-group'></i> Users</a>
+                        <a href="{{ url('list-user') }}"><i class='bx bx-group'></i>All Users</a>
                     </li>
 
                     <li class="menu-header-title {{ request()->is('list-order') ? 'active' : '' }} ps-0">
