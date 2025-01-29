@@ -334,7 +334,11 @@ class ContentManagementController extends Controller
 
         if ($presentationData->isNotEmpty()) {
             $presentationData->transform(function ($presentation) {
-                $presentation->presentation_cover_image = asset('cms_images/leagues/presentations/' . $presentation->presentation_cover_image);
+                if ($presentation->presentation_cover_image) {
+                    $presentation->presentation_cover_image = asset('cms_images/leagues/presentations/' . $presentation->presentation_cover_image);
+                } else {
+                    $presentation->presentation_cover_image = asset('admin/img/bg-img/placeholder.jpg');
+                }
                 return $presentation;
             });
 
