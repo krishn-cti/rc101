@@ -178,14 +178,14 @@ Route::group(['middleware' => ['admin']], function () {
         });
 
         // route for leaders
-        Route::controller(LeaderController::class)->group(function () {
-            Route::get('/leader-list', 'index');
-            Route::get('/leader-add', 'create');
-            Route::post('/leader-save', 'store');
-            Route::get('/leader-edit/{id}', 'edit');
-            Route::post('/leader-update', 'update');
-            Route::post('/leader-delete', 'destroy');
-        });
+        // Route::controller(LeaderController::class)->group(function () {
+        //     Route::get('/leader-list', 'index');
+        //     Route::get('/leader-add', 'create');
+        //     Route::post('/leader-save', 'store');
+        //     Route::get('/leader-edit/{id}', 'edit');
+        //     Route::post('/leader-update', 'update');
+        //     Route::post('/leader-delete', 'destroy');
+        // });
 
         // route for SPARC Rules
         Route::controller(SparcRuleController::class)->group(function () {

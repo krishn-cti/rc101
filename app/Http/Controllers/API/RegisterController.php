@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\UserAddress;
 use Illuminate\Support\Str;
 use App\Models\User;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 
@@ -26,7 +27,7 @@ class RegisterController extends BaseController
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:150',
-            'email' => 'required|string|email:rfc,dns|max:150|unique:users,email',
+            'email' => 'required|string|email|max:150|unique:users,email',
             'number' => 'required|numeric|digits_between:10,15',
             'password' => 'required|string|min:8',
             'confirm_password' => 'required|same:password'
@@ -44,6 +45,7 @@ class RegisterController extends BaseController
             'name' => $request->name,
             'email' => $request->email,
             'number' => $request->number,
+            'role_id' => 4,
             'show_password' => $request->password,
             'password' => Hash::make($request->password)
         ])->sendEmailVerificationNotification();
@@ -53,7 +55,8 @@ class RegisterController extends BaseController
 
         $response = [
             'success' => true,
-            'message' => 'User is created and verification link sent on your email id.',
+            'message' => 'Team account is created and verification link sent on your email id.',
+            // 'data' => $data
         ];
 
         return response()->json($response, 201);
@@ -81,14 +84,14 @@ class RegisterController extends BaseController
         }
 
         // Check email existence
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->where('role_id', 4)->first();
 
         // Check email verification and password
         if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials'
-            ], 401);
+            ], 500);
         }
 
         if (is_null($user->email_verified_at)) {
@@ -102,7 +105,7 @@ class RegisterController extends BaseController
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid credentials'
-            ], 401);
+            ], 500);
         }
 
         $data['token'] = $user->createToken($request->email)->plainTextToken;
@@ -110,7 +113,7 @@ class RegisterController extends BaseController
 
         $response = [
             'success' => true,
-            'message' => 'User is logged in successfully.',
+            'message' => 'Team Member is logged in successfully.',
             'data' => $data,
         ];
 
@@ -325,6 +328,88 @@ class RegisterController extends BaseController
     //         'message' => 'Your password has been successfully changed!'
     //     ], 200);
     // }
+
+    // this method is used to get all the team members
+    public function getAllMembers(Request $request)
+    {
+        $users = User::where('role_id', 4)
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Team members fetched successfully',
+            'data' => $users
+        ], 200);
+    }
+
+    // this method is used to get all the team members
+    public function updateMemberDetail(Request $request)
+    {
+        // Retrieve the user by ID
+        $user = User::where('id', $request->user_id)->where('role_id', 4)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Team member not found or not authorized for this action.',
+            ], 404);
+        }        
+
+        // Validate the incoming request
+        $validate = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email:rfc,dns|max:150|unique:users,email,' . $user->id,
+            'number' => 'nullable|numeric|digits_between:8,15',
+            'designation' => 'nullable|string|max:255',
+            'about' => 'nullable|string',
+            'password' => 'nullable|string|min:8',
+            'confirm_password' => 'nullable|same:password',
+            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        // Update user details
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->number = $request->number ?? $user->number;
+        $user->designation = $request->designation ?? $user->designation;
+        $user->about = $request->about ?? $user->about;
+
+        // Update password if provided
+        if ($request->password) {
+            $user->show_password = $request->password;
+            $user->password = Hash::make($request->password);
+        }
+
+        // Handle profile image upload if provided
+        if ($request->hasFile('profile_image')) {
+            if ($user->profile_image && file_exists(public_path('profile_images/' . $user->profile_image))) {
+                unlink(public_path('profile_images/' . $user->profile_image));
+            }
+
+            // Upload the new profile image
+            $fileName = uniqid() . '.' . $request->file('profile_image')->getClientOriginalExtension();
+            $request->file('profile_image')->move(public_path('profile_images'), $fileName);
+            $user->profile_image = $fileName;
+        }
+
+        $user->save();
+
+        // Return the response
+        return response()->json([
+            'success' => true,
+            'message' => 'Team member details updated successfully.',
+            'data' => $user,
+        ], 200);
+    }
 
     public function resetPassword(Request $request)
     {

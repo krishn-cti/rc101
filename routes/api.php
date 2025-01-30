@@ -66,8 +66,8 @@ Route::prefix('google-classroom')->group(function () {
 
 // Public routes of authtication
 Route::controller(RegisterController::class)->group(function () {
-    Route::post('register', 'register');
-    Route::post('login', 'login');
+    Route::post('member-register', 'register');
+    Route::post('member-login', 'login');
     Route::post('forgot-password', 'forgotPassword');
     // Route::post('reset-password', 'resetPassword')->name('password.update');
 
@@ -78,6 +78,8 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 
 Route::get('email/verify/{id}', [VerificationController::class, 'verify'])->name('verification.verify');
 Route::get('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+Route::get('/get-all-members', [RegisterController::class, 'getAllMembers']);
+Route::post('/update-member-detail', [RegisterController::class, 'updateMemberDetail']);
 
 // Public routes of product
 Route::controller(ProductController::class)->group(function () {

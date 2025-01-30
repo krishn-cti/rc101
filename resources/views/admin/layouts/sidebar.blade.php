@@ -187,9 +187,9 @@
                                 <li class="menu-header-title {{ request()->is('cms/partner-list', 'cms/partner-add', 'cms/partner-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/partner-list') }}"><i class='bx bx-buildings'></i> Partners</a>
                                 </li>
-                                <li class="menu-header-title {{ request()->is('cms/leader-list', 'cms/leader-add', 'cms/leader-edit/*') ? 'active' : '' }} ps-0">
+                                <!-- <li class="menu-header-title {{ request()->is('cms/leader-list', 'cms/leader-add', 'cms/leader-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/leader-list') }}"><i class='bx bx-user-pin'></i> Our Leaders</a>
-                                </li>
+                                </li> -->
                                 <li class="menu-header-title {{ request()->is('cms/weight-class-list', 'cms/weight-class-add', 'cms/weight-class-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/weight-class-list') }}"><i class='bx bx-slider-alt'></i> Weight Class/Restrictions</a>
                                 </li>
