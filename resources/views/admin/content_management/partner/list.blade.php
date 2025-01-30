@@ -17,7 +17,7 @@
                             <div class="card-body">
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
                                     <h6 class="mb-0">All Partners</h6>
-                                    <a href="{{ url('cms/partner-add') }}">
+                                    <a href="{{ url('partner-add') }}">
                                         <button class="ct_custom_btn1 mx-auto">Add New Partner</button>
                                     </a>
                                 </div>
@@ -50,7 +50,7 @@
         var table = $('.partner-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('cms/partner-list') }}",
+            ajax: "{{ url('partner-list') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
@@ -95,7 +95,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('cms/partner-delete') }}",
+                        url: "{{ url('partner-delete') }}",
                         type: "POST",
                         cache: false,
                         data: {

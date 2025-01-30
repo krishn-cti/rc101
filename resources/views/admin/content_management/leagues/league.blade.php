@@ -30,7 +30,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="banner_text"><strong>Banner Text</strong></label>
-                                        <textarea name="banner_text" id="banner_text" class="form-control" cols="30" rows="4" placeholder="Banner Text">{{ old('banner_text', $leaguePage->banner_text ?? '') }}</textarea>
+                                        <textarea name="banner_text" id="banner_text" class="form-control ct_input" cols="30" rows="4" placeholder="Banner Text">{{ old('banner_text', $leaguePage->banner_text ?? '') }}</textarea>
                                     </div>
                                     <div class="mb-3">
                                         <label for="about_league_title"><strong>About League Title</strong></label>
@@ -104,16 +104,16 @@
 @endsection
 @section('script')
 <script>
-    ClassicEditor
-        .create(document.querySelector('#banner_text'), {
-            toolbar: [
-                'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', '|', 'undo', 'redo'
-                // Add other items as needed, but exclude 'imageUpload' and 'mediaEmbed'
-            ],
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    // ClassicEditor
+    //     .create(document.querySelector('#banner_text'), {
+    //         toolbar: [
+    //             'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', '|', 'undo', 'redo'
+    //             // Add other items as needed, but exclude 'imageUpload' and 'mediaEmbed'
+    //         ],
+    //     })
+    //     .catch(error => {
+    //         console.error(error);
+    //     });
     ClassicEditor
         .create(document.querySelector('#about_league_desc'), {
             toolbar: [

@@ -21,9 +21,9 @@
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
                                     <h3 class="mb-0 ct_fs_22">Edit Partners</h3>
-                                    <a href="{{url('cms/partner-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <a href="{{url('partner-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('cms/partner-update')}}" method="POST" id="editPartner" enctype="multipart/form-data">
+                                <form action="{{url('partner-update')}}" method="POST" id="editPartner" enctype="multipart/form-data">
                                     <input type="hidden" name="id" value="{{$partnerData->id}}">
                                     @csrf
                                     <div class="row">

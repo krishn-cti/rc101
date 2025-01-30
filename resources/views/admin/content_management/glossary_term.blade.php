@@ -19,9 +19,9 @@
                         <div class="card ">
                             <div class="card-body card-breadcrumb">
                                 <div class="page-title-box mb-4">
-                                    <h3 class="mb-0 ct_fs_22">Glossary of Terms</h3>
+                                    <h3 class="mb-0 ct_fs_22">Terms and Conditions</h3>
                                 </div>
-                                <form action="{{url('cms/update-glossary-term')}}" method="POST" id="glossaryTermForm" enctype="multipart/form-data">
+                                <form action="{{url('cms/update-terms-and-conditions')}}" method="POST" id="glossaryTermForm" enctype="multipart/form-data">
                                     @csrf
                                     <input type="hidden" name="id" value="{{$glossaryTerm->id ?? null}}">
                                     <div class="mb-3">

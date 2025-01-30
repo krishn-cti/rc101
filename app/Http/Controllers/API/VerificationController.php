@@ -23,7 +23,7 @@ class VerificationController extends Controller
             $user->markEmailAsVerified();
         }
 
-        return redirect($_ENV['FRONT_URL'] . '/member-login');
+        return redirect($_ENV['FRONT_URL'] . '/member-login-register');
     }
 
     public function resend(Request $request)

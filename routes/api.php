@@ -134,7 +134,7 @@ Route::controller(ContentManagementController::class)->group(function () {
     Route::get('get-all-weight-class-restriction', 'getAllWeightClassRestriction');
     Route::get('get-all-event-coverage', 'getAllEventCoverage');
     Route::get('get-all-tools-trade', 'getAllToolsTrade');
-    Route::get('get-glossary-term', 'getGlossaryTerm');
+    Route::get('get-terms-and-conditions', 'getGlossaryTerm');
     Route::get('get-privacy-policy', 'getPrivacyPolicy');
 
     // Routes for Weight clasess

@@ -118,7 +118,7 @@ class ContentManagementController extends Controller
     }
 
     /**
-     * Write code on this method for get glossary of terms
+     * Write code on this method for get terms and conditions
      *
      * @return response()
      */

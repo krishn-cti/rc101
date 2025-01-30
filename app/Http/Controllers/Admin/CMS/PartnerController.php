@@ -31,7 +31,7 @@ class PartnerController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
-                        <a href="' . url('cms/partner-edit/' . $row->id) . '">
+                        <a href="' . url('partner-edit/' . $row->id) . '">
                                         <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
                                         </lord-icon>
                                     </a>
@@ -83,9 +83,9 @@ class PartnerController extends Controller
         ]);
 
         if ($isInserted) {
-            return redirect('cms/partner-list')->with('success_msg', 'Company details added successfully!');
+            return redirect('partner-list')->with('success_msg', 'Company details added successfully!');
         } else {
-            return redirect('cms/partner-list')->with('error_msg', 'Something went wrong!');
+            return redirect('partner-list')->with('error_msg', 'Something went wrong!');
         }
     }
 
@@ -111,7 +111,7 @@ class PartnerController extends Controller
         // Check if the partner with the provided id exists
         $existingPartner = Partner::where('id', $id)->first();
         if (!$existingPartner) {
-            return redirect('cms/partner-list')->with('error_msg', 'Partners not found.');
+            return redirect('partner-list')->with('error_msg', 'Partners not found.');
         }
 
         // Update partner fields
@@ -140,9 +140,9 @@ class PartnerController extends Controller
         $isUpdated = Partner::where('id', $id)->update($updateData);
 
         if ($isUpdated) {
-            return redirect('cms/partner-list')->with('success_msg', 'Company details updated successfully!');
+            return redirect('partner-list')->with('success_msg', 'Company details updated successfully!');
         } else {
-            return redirect('cms/partner-list')->with('error_msg', 'Failed to update Company details.');
+            return redirect('partner-list')->with('error_msg', 'Failed to update Company details.');
         }
     }
 

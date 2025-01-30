@@ -125,6 +125,16 @@ Route::group(['middleware' => ['admin']], function () {
         Route::post('/delete-user', 'destroy');
     });
 
+    // route for partners(companies)
+    Route::controller(PartnerController::class)->group(function () {
+        Route::get('/partner-list', 'index');
+        Route::get('/partner-add', 'create');
+        Route::post('/partner-save', 'store');
+        Route::get('/partner-edit/{id}', 'edit');
+        Route::post('/partner-update', 'update');
+        Route::post('/partner-delete', 'destroy');
+    });
+
     // route for Content Management
     Route::prefix('cms')->group(function () {
         // route for tournaments
@@ -165,16 +175,6 @@ Route::group(['middleware' => ['admin']], function () {
             Route::get('/service-edit/{id}', 'edit');
             Route::post('/service-update', 'update');
             Route::post('/service-delete', 'destroy');
-        });
-
-        // route for partners(companies)
-        Route::controller(PartnerController::class)->group(function () {
-            Route::get('/partner-list', 'index');
-            Route::get('/partner-add', 'create');
-            Route::post('/partner-save', 'store');
-            Route::get('/partner-edit/{id}', 'edit');
-            Route::post('/partner-update', 'update');
-            Route::post('/partner-delete', 'destroy');
         });
 
         // route for leaders
@@ -467,11 +467,11 @@ Route::group(['middleware' => ['admin']], function () {
             // route for league page
             Route::get('/league', 'editLeague');
             Route::post('/update-league', 'updateLeague');
-            
-            // route for glossary of terms
-            Route::get('/glossary-term', 'editGlossaryTerm');
-            Route::post('/update-glossary-term', 'updateGlossaryTerm');
-            
+
+            // route for terms and conditions
+            Route::get('/terms-and-conditions', 'editGlossaryTerm');
+            Route::post('/update-terms-and-conditions', 'updateGlossaryTerm');
+
             // route for privacy policy
             Route::get('/privacy-policy', 'editPrivacyPolicy');
             Route::post('/update-privacy-policy', 'updatePrivacyPolicy');

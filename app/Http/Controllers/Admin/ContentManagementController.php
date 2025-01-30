@@ -149,6 +149,7 @@ class ContentManagementController extends Controller
     {
         $request->validate([
             'banner_title' => 'required|string|max:150',
+            'banner_text' => 'nullable|string|max:255',
         ]);
 
         $cmsLeagueData = [
@@ -227,14 +228,14 @@ class ContentManagementController extends Controller
         return redirect('cms/league')->with($id ? 'success_msg' : 'error_msg', $message);
     }
 
-    // this method is used to view for glossary of terms
+    // this method is used to view for terms and conditions
     public function editGlossaryTerm()
     {
         $data['glossaryTerm'] = DB::table('cms_glossary_of_terms')->first();
         return view('admin.content_management.glossary_term', $data);
     }
 
-    // this method is used to insert or update glossary of terms
+    // this method is used to insert or update terms and conditions
     public function updateGlossaryTerm(Request $request)
     {
         $request->validate([
@@ -256,14 +257,14 @@ class ContentManagementController extends Controller
                 DB::table('cms_glossary_of_terms')->where('id', $id)->update($cmsGlossaryTermData);
                 $message = 'Glossary of terms updated successfully!';
             } else {
-                return redirect('cms/glossary-term')->with('error_msg', 'No record found with the provided ID.');
+                return redirect('cms/terms-and-conditions')->with('error_msg', 'No record found with the provided ID.');
             }
         } else {
             $id = DB::table('cms_glossary_of_terms')->insertGetId($cmsGlossaryTermData);
             $message = 'New Glossary of terms added successfully!';
         }
 
-        return redirect('cms/glossary-term')->with($id ? 'success_msg' : 'error_msg', $message);
+        return redirect('cms/terms-and-conditions')->with($id ? 'success_msg' : 'error_msg', $message);
     }
 
     // this method is used to view for privacy policy

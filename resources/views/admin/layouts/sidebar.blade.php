@@ -38,6 +38,10 @@
                         <a href="{{ url('list-user') }}"><i class='bx bx-group'></i>All Users</a>
                     </li>
 
+                    <li class="menu-header-title {{ request()->is('partner-list', 'partner-add', 'partner-edit/*') ? 'active' : '' }} ps-0">
+                        <a href="{{ url('partner-list') }}"><i class='bx bx-buildings'></i> Partners</a>
+                    </li>
+
                     <li class="menu-header-title {{ request()->is('list-order') ? 'active' : '' }} ps-0">
                         <a href="{{ url('list-order') }}"><i class='bx bx-receipt'></i> Orders</a>
                     </li>
@@ -63,7 +67,7 @@
 
                                 <li class="menu-header-title treeview ps-0 {{ request()->is('cms/league', 'cms/tournament-list', 'cms/tournament-add', 'cms/tournament-edit/*', 'cms/presentation-list', 'cms/presentation-add', 'cms/presentation-edit/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
-                                        <i class='bx bx-trophy' ></i> <span>League/Tournament</span>
+                                        <i class='bx bx-trophy'></i> <span>League/Tournament</span>
                                         <i class="fa fa-angle-right"></i>
                                     </a>
 
@@ -92,58 +96,58 @@
 
                                     @if( request()->is('cms/lessons/*'))
                                     <ul class="treeview-menu" style="display: block;">
-                                    @else
-                                    <ul class="treeview-menu menu-list" style="display: none;">
-                                        @endif
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/3d-modeling-list', 'cms/lessons/3d-modeling-add', 'cms/lessons/3d-modeling-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/3d-modeling-list') }}"><i class='bx bxs-file'></i> 3D Modeling</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/3d-printing-list', 'cms/lessons/3d-printing-add', 'cms/lessons/3d-printing-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/3d-printing-list') }}"><i class='bx bxs-printer'></i> 3D Printing</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/batteries-list', 'cms/lessons/batteries-add', 'cms/lessons/batteries-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/batteries-list') }}"><i class='bx bx-battery'></i> Batteries</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/brushed-brushless-list', 'cms/lessons/brushed-brushless-add', 'cms/lessons/brushed-brushless-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/brushed-brushless-list') }}"><i class='bx bx-rotate-left'></i> Brushed vs. brushless motors</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/bescs-list', 'cms/lessons/bescs-add', 'cms/lessons/bescs-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/bescs-list') }}"><i class='bx bx-cog'></i> ESCs/BESCs</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/electrical-engineering-list', 'cms/lessons/electrical-engineering-add', 'cms/lessons/electrical-engineering-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/electrical-engineering-list') }}"><i class='bx bx-chip'></i> Electrical engineering and robot combat</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/fusion-list', 'cms/lessons/fusion-add', 'cms/lessons/fusion-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/fusion-list') }}"><i class='bx bx-layer'></i> Fusion</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/gear-ratios-list', 'cms/lessons/gear-ratios-add', 'cms/lessons/gear-ratios-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/gear-ratios-list') }}"><i class='bx bx-cog'></i> Gear ratios and mechanisms</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/material-science-list', 'cms/lessons/material-science-add', 'cms/lessons/material-science-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/material-science-list') }}"><i class='bx bxs-flask'></i> Materials Science and Robot Combat</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/pcbs-list', 'cms/lessons/pcbs-add', 'cms/lessons/pcbs-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/pcbs-list') }}"><i class='bx bx-dna'></i> PCBs</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/physics-geometry-list', 'cms/lessons/physics-geometry-add', 'cms/lessons/physics-geometry-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/physics-geometry-list') }}"><i class='bx bx-shape-triangle' ></i> Physics, Geometry, and Robot Combat</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/receivers-list', 'cms/lessons/receivers-add', 'cms/lessons/receivers-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/receivers-list') }}"><i class='bx bx-bar-chart-alt-2'></i> Receivers</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/slicing-list', 'cms/lessons/slicing-add', 'cms/lessons/slicing-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/slicing-list') }}"><i class='bx bx-cut'></i> Slicing</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/soldering-list', 'cms/lessons/soldering-add', 'cms/lessons/soldering-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/soldering-list') }}"><i class='bx bx-wrench'></i> Soldering</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/thinkercad-list', 'cms/lessons/thinkercad-add', 'cms/lessons/thinkercad-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/thinkercad-list') }}"><i class='bx bx-cube'></i> ThinkerCAD</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/lessons/weapon-physics-list', 'cms/lessons/weapon-physics-add', 'cms/lessons/weapon-physics-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/lessons/weapon-physics-list') }}"><i class='bx bx-target-lock'></i> Weapon Physics</a>
-                                        </li>
-                                    </ul>
+                                        @else
+                                        <ul class="treeview-menu menu-list" style="display: none;">
+                                            @endif
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/3d-modeling-list', 'cms/lessons/3d-modeling-add', 'cms/lessons/3d-modeling-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/3d-modeling-list') }}"><i class='bx bxs-file'></i> 3D Modeling</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/3d-printing-list', 'cms/lessons/3d-printing-add', 'cms/lessons/3d-printing-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/3d-printing-list') }}"><i class='bx bxs-printer'></i> 3D Printing</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/batteries-list', 'cms/lessons/batteries-add', 'cms/lessons/batteries-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/batteries-list') }}"><i class='bx bx-battery'></i> Batteries</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/brushed-brushless-list', 'cms/lessons/brushed-brushless-add', 'cms/lessons/brushed-brushless-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/brushed-brushless-list') }}"><i class='bx bx-rotate-left'></i> Brushed vs. brushless motors</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/bescs-list', 'cms/lessons/bescs-add', 'cms/lessons/bescs-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/bescs-list') }}"><i class='bx bx-cog'></i> ESCs/BESCs</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/electrical-engineering-list', 'cms/lessons/electrical-engineering-add', 'cms/lessons/electrical-engineering-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/electrical-engineering-list') }}"><i class='bx bx-chip'></i> Electrical engineering and robot combat</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/fusion-list', 'cms/lessons/fusion-add', 'cms/lessons/fusion-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/fusion-list') }}"><i class='bx bx-layer'></i> Fusion</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/gear-ratios-list', 'cms/lessons/gear-ratios-add', 'cms/lessons/gear-ratios-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/gear-ratios-list') }}"><i class='bx bx-cog'></i> Gear ratios and mechanisms</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/material-science-list', 'cms/lessons/material-science-add', 'cms/lessons/material-science-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/material-science-list') }}"><i class='bx bxs-flask'></i> Materials Science and Robot Combat</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/pcbs-list', 'cms/lessons/pcbs-add', 'cms/lessons/pcbs-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/pcbs-list') }}"><i class='bx bx-dna'></i> PCBs</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/physics-geometry-list', 'cms/lessons/physics-geometry-add', 'cms/lessons/physics-geometry-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/physics-geometry-list') }}"><i class='bx bx-shape-triangle'></i> Physics, Geometry, and Robot Combat</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/receivers-list', 'cms/lessons/receivers-add', 'cms/lessons/receivers-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/receivers-list') }}"><i class='bx bx-bar-chart-alt-2'></i> Receivers</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/slicing-list', 'cms/lessons/slicing-add', 'cms/lessons/slicing-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/slicing-list') }}"><i class='bx bx-cut'></i> Slicing</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/soldering-list', 'cms/lessons/soldering-add', 'cms/lessons/soldering-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/soldering-list') }}"><i class='bx bx-wrench'></i> Soldering</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/thinkercad-list', 'cms/lessons/thinkercad-add', 'cms/lessons/thinkercad-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/thinkercad-list') }}"><i class='bx bx-cube'></i> ThinkerCAD</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/lessons/weapon-physics-list', 'cms/lessons/weapon-physics-add', 'cms/lessons/weapon-physics-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/lessons/weapon-physics-list') }}"><i class='bx bx-target-lock'></i> Weapon Physics</a>
+                                            </li>
+                                        </ul>
                                 </li>
 
                                 <li class="menu-header-title treeview ps-0 {{ request()->is('cms/weight-classes/*') ? 'menu-open active' : '' }}">
@@ -154,38 +158,35 @@
 
                                     @if( request()->is('cms/weight-classes/*'))
                                     <ul class="treeview-menu" style="display: block;">
-                                    @else
-                                    <ul class="treeview-menu menu-list" style="display: none;">
-                                        @endif
-                                        <li class="menu-header-title {{ request()->is('cms/weight-classes/antweight-list', 'cms/weight-classes/antweight-add', 'cms/weight-classes/antweight-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/weight-classes/antweight-list') }}"><i class='bx bxs-bug'></i> Antweights</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/weight-classes/beetleweight-list', 'cms/weight-classes/beetleweight-add', 'cms/weight-classes/beetleweight-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/weight-classes/beetleweight-list') }}"><i class='bx bxs-bug-alt'></i> Beetleweights</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/weight-classes/fairyweight-list', 'cms/weight-classes/fairyweight-add', 'cms/weight-classes/fairyweight-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/weight-classes/fairyweight-list') }}"><i class="bx bxs-magic-wand"></i> Fairyweights</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/weight-classes/featherweight-list', 'cms/weight-classes/featherweight-add', 'cms/weight-classes/featherweight-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/weight-classes/featherweight-list') }}"><i class='bx bxs-plane'></i> Featherweights</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/weight-classes/hobbyweight-list', 'cms/weight-classes/hobbyweight-add', 'cms/weight-classes/hobbyweight-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/weight-classes/hobbyweight-list') }}"><i class='bx bx-joystick'></i> Hobbyweights</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/weight-classes/plastic-antweight-list', 'cms/weight-classes/plastic-antweight-add', 'cms/weight-classes/plastic-antweight-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/weight-classes/plastic-antweight-list') }}"><i class='bx bx-bug-alt'></i> Plastic Antweights (30lb.)</a>
-                                        </li>
-                                        <li class="menu-header-title {{ request()->is('cms/weight-classes/sportsman-list', 'cms/weight-classes/sportsman-add', 'cms/weight-classes/sportsman-edit/*') ? 'active' : '' }} ps-0">
-                                            <a href="{{ url('cms/weight-classes/sportsman-list') }}"><i class='bx bx-run'></i> Sportsmans (30lb.)</a>
-                                        </li>
-                                    </ul>
+                                        @else
+                                        <ul class="treeview-menu menu-list" style="display: none;">
+                                            @endif
+                                            <li class="menu-header-title {{ request()->is('cms/weight-classes/antweight-list', 'cms/weight-classes/antweight-add', 'cms/weight-classes/antweight-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/weight-classes/antweight-list') }}"><i class='bx bxs-bug'></i> Antweights</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/weight-classes/beetleweight-list', 'cms/weight-classes/beetleweight-add', 'cms/weight-classes/beetleweight-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/weight-classes/beetleweight-list') }}"><i class='bx bxs-bug-alt'></i> Beetleweights</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/weight-classes/fairyweight-list', 'cms/weight-classes/fairyweight-add', 'cms/weight-classes/fairyweight-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/weight-classes/fairyweight-list') }}"><i class="bx bxs-magic-wand"></i> Fairyweights</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/weight-classes/featherweight-list', 'cms/weight-classes/featherweight-add', 'cms/weight-classes/featherweight-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/weight-classes/featherweight-list') }}"><i class='bx bxs-plane'></i> Featherweights</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/weight-classes/hobbyweight-list', 'cms/weight-classes/hobbyweight-add', 'cms/weight-classes/hobbyweight-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/weight-classes/hobbyweight-list') }}"><i class='bx bx-joystick'></i> Hobbyweights</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/weight-classes/plastic-antweight-list', 'cms/weight-classes/plastic-antweight-add', 'cms/weight-classes/plastic-antweight-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/weight-classes/plastic-antweight-list') }}"><i class='bx bx-bug-alt'></i> Plastic Antweights (30lb.)</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/weight-classes/sportsman-list', 'cms/weight-classes/sportsman-add', 'cms/weight-classes/sportsman-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/weight-classes/sportsman-list') }}"><i class='bx bx-run'></i> Sportsmans (30lb.)</a>
+                                            </li>
+                                        </ul>
                                 </li>
 
                                 <li class="menu-header-title {{ request()->is('cms/service-list', 'cms/service-add', 'cms/service-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/service-list') }}"><i class='bx bxs-offer'></i> Services</a>
-                                </li>
-                                <li class="menu-header-title {{ request()->is('cms/partner-list', 'cms/partner-add', 'cms/partner-edit/*') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/partner-list') }}"><i class='bx bx-buildings'></i> Partners</a>
                                 </li>
                                 <!-- <li class="menu-header-title {{ request()->is('cms/leader-list', 'cms/leader-add', 'cms/leader-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/leader-list') }}"><i class='bx bx-user-pin'></i> Our Leaders</a>
@@ -202,8 +203,8 @@
                                 <li class="menu-header-title {{ request()->is('cms/tools-trade-list', 'cms/tools-trade-add', 'cms/tools-trade-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/tools-trade-list') }}"><i class="bx bx-wrench"></i> Tools of the Trade</a>
                                 </li>
-                                <li class="menu-header-title {{ request()->is('cms/glossary-term') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/glossary-term') }}"><i class="bx bx-book"></i> Glossary of Terms</a>
+                                <li class="menu-header-title {{ request()->is('cms/terms-and-conditions') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('cms/terms-and-conditions') }}"><i class="bx bx-book"></i> Terms and Conditions</a>
                                 </li>
                                 <li class="menu-header-title {{ request()->is('cms/privacy-policy') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/privacy-policy') }}"><i class="bx bx-lock"></i> Privacy Policy</a>

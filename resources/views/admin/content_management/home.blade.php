@@ -39,7 +39,7 @@
                                         @enderror
                                     </div>
                                     <div class="mb-3">
-                                        <label for="banner_text"><strong>Banner Text</strong></label>
+                                        <label for="banner_text"><strong>Home Page Content</strong></label>
                                         <textarea name="banner_text" id="banner_text" class="form-control" cols="30" rows="5" placeholder="Banner Description" required>{{ old('banner_text', $homeBanner->banner_text ?? '') }}</textarea>
                                         @error('banner_text')
                                         <div class="text text-danger mt-2">{{ $message }}</div>
