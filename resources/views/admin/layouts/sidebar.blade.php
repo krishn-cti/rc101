@@ -194,8 +194,8 @@
                                 <li class="menu-header-title {{ request()->is('cms/weight-class-list', 'cms/weight-class-add', 'cms/weight-class-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/weight-class-list') }}"><i class='bx bx-slider-alt'></i> Weight Class/Restrictions</a>
                                 </li>
-                                <li class="menu-header-title {{ request()->is('cms/sparc-rule-list', 'cms/sparc-rule-add', 'cms/sparc-rule-edit/*') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/sparc-rule-list') }}"><i class="bx bx-task"></i> SPARC Rules</a>
+                                <li class="menu-header-title {{ request()->is('cms/league-rule-list', 'cms/league-rule-add', 'cms/league-rule-edit/*') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('cms/league-rule-list') }}"><i class="bx bx-task"></i> League Rules</a>
                                 </li>
                                 <li class="menu-header-title {{ request()->is('cms/event-coverage-list', 'cms/event-coverage-add', 'cms/event-coverage-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/event-coverage-list') }}"><i class="bx bx-calendar-event"></i> Event Coverage/Results</a>

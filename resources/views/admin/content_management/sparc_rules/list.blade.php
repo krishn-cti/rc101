@@ -16,9 +16,9 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All SPARC Rules</h6>
-                                    <a href="{{ url('cms/sparc-rule-add') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New SPARC Rule</button>
+                                    <h6 class="mb-0">All League Rules</h6>
+                                    <a href="{{ url('cms/league-rule-add') }}">
+                                        <button class="ct_custom_btn1 mx-auto">Add New League Rule</button>
                                     </a>
                                 </div>
 
@@ -50,7 +50,7 @@
         var table = $('.sparc-rule-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('cms/sparc-rule-list') }}",
+            ajax: "{{ url('cms/league-rule-list') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
@@ -95,7 +95,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('cms/sparc-rule-delete') }}",
+                        url: "{{ url('cms/league-rule-delete') }}",
                         type: "POST",
                         cache: false,
                         data: {

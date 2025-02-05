@@ -23,7 +23,7 @@ use App\Models\LessonWeaponPhysics;
 use App\Models\Partner;
 use App\Models\Presentation;
 use App\Models\Service;
-use App\Models\SparcRule;
+use App\Models\LeagueRule;
 use App\Models\ToolsTrade;
 use App\Models\Tournament;
 use App\Models\WeightAntweight;
@@ -384,19 +384,19 @@ class ContentManagementController extends Controller
     }
 
     /**
-     * Write code on this method for get SPARC Rules
+     * Write code on this method for get League Rules
      *
      * @return response()
      */
     public function getAllSparcRule()
     {
-        $sparcRuleData = SparcRule::orderBy('id', 'DESC')->get();
+        $sparcRuleData = LeagueRule::orderBy('id', 'DESC')->get();
 
         if ($sparcRuleData->isNotEmpty()) {
 
             $response = [
                 'success' => true,
-                'message' => 'SPARC Rules retrieved successfully.',
+                'message' => 'League Rules retrieved successfully.',
                 'data' => $sparcRuleData,
             ];
 

@@ -28,7 +28,7 @@ use App\Http\Controllers\Admin\CMS\LessonWeaponPhysicsController;
 use App\Http\Controllers\Admin\CMS\PartnerController;
 use App\Http\Controllers\Admin\CMS\PresentationController;
 use App\Http\Controllers\Admin\CMS\ServiceController;
-use App\Http\Controllers\Admin\CMS\SparcRuleController;
+use App\Http\Controllers\Admin\CMS\LeagueRuleController;
 use App\Http\Controllers\Admin\CMS\ToolsTradeController;
 use App\Http\Controllers\Admin\CMS\TournamentController;
 use App\Http\Controllers\Admin\CMS\WeightAntweightController;
@@ -187,14 +187,14 @@ Route::group(['middleware' => ['admin']], function () {
         //     Route::post('/leader-delete', 'destroy');
         // });
 
-        // route for SPARC Rules
-        Route::controller(SparcRuleController::class)->group(function () {
-            Route::get('/sparc-rule-list', 'index');
-            Route::get('/sparc-rule-add', 'create');
-            Route::post('/sparc-rule-save', 'store');
-            Route::get('/sparc-rule-edit/{id}', 'edit');
-            Route::post('/sparc-rule-update', 'update');
-            Route::post('/sparc-rule-delete', 'destroy');
+        // route for League Rules
+        Route::controller(LeagueRuleController::class)->group(function () {
+            Route::get('/league-rule-list', 'index');
+            Route::get('/league-rule-add', 'create');
+            Route::post('/league-rule-save', 'store');
+            Route::get('/league-rule-edit/{id}', 'edit');
+            Route::post('/league-rule-update', 'update');
+            Route::post('/league-rule-delete', 'destroy');
         });
 
         // route for Event Coverage/Results

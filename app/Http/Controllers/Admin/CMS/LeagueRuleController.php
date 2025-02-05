@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin\CMS;
 
 use App\Http\Controllers\Controller;
-use App\Models\SparcRule;
+use App\Models\LeagueRule;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
-class SparcRuleController extends Controller
+class LeagueRuleController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,7 @@ class SparcRuleController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = SparcRule::orderBy('id', 'DESC')->get();
+            $data = LeagueRule::orderBy('id', 'DESC')->get();
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('serial_number', function ($row) {
@@ -40,7 +40,7 @@ class SparcRuleController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
-                        <a href="' . url('cms/sparc-rule-edit/' . $row->id) . '">
+                        <a href="' . url('cms/league-rule-edit/' . $row->id) . '">
                                         <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
                                         </lord-icon>
                                     </a>
@@ -77,16 +77,16 @@ class SparcRuleController extends Controller
             'sparc_rule_description' => 'required',
         ]);
 
-        $isInserted = SparcRule::insert([
+        $isInserted = LeagueRule::insert([
             'sparc_rule_title' => $request->sparc_rule_title,
             'sparc_rule_description' => $request->sparc_rule_description,
             'container_color' => $request->container_color,
         ]);
 
         if ($isInserted) {
-            return redirect('cms/sparc-rule-list')->with('success_msg', 'Sparc Rules added successfully!');
+            return redirect('cms/league-rule-list')->with('success_msg', 'Sparc Rules added successfully!');
         } else {
-            return redirect('cms/sparc-rule-list')->with('error_msg', 'Something went wrong!');
+            return redirect('cms/league-rule-list')->with('error_msg', 'Something went wrong!');
         }
     }
 
@@ -103,7 +103,7 @@ class SparcRuleController extends Controller
      */
     public function edit(string $id)
     {
-        $data['sparcRuleData'] = SparcRule::where('id', $id)->first();
+        $data['sparcRuleData'] = LeagueRule::where('id', $id)->first();
         return view('admin.content_management.sparc_rules.edit', $data);
     }
 
@@ -121,9 +121,9 @@ class SparcRuleController extends Controller
         $id = $request->id;
 
         // Check if the sparc rule with the provided id exists
-        $existingSparcRule = SparcRule::where('id', $id)->first();
+        $existingSparcRule = LeagueRule::where('id', $id)->first();
         if (!$existingSparcRule) {
-            return redirect('cms/sparc-rule-list')->with('error_msg', 'Sparc Rules not found.');
+            return redirect('cms/league-rule-list')->with('error_msg', 'Sparc Rules not found.');
         }
 
         // Update sparc rule fields
@@ -134,12 +134,12 @@ class SparcRuleController extends Controller
         ];
 
         // Perform the update
-        $isUpdated = SparcRule::where('id', $id)->update($updateData);
+        $isUpdated = LeagueRule::where('id', $id)->update($updateData);
 
         if ($isUpdated) {
-            return redirect('cms/sparc-rule-list')->with('success_msg', 'Sparc Rules updated successfully!');
+            return redirect('cms/league-rule-list')->with('success_msg', 'Sparc Rules updated successfully!');
         } else {
-            return redirect('cms/sparc-rule-list')->with('error_msg', 'Failed to update sparc rule.');
+            return redirect('cms/league-rule-list')->with('error_msg', 'Failed to update sparc rule.');
         }
     }
 
@@ -148,10 +148,10 @@ class SparcRuleController extends Controller
      */
     public function destroy(Request $request)
     {
-        $sparcRuleInfo = SparcRule::where('id', $request->id)->first();
+        $sparcRuleInfo = LeagueRule::where('id', $request->id)->first();
 
         if ($sparcRuleInfo) {
-            SparcRule::where('id', $request->id)->delete();
+            LeagueRule::where('id', $request->id)->delete();
             return response()->json(['success' => true, 'message' => 'Sparc Rules deleted successfully.'], 200);
         } else {
             return response()->json(['success' => false, 'message' => 'Sparc Rules not found.'], 404);

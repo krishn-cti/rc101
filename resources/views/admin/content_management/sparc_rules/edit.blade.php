@@ -20,17 +20,17 @@
                                 @endif
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-0 ct_fs_22">Edit SPARC Rule</h3>
-                                    <a href="{{url('cms/sparc-rule-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <h3 class="mb-0 ct_fs_22">Edit League Rule</h3>
+                                    <a href="{{url('cms/league-rule-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('cms/sparc-rule-update')}}" method="POST" id="editSparcRule" enctype="multipart/form-data">
+                                <form action="{{url('cms/league-rule-update')}}" method="POST" id="editSparcRule" enctype="multipart/form-data">
                                     <input type="hidden" name="id" value="{{$sparcRuleData->id}}">
                                     @csrf
                                     <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group mb-3">
-                                                <label for="sparc_rule_title" class="mb-2">Sparc Rule Title</label>
-                                                <input type="text" class="form-control ct_input" name="sparc_rule_title" placeholder="Sparc Rule Title" value="{{ old('sparc_rule_title', $sparcRuleData->sparc_rule_title) }}">
+                                                <label for="sparc_rule_title" class="mb-2">Title</label>
+                                                <input type="text" class="form-control ct_input" name="sparc_rule_title" placeholder="League Rule Title" value="{{ old('sparc_rule_title', $sparcRuleData->sparc_rule_title) }}">
                                                 @error('sparc_rule_title')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -38,27 +38,28 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group mb-3">
-                                                <label for="container_color" class="mb-2">Choose Container Color</label>
+                                                <label for="color_code" class="mb-2">Color (for container)</label>
                                                 <div class="d-flex align-items-center">
-                                                    <!-- Color Picker Input -->
-                                                    <input
-                                                        type="color"
-                                                        class="form-control p-1"
-                                                        id="container_color"
-                                                        name="container_color"
-                                                        value="{{ old('container_color', $sparcRuleData->container_color ?? '#000000') }}"
-                                                        style="width: 200px; height: 40px; border: none; cursor: pointer;"
-                                                        onchange="updateColorCode(this.value)">
                                                     <!-- Color Code Display -->
                                                     <input
                                                         type="text"
-                                                        class="form-control ms-2"
+                                                        class="form-control ct_input"
                                                         id="color_code"
+                                                        name="color_code"
                                                         placeholder="Color Code"
+                                                        value="{{ old('container_color', $sparcRuleData->container_color ?? '#000000') }}">
+                                                    &nbsp;OR&nbsp;
+                                                    <!-- Color Picker Input -->
+                                                    <input
+                                                        type="color"
+                                                        class="form-control ct_input"
+                                                        id="container_color"
+                                                        name="container_color"
                                                         value="{{ old('container_color', $sparcRuleData->container_color ?? '#000000') }}"
-                                                        readonly
-                                                        style="max-width: 100px; text-align: center;">
+                                                        style="height: 40px; cursor: pointer;"
+                                                        onchange="updateColorCode(this.value)">
                                                 </div>
+                                                <div id="color_code_error" class="text-danger mt-1" style="font-size: 0.9rem;"></div>
                                                 @error('container_color')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -66,8 +67,8 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
-                                                <label for="sparc_rule_description" class="mb-2">Sparc Rule Description</label>
-                                                <textarea rows="4" class="form-control" name="sparc_rule_description" id="sparc_rule_description" placeholder="Sparc Rule Description">{{ old('sparc_rule_description', $sparcRuleData->sparc_rule_description) }}</textarea>
+                                                <label for="sparc_rule_description" class="mb-2">Description</label>
+                                                <textarea rows="4" class="form-control" name="sparc_rule_description" id="sparc_rule_description" placeholder="League Rule Description">{{ old('sparc_rule_description', $sparcRuleData->sparc_rule_description) }}</textarea>
                                                 @error('sparc_rule_description')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -113,8 +114,8 @@
                 },
             },
             messages: {
-                sparc_rule_title: 'Please enter sparc rule title.',
-                sparc_rule_description: 'Please enter sparc rule description.',
+                sparc_rule_title: 'Please enter league rule title.',
+                sparc_rule_description: 'Please enter league rule description.',
             },
             errorPlacement: function(error, element) {
                 if (element.attr("name") == "sparc_rule_description") {
@@ -130,9 +131,31 @@
     });
 </script>
 <script>
-    // Function to update the color code input field dynamically
-    function updateColorCode(color) {
-        document.getElementById('color_code').value = color;
-    }
+    $(document).ready(function() {
+        const colorCodeInput = $('#color_code');
+        const colorPicker = $('#container_color');
+
+        // Set initial value of the color picker from the color code input
+        if (/^#[0-9A-Fa-f]{6}$/.test(colorCodeInput.val())) {
+            colorPicker.val(colorCodeInput.val());
+        }
+
+        // Sync color picker changes with color code input
+        colorPicker.on('input', function() {
+            colorCodeInput.val($(this).val());
+            $('#color_code_error').text(''); // Clear error if valid
+        });
+
+        // Validate and update color picker when color code input changes
+        colorCodeInput.on('keyup', function() {
+            const colorCode = $(this).val();
+            if (/^#[0-9A-Fa-f]{6}$/.test(colorCode)) {
+                colorPicker.val(colorCode);
+                $('#color_code_error').text(''); // Clear error on valid input
+            } else {
+                $('#color_code_error').text('Invalid color code. Use format #RRGGBB.');
+            }
+        });
+    });
 </script>
 @endsection
