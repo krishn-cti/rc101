@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\UserAddress;
 use Illuminate\Support\Str;
 use App\Models\User;
+use Illuminate\Validation\Rule;
 use Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -28,7 +29,10 @@ class RegisterController extends BaseController
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:150',
             'email' => 'required|string|email|max:150|unique:users,email',
-            'number' => 'required|numeric|digits_between:10,15',
+            'number' => 'nullable|numeric|digits_between:10,15',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
             'password' => 'required|string|min:8',
             'confirm_password' => 'required|same:password'
         ]);
@@ -45,6 +49,9 @@ class RegisterController extends BaseController
             'name' => $request->name,
             'email' => $request->email,
             'number' => $request->number,
+            'city' => $request->city,
+            'state' => $request->state,
+            'country' => $request->country,
             'role_id' => 4,
             'show_password' => $request->password,
             'password' => Hash::make($request->password)
@@ -84,7 +91,10 @@ class RegisterController extends BaseController
         }
 
         // Check email existence
-        $user = User::where('email', $request->email)->where('role_id', 4)->first();
+        $user = User::where('email', $request->email)
+            ->where('role_id', 4)
+            ->with(['bot', 'weightClass', 'tournament'])
+            ->first();
 
         // Check email verification and password
         if (!$user) {
@@ -116,6 +126,17 @@ class RegisterController extends BaseController
             'message' => 'Team Member is logged in successfully.',
             'data' => $data,
         ];
+
+        // Set is_popup_display to 1 if it's the first login, otherwise 0
+        if (is_null($user->login_count) || $user->login_count == 0) {
+            $user->is_popup_display = 1;
+        } else {
+            $user->is_popup_display = 0;
+        }        
+
+        // Increment login count
+        $user->login_count++;
+        $user->save();
 
         return response()->json($response, 200);
     }
@@ -333,6 +354,7 @@ class RegisterController extends BaseController
     public function getAllMembers(Request $request)
     {
         $users = User::where('role_id', 4)
+            ->with(['bot', 'weightClass', 'tournament'])
             ->orderBy('id', 'DESC')
             ->get();
 
@@ -347,14 +369,17 @@ class RegisterController extends BaseController
     public function updateMemberDetail(Request $request)
     {
         // Retrieve the user by ID
-        $user = User::where('id', $request->user_id)->where('role_id', 4)->first();
+        $user = User::where('id', $request->user_id)
+            ->where('role_id', 4)
+            ->with(['bot', 'weightClass', 'tournament'])
+            ->first();
 
         if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'Team member not found or not authorized for this action.',
             ], 404);
-        }        
+        }
 
         // Validate the incoming request
         $validate = Validator::make($request->all(), [
@@ -381,6 +406,14 @@ class RegisterController extends BaseController
         $user->email = $request->email;
         $user->number = $request->number ?? $user->number;
         $user->designation = $request->designation ?? $user->designation;
+        $user->website_link = $request->website_link ?? $user->website_link;
+        $user->discord_name = $request->discord_name ?? $user->discord_name;
+        $user->bot_id = $request->bot_id ?? $user->bot_id;
+        $user->weight_class_id = $request->weight_class_id ?? $user->weight_class_id;
+        $user->tournament_id = $request->tournament_id ?? $user->tournament_id;
+        $user->city = $request->city ?? $user->city;
+        $user->state = $request->state ?? $user->state;
+        $user->country = $request->country ?? $user->country;
         $user->about = $request->about ?? $user->about;
 
         // Update password if provided

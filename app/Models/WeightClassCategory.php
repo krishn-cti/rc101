@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Leader extends Model
+class WeightClassCategory extends Model
 {
     use HasFactory;
-
+    
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'cms_leaders';
+    protected $table = 'cms_weight_class_categories';
 
     /**
      * The attributes that are mass assignable.
@@ -23,9 +23,7 @@ class Leader extends Model
      */
     protected $fillable = [
         'name',
-        'designation',
-        'about',
-        'profile_image',
+        'description',
         'status',
         'created_at'
     ];

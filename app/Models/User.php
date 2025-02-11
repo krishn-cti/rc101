@@ -30,6 +30,14 @@ class User extends Authenticatable
         'profile_image',
         'email',
         'number',
+        'city',
+        'state',
+        'country',
+        'website_link',
+        'discord_name',
+        'bot_id',
+        'weight_class_id',
+        'tournament_id',
         'email_verified_at',
         'show_password',
         'password',
@@ -70,6 +78,21 @@ class User extends Authenticatable
         return $this->hasMany(UserAddress::class);
     }
 
+    public function bot()
+    {
+        return $this->belongsTo(Bot::class, 'bot_id', 'id')->select(['id', 'name']);
+    }
+
+    public function weightClass()
+    {
+        return $this->belongsTo(WeightClassCategory::class, 'weight_class_id', 'id')->select(['id', 'name']);
+    }
+
+    public function tournament()
+    {
+        return $this->belongsTo(Tournament::class, 'tournament_id', 'id')->select(['id', 'tournament_title']);
+    }
+
     public function getProfileImageAttribute($value)
     {
         if ($value) {
@@ -99,5 +122,4 @@ class User extends Authenticatable
     {
         return $this->role_id === 3;
     }
-
 }

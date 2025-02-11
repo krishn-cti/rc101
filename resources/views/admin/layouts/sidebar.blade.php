@@ -65,6 +65,10 @@
                                     <a href="{{ url('cms/about') }}"><i class='bx bx-info-circle'></i> About</a>
                                 </li>
 
+                                <li class="menu-header-title {{ request()->is('cms/bot-list', 'cms/bot-add', 'cms/bot-edit/*') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('cms/bot-list') }}"><i class='bx bx-user-pin'></i> Bots</a>
+                                </li>
+
                                 <li class="menu-header-title treeview ps-0 {{ request()->is('cms/league', 'cms/tournament-list', 'cms/tournament-add', 'cms/tournament-edit/*', 'cms/presentation-list', 'cms/presentation-add', 'cms/presentation-edit/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
                                         <i class='bx bx-trophy'></i> <span>League/Tournament</span>
@@ -188,9 +192,6 @@
                                 <li class="menu-header-title {{ request()->is('cms/service-list', 'cms/service-add', 'cms/service-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/service-list') }}"><i class='bx bxs-offer'></i> Services</a>
                                 </li>
-                                <!-- <li class="menu-header-title {{ request()->is('cms/leader-list', 'cms/leader-add', 'cms/leader-edit/*') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/leader-list') }}"><i class='bx bx-user-pin'></i> Our Leaders</a>
-                                </li> -->
                                 <li class="menu-header-title {{ request()->is('cms/weight-class-list', 'cms/weight-class-add', 'cms/weight-class-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/weight-class-list') }}"><i class='bx bx-slider-alt'></i> Weight Class/Restrictions</a>
                                 </li>

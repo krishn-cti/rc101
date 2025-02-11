@@ -16,19 +16,23 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Leaders</h6>
-                                    <a href="{{ url('cms/leader-add') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Leader</button>
+                                    <h6 class="mb-0">All Bots</h6>
+                                    <a href="{{ url('cms/bot-add') }}">
+                                        <button class="ct_custom_btn1 mx-auto">Add New Bot</button>
                                     </a>
                                 </div>
 
-                                <table class="table leader-data-table table-responsive table-bordered table-hover mb-0" id="leaderTable">
+                                <table class="table bot-data-table table-responsive table-bordered table-hover mb-0" id="botTable">
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Profile Image</th>
+                                            <th>Image</th>
                                             <th>Name</th>
-                                            <th>Designation</th>
+                                            <th>Type</th>
+                                            <th>Design Type</th>
+                                            <th>Weight Class</th>
+                                            <th>Start Date</th>
+                                            <th>Created By</th>
                                             <th width="100px">Action</th>
                                         </tr>
                                     </thead>
@@ -47,25 +51,41 @@
 
 <script type="text/javascript">
     $(function() {
-        var table = $('.leader-data-table').DataTable({
+        var table = $('.bot-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('cms/leader-list') }}",
+            ajax: "{{ url('cms/bot-list') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
                 }, // Change 'id' to 'serial_number'
                 {
-                    data: 'profile_image',
-                    name: 'profile_image'
+                    data: 'image',
+                    name: 'image'
                 },
                 {
                     data: 'name',
                     name: 'name'
                 },
                 {
-                    data: 'designation',
-                    name: 'designation'
+                    data: 'bot_type',
+                    name: 'bot_type'
+                },
+                {
+                    data: 'design_type',
+                    name: 'design_type'
+                },
+                {
+                    data: 'weight_class',
+                    name: 'weight_class'
+                },
+                {
+                    data: 'start_date',
+                    name: 'start_date'
+                },
+                {
+                    data: 'created_by',
+                    name: 'created_by'
                 },
                 {
                     data: 'action',
@@ -95,7 +115,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('cms/leader-delete') }}",
+                        url: "{{ url('cms/bot-delete') }}",
                         type: "POST",
                         cache: false,
                         data: {
@@ -107,7 +127,7 @@
                                 toastr.error(response.error);
                             } else {
                                 toastr.success(response.message);
-                                $('#leaderTable').DataTable().ajax.reload(null, false);
+                                $('#botTable').DataTable().ajax.reload(null, false);
                             }
                         },
                         error: function(xhr, textStatus, errorThrown) {

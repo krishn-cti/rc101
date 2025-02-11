@@ -4,7 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\EventCoverage;
-use App\Models\Leader;
+use App\Models\Bot;
+use App\Models\BotType;
 use App\Models\Lesson3dModeling;
 use App\Models\Lesson3dPrinting;
 use App\Models\LessonBatteries;
@@ -29,6 +30,7 @@ use App\Models\Tournament;
 use App\Models\WeightAntweight;
 use App\Models\WeightBeetleweight;
 use App\Models\WeightClass;
+use App\Models\WeightClassCategory;
 use App\Models\WeightFairyweight;
 use App\Models\WeightFeatherweight;
 use App\Models\WeightHobbyweight;
@@ -264,33 +266,211 @@ class ContentManagementController extends Controller
     }
 
     /**
-     * Write code on this method for get all leaders
+     * Write code on this method for get all bots
      *
      * @return response()
      */
-    public function getAllLeader()
+    public function getAllBotTypes()
     {
-        $leaders = Leader::orderBy('id', 'DESC')->get();
+        $botTypes = BotType::orderBy('id', 'DESC')->get();
 
-        if ($leaders->isEmpty()) {
+        if ($botTypes->isEmpty()) {
             return response()->json([
                 'success' => false,
-                'message' => 'No leader details found!',
+                'message' => 'No bot types found!',
             ], 200);
-        }
-
-        // Append full image path to each leader
-        foreach ($leaders as $leader) {
-            $leader->profile_image = asset('cms_images/leaders/' . $leader->profile_image);
         }
 
         $response = [
             'success' => true,
-            'message' => 'Leaders retrieved successfully.',
-            'data' => $leaders,
+            'message' => 'Bot Types retrieved successfully.',
+            'data' => $botTypes,
         ];
 
         return response()->json($response, 200);
+    }
+
+    /**
+     * Write code on this method for get all bots
+     *
+     * @return response()
+     */
+    public function getAllWeightClassCategories()
+    {
+        $weightClassCategory = WeightClassCategory::orderBy('id', 'DESC')->get();
+
+        if ($weightClassCategory->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No weight class categories found!',
+            ], 200);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Weight Class Categories retrieved successfully.',
+            'data' => $weightClassCategory,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    /**
+     * Write code on this method for get all bots
+     *
+     * @return response()
+     */
+    public function getAllBots()
+    {
+        $bots = Bot::orderBy('id', 'DESC')->with(['botType', 'weightClass', 'createdBy'])->get();
+
+        if ($bots->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No bot details found!',
+            ], 200);
+        }
+
+        // Append full image path to each bot
+        foreach ($bots as $bot) {
+            if ($bot->image) {
+                $bot->image = asset('cms_images/bots/' . $bot->image);
+            } else {
+                $bot->image = asset('admin/img/shop-img/no_image.png');
+            }
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Bots retrieved successfully.',
+            'data' => $bots,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    /**
+     * Write code on this method for create bots
+     *
+     * @return response()
+     */
+    public function createBot(Request $request)
+    {
+        // Validate the request
+        $validate = Validator::make($request->all(), [
+            'name' => 'required|string|max:100',
+            'design_type' => 'nullable|in:Custom,Kit',
+            'start_date' => 'nullable|date|after_or_equal:today',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'errors' => $validate->errors(),
+            ], 422);
+        }
+
+        // Handle image upload
+        $image = '';
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('cms_images/bots'), $fileName);
+            $image = $fileName;
+        }
+
+        // Insert data into the database
+        $botData = [
+            'name' => $request->name,
+            'bot_type_id' => $request->bot_type_id,
+            'design_type' => $request->design_type,
+            'weight_class_id' => $request->weight_class_id,
+            'start_date' => $request->start_date,
+            'description' => $request->description,
+            'image' => $image,
+            'created_by' => $request->created_by,
+        ];
+
+        $isInserted = Bot::insert($botData);
+
+        if ($isInserted) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Bot created successfully!',
+                'data' => $botData,
+            ], 201);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong while creating the bot!',
+            ], 500);
+        }
+    }
+
+    /**
+     * Write code on this method for update bots
+     *
+     * @return response()
+     */
+    public function updateBot(Request $request)
+    {
+        // Find the bot by ID
+        $bot = Bot::find($request->bot_id);
+
+        if (!$bot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bot not found!',
+            ], 404);
+        }
+
+        // Validate the request
+        $validate = Validator::make($request->all(), [
+            'name' => 'required|string|max:100',
+            'design_type' => 'nullable|in:Custom,Kit',
+            'start_date' => 'nullable|date|after_or_equal:today',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'errors' => $validate->errors(),
+            ], 422);
+        }
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete the old image if it exists
+            if ($bot->image && file_exists(public_path('cms_images/bots/' . $bot->image))) {
+                unlink(public_path('cms_images/bots/' . $bot->image));
+            }
+
+            $image = $request->file('image');
+            $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('cms_images/bots'), $fileName);
+            $bot->image = $fileName;
+        }
+
+        // Update bot data
+        $bot->name = $request->name;
+        $bot->bot_type_id = $request->bot_type_id ?? $bot->bot_type_id;
+        $bot->design_type = $request->design_type ?? $bot->design_type;
+        $bot->weight_class_id = $request->weight_class_id ?? $bot->weight_class_id;
+        $bot->start_date = $request->start_date ?? $bot->start_date;
+        $bot->description = $request->description ?? $bot->description;
+        $bot->created_by = $request->created_by ?? $bot->created_by;
+
+        $bot->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bot updated successfully!',
+            'data' => $bot,
+        ], 200);
     }
 
     /**

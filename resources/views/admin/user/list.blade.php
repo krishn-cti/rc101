@@ -17,9 +17,9 @@
                                 @endif
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
                                     <h6 class="mb-0">All Users</h6>
-                                    <a href="{{ url('add-user') }}">
+                                    <!-- <a href="{{ url('add-user') }}">
                                         <button class="ct_custom_btn1 mx-auto">Add New User</button>
-                                    </a>
+                                    </a> -->
                                 </div>
                                 <table class="table user-data-table table-responsive table-bordered table-hover mb-0" id="userTable">
                                     <thead>

@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CMS\EventCoverageController;
-use App\Http\Controllers\Admin\CMS\LeaderController;
+use App\Http\Controllers\Admin\CMS\BotController;
 use App\Http\Controllers\Admin\CMS\Lesson3dModelingController;
 use App\Http\Controllers\Admin\CMS\Lesson3dPrintingController;
 use App\Http\Controllers\Admin\CMS\LessonBatteriesController;
@@ -177,15 +177,15 @@ Route::group(['middleware' => ['admin']], function () {
             Route::post('/service-delete', 'destroy');
         });
 
-        // route for leaders
-        // Route::controller(LeaderController::class)->group(function () {
-        //     Route::get('/leader-list', 'index');
-        //     Route::get('/leader-add', 'create');
-        //     Route::post('/leader-save', 'store');
-        //     Route::get('/leader-edit/{id}', 'edit');
-        //     Route::post('/leader-update', 'update');
-        //     Route::post('/leader-delete', 'destroy');
-        // });
+        // route for bots
+        Route::controller(BotController::class)->group(function () {
+            Route::get('/bot-list', 'index');
+            Route::get('/bot-add', 'create');
+            Route::post('/bot-save', 'store');
+            Route::get('/bot-edit/{id}', 'edit');
+            Route::post('/bot-update', 'update');
+            Route::post('/bot-delete', 'destroy');
+        });
 
         // route for League Rules
         Route::controller(LeagueRuleController::class)->group(function () {

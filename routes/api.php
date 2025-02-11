@@ -124,7 +124,11 @@ Route::controller(ContentManagementController::class)->group(function () {
     Route::get('get-all-service', 'getAllService');
     Route::get('get-service-details', 'getServiceDetails');
     Route::get('get-all-partner', 'getAllPartner');
-    Route::get('get-all-leader', 'getAllLeader');
+    Route::get('get-all-weight-class-categories', 'getAllWeightClassCategories');
+    Route::get('get-all-bot-types', 'getAllBotTypes');
+    Route::get('get-all-bots', 'getAllBots');
+    Route::post('create-bot', 'createBot');
+    Route::post('update-bot', 'updateBot');
     Route::get('get-about-section', 'getAboutSection');
     Route::get('get-home-section', 'getHomeSection');
     Route::get('get-league-page', 'getLeaguePage');
