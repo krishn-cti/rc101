@@ -28,6 +28,9 @@ class EventCoverageController extends Controller
                         ? substr($plainText, 0, 50) . '...'
                         : $plainText;
                 })
+                ->addColumn('event_coverage_link', function ($row) {
+                    return $row->event_coverage_link ?? "#N/A";
+                })
                 ->addColumn('event_coverage_image', function ($row) {
                     if ($row->event_coverage_image) {
                         $src = $row->event_coverage_image;
@@ -75,6 +78,7 @@ class EventCoverageController extends Controller
             'event_coverage_title' => 'required|string|max:150',
             'event_coverage_description' => 'required',
             'event_coverage_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'event_coverage_link' => 'nullable|string|max|255'
         ]);
 
         $event_coverage_image = '';
@@ -90,6 +94,7 @@ class EventCoverageController extends Controller
             'event_coverage_title' => $request->event_coverage_title,
             'event_coverage_description' => $request->event_coverage_description,
             'event_coverage_image' => $event_coverage_image,
+            'event_coverage_link' => $request->event_coverage_link,
         ]);
 
         if ($isInserted) {
@@ -126,6 +131,7 @@ class EventCoverageController extends Controller
             'event_coverage_title' => 'required|string|max:150',
             'event_coverage_description' => 'required',
             'event_coverage_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'event_coverage_link' => 'nullable|string|max|255'
         ]);
 
         $id = $request->id;
@@ -140,6 +146,7 @@ class EventCoverageController extends Controller
         $updateData = [
             'event_coverage_title' => $request->event_coverage_title,
             'event_coverage_description' => $request->event_coverage_description,
+            'event_coverage_link' => $request->event_coverage_link,
         ];
 
         if ($request->hasFile('event_coverage_image')) {

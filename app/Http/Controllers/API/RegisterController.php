@@ -93,7 +93,7 @@ class RegisterController extends BaseController
         // Check email existence
         $user = User::where('email', $request->email)
             ->where('role_id', 4)
-            ->with(['bot', 'weightClass', 'tournament'])
+            ->with(['bot', 'weightClass'])
             ->first();
 
         // Check email verification and password
@@ -201,50 +201,6 @@ class RegisterController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function forgotPassword12(Request $request)
-    {
-        $validate = Validator::make($request->all(), [
-            'email' => 'required|string|email'
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation Error!',
-                'data' => $validate->errors(),
-            ], 403);
-        }
-
-        $verify = User::where('email', $request->email)->exists();
-
-        if ($verify) {
-            $userData = DB::table('password_resets')->where('email', $request->email)->first();
-
-            if (!$userData) {
-                $token = Str::random(64);
-                DB::table('password_resets')->insert([
-                    'email' => $request->email,
-                    'token' => $token,
-                    'created_at' => Carbon::now()
-                ]);
-            } else {
-                $token = $userData->token;
-            }
-
-            Password::sendResetLink($request->only('email'));
-
-            return response()->json([
-                'success' => true,
-                'message' => "Please check your email for a password reset link."
-            ], 200);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => "This email does not exist"
-            ], 400);
-        }
-    }
-
     public function forgotPassword(Request $request)
     {
         $validate = Validator::make($request->all(), [
@@ -275,86 +231,11 @@ class RegisterController extends BaseController
         }
     }
 
-    /**
-     * Authenticate the user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    // public function resetPassword(Request $request)
-    // {
-    //     $validate = Validator::make($request->all(), [
-    //         'token' => 'required',
-    //         'email' => 'required|email',
-    //         'new_password' => 'required|string|min:8',
-    //         'confirm_password' => 'required|same:new_password'
-    //     ]);
-
-    //     if ($validate->fails()) {
-    //         return back()->withErrors($validate)->withInput(); // Return errors to Blade
-    //     }
-
-    //     $update = DB::table('password_resets')->where(['email' => $request->email, 'token' => $request->token])->first();
-
-    //     if (!$update) {
-    //         return back()->withErrors(['email' => 'Invalid token provided!'])->withInput(); // Handle error for invalid token
-    //     }
-
-    //     $user = User::where('email', $request->email)->update([
-    //         'password' => Hash::make($request->new_password)
-    //     ]);
-
-    //     // Delete password_resets record
-    //     DB::table('password_resets')->where(['email' => $request->email])->delete();
-
-    //     return redirect()->route('login')->with('status', 'Your password has been successfully changed!');
-    // }
-
-    // public function resetPassword(Request $request)
-    // {
-    //     $validate = Validator::make($request->all(), [
-    //         'token' => 'required',
-    //         'email' => 'required|email',
-    //         'new_password' => 'required|string|min:8',
-    //         'confirm_password' => 'required|same:new_password'
-    //     ]);
-
-    //     if ($validate->fails()) {
-    //         return response()->json([
-    //             'status' => 'failed',
-    //             'message' => 'Validation Error!',
-    //             'data' => $validate->errors(),
-    //         ], 403);
-    //     }
-
-    //     $update = DB::table('password_resets')->where(['email' => $request->email, 'token' => $request->token])->first();
-
-    //     if (!$update) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Invalid token provided!'
-    //         ], 400);
-    //     }
-
-    //     $user = User::where('email', $request->email)->update([
-    //         'show_password' => $request->password,
-    //         'password' => Hash::make($request->new_password)
-    //     ]);
-
-    //     // Delete password_resets record
-    //     DB::table('password_resets')->where(['email' => $request->email])->delete();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Your password has been successfully changed!'
-    //     ], 200);
-    // }
-
     // this method is used to get all the team members
     public function getAllMembers(Request $request)
     {
         $users = User::where('role_id', 4)
-            ->with(['bot', 'weightClass', 'tournament'])
+            ->with(['bot', 'weightClass'])
             ->orderBy('id', 'DESC')
             ->get();
 
@@ -371,7 +252,7 @@ class RegisterController extends BaseController
         // Retrieve the user by ID
         $user = User::where('id', $request->user_id)
             ->where('role_id', 4)
-            ->with(['bot', 'weightClass', 'tournament'])
+            ->with(['bot', 'weightClass'])
             ->first();
 
         if (!$user) {
@@ -410,7 +291,7 @@ class RegisterController extends BaseController
         $user->discord_name = $request->discord_name ?? $user->discord_name;
         $user->bot_id = $request->bot_id ?? $user->bot_id;
         $user->weight_class_id = $request->weight_class_id ?? $user->weight_class_id;
-        $user->tournament_id = $request->tournament_id ?? $user->tournament_id;
+        $user->tournament = $request->tournament ?? $user->tournament;
         $user->city = $request->city ?? $user->city;
         $user->state = $request->state ?? $user->state;
         $user->country = $request->country ?? $user->country;

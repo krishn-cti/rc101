@@ -28,6 +28,7 @@
                                             <th>No</th>
                                             <th>Image</th>
                                             <th>Title</th>
+                                            <th>Link</th>
                                             <th>Description</th>
                                             <th width="100px">Action</th>
                                         </tr>
@@ -62,6 +63,10 @@
                 {
                     data: 'event_coverage_title',
                     name: 'event_coverage_title'
+                },
+                {
+                    data: 'event_coverage_link',
+                    name: 'event_coverage_link'
                 },
                 {
                     data: 'event_coverage_description',

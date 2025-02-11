@@ -37,6 +37,15 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
+                                                <label for="" class="mb-2">Event Coverage Link</label>
+                                                <input type="text" class="form-control ct_input" name="$row->event_coverage_link" placeholder="Event Coverage Link" value="{{ old('$row->event_coverage_link')}}">
+                                                @error('$row->event_coverage_link')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
                                                 <label for="event_coverage_description" class="mb-2">Event Coverage Description</label>
                                                 <textarea rows="4" class="form-control ct_input" name="event_coverage_description" id="event_coverage_description" placeholder="Event Coverage Description">{{ old('event_coverage_description')}}</textarea>
                                                 @error('event_coverage_description')

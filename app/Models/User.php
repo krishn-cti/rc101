@@ -37,7 +37,7 @@ class User extends Authenticatable
         'discord_name',
         'bot_id',
         'weight_class_id',
-        'tournament_id',
+        'tournament',
         'email_verified_at',
         'show_password',
         'password',
@@ -68,11 +68,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // public function getProfileImageAttribute($value)
-    // {
-    //     return asset('profile_images/' . $value);
-    // }
-
     public function userAddresses()
     {
         return $this->hasMany(UserAddress::class);
@@ -88,17 +83,11 @@ class User extends Authenticatable
         return $this->belongsTo(WeightClassCategory::class, 'weight_class_id', 'id')->select(['id', 'name']);
     }
 
-    public function tournament()
-    {
-        return $this->belongsTo(Tournament::class, 'tournament_id', 'id')->select(['id', 'tournament_title']);
-    }
-
     public function getProfileImageAttribute($value)
     {
         if ($value) {
             return asset('profile_images/' . $value);
         } else {
-            // If $value is null or empty, return the URL of the default user avatar image
             return asset('admin/img/bg-img/no-user.webp');
         }
     }

@@ -134,7 +134,7 @@ Route::controller(ContentManagementController::class)->group(function () {
     Route::get('get-league-page', 'getLeaguePage');
     Route::get('get-all-tournament', 'getAllTournament');
     Route::get('get-all-presentation', 'getAllPresentation');
-    Route::get('get-all-sparc-rule', 'getAllSparcRule');
+    Route::get('get-all-league-rules', 'getAllLeagueRule');
     Route::get('get-all-weight-class-restriction', 'getAllWeightClassRestriction');
     Route::get('get-all-event-coverage', 'getAllEventCoverage');
     Route::get('get-all-tools-trade', 'getAllToolsTrade');

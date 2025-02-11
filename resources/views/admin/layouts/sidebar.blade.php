@@ -66,7 +66,7 @@
                                 </li>
 
                                 <li class="menu-header-title {{ request()->is('cms/bot-list', 'cms/bot-add', 'cms/bot-edit/*') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/bot-list') }}"><i class='bx bx-user-pin'></i> Bots</a>
+                                    <a href="{{ url('cms/bot-list') }}"><i class='bx bx-bot'></i> Bots</a>
                                 </li>
 
                                 <li class="menu-header-title treeview ps-0 {{ request()->is('cms/league', 'cms/tournament-list', 'cms/tournament-add', 'cms/tournament-edit/*', 'cms/presentation-list', 'cms/presentation-add', 'cms/presentation-edit/*') ? 'menu-open active' : '' }}">
@@ -189,9 +189,6 @@
                                         </ul>
                                 </li>
 
-                                <li class="menu-header-title {{ request()->is('cms/service-list', 'cms/service-add', 'cms/service-edit/*') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/service-list') }}"><i class='bx bxs-offer'></i> Services</a>
-                                </li>
                                 <li class="menu-header-title {{ request()->is('cms/weight-class-list', 'cms/weight-class-add', 'cms/weight-class-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/weight-class-list') }}"><i class='bx bx-slider-alt'></i> Weight Class/Restrictions</a>
                                 </li>
@@ -203,6 +200,9 @@
                                 </li>
                                 <li class="menu-header-title {{ request()->is('cms/tools-trade-list', 'cms/tools-trade-add', 'cms/tools-trade-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/tools-trade-list') }}"><i class="bx bx-wrench"></i> Tools of the Trade</a>
+                                </li>
+                                <li class="menu-header-title {{ request()->is('cms/service-list', 'cms/service-add', 'cms/service-edit/*') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('cms/service-list') }}"><i class='bx bxs-offer'></i> Services</a>
                                 </li>
                                 <li class="menu-header-title {{ request()->is('cms/terms-and-conditions') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/terms-and-conditions') }}"><i class="bx bx-book"></i> Terms and Conditions</a>

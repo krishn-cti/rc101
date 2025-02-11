@@ -14,7 +14,7 @@ class LeagueRule extends Model
      *
      * @var string
      */
-    protected $table = 'cms_sparc_rules';
+    protected $table = 'cms_league_rules';
 
     /**
      * The attributes that are mass assignable.

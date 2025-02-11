@@ -568,7 +568,7 @@ class ContentManagementController extends Controller
      *
      * @return response()
      */
-    public function getAllSparcRule()
+    public function getAllLeagueRule()
     {
         $sparcRuleData = LeagueRule::orderBy('id', 'DESC')->get();
 
