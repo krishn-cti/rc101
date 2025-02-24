@@ -7,8 +7,18 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CMS\BattleBotController;
 use App\Http\Controllers\Admin\CMS\EventCoverageController;
 use App\Http\Controllers\Admin\CMS\BotController;
+use App\Http\Controllers\Admin\CMS\ControlBotController;
+use App\Http\Controllers\Admin\CMS\DriveSystemController;
+use App\Http\Controllers\Admin\CMS\DrumSpinnerController;
+use App\Http\Controllers\Admin\CMS\FireBotController;
+use App\Http\Controllers\Admin\CMS\FlipperBotController;
+use App\Http\Controllers\Admin\CMS\GearboxController;
+use App\Http\Controllers\Admin\CMS\HammerBotController;
+use App\Http\Controllers\Admin\CMS\HandToolController;
+use App\Http\Controllers\Admin\CMS\HorizontalSpinnerController;
 use App\Http\Controllers\Admin\CMS\Lesson3dModelingController;
 use App\Http\Controllers\Admin\CMS\Lesson3dPrintingController;
 use App\Http\Controllers\Admin\CMS\LessonBatteriesController;
@@ -29,8 +39,20 @@ use App\Http\Controllers\Admin\CMS\PartnerController;
 use App\Http\Controllers\Admin\CMS\PresentationController;
 use App\Http\Controllers\Admin\CMS\ServiceController;
 use App\Http\Controllers\Admin\CMS\LeagueRuleController;
+use App\Http\Controllers\Admin\CMS\TransferringMotionController;
+use App\Http\Controllers\Admin\CMS\NhrlController;
+use App\Http\Controllers\Admin\CMS\OverheadSawController;
+use App\Http\Controllers\Admin\CMS\PlantController;
+use App\Http\Controllers\Admin\CMS\PowerToolController;
+use App\Http\Controllers\Admin\CMS\PrintedCircuitBoardController;
+use App\Http\Controllers\Admin\CMS\RclController;
+use App\Http\Controllers\Admin\CMS\SspController;
 use App\Http\Controllers\Admin\CMS\ToolsTradeController;
 use App\Http\Controllers\Admin\CMS\TournamentController;
+use App\Http\Controllers\Admin\CMS\TurnaBotController;
+use App\Http\Controllers\Admin\CMS\TypesOfDriveSystemController;
+use App\Http\Controllers\Admin\CMS\VerticalSpinnerController;
+use App\Http\Controllers\Admin\CMS\WeaponsSystemController;
 use App\Http\Controllers\Admin\CMS\WeightAntweightController;
 use App\Http\Controllers\Admin\CMS\WeightBeetleweightController;
 use App\Http\Controllers\Admin\CMS\WeightClassController;
@@ -215,6 +237,230 @@ Route::group(['middleware' => ['admin']], function () {
             Route::get('/tools-trade-edit/{id}', 'edit');
             Route::post('/tools-trade-update', 'update');
             Route::post('/tools-trade-delete', 'destroy');
+        });
+
+        // Routes for all knowledgebases
+        Route::prefix('knowledgebases')->group(function () {
+
+            // Routes for CMS battlebots
+            Route::controller(BattleBotController::class)->group(function () {
+                Route::get('/battlebot-list', 'index');
+                Route::get('/battlebot-add', 'create');
+                Route::post('/battlebot-save', 'store');
+                Route::get('/battlebot-edit/{id}', 'edit');
+                Route::post('/battlebot-update', 'update');
+                Route::post('/battlebot-delete', 'destroy');
+            });
+
+            // Routes for CMS controlbots
+            Route::controller(ControlBotController::class)->group(function () {
+                Route::get('/controlbot-list', 'index');
+                Route::get('/controlbot-add', 'create');
+                Route::post('/controlbot-save', 'store');
+                Route::get('/controlbot-edit/{id}', 'edit');
+                Route::post('/controlbot-update', 'update');
+                Route::post('/controlbot-delete', 'destroy');
+            });
+
+            // Routes for CMS drum spinners
+            Route::controller(DrumSpinnerController::class)->group(function () {
+                Route::get('/drum-spinner-list', 'index');
+                Route::get('/drum-spinner-add', 'create');
+                Route::post('/drum-spinner-save', 'store');
+                Route::get('/drum-spinner-edit/{id}', 'edit');
+                Route::post('/drum-spinner-update', 'update');
+                Route::post('/drum-spinner-delete', 'destroy');
+            });
+
+            // Routes for CMS firebots
+            Route::controller(FireBotController::class)->group(function () {
+                Route::get('/firebot-list', 'index');
+                Route::get('/firebot-add', 'create');
+                Route::post('/firebot-save', 'store');
+                Route::get('/firebot-edit/{id}', 'edit');
+                Route::post('/firebot-update', 'update');
+                Route::post('/firebot-delete', 'destroy');
+            });
+
+            // Routes for CMS flipper bots
+            Route::controller(FlipperBotController::class)->group(function () {
+                Route::get('/flipperbot-list', 'index');
+                Route::get('/flipperbot-add', 'create');
+                Route::post('/flipperbot-save', 'store');
+                Route::get('/flipperbot-edit/{id}', 'edit');
+                Route::post('/flipperbot-update', 'update');
+                Route::post('/flipperbot-delete', 'destroy');
+            });
+
+            // Routes for CMS gearboxes
+            Route::controller(GearboxController::class)->group(function () {
+                Route::get('/gearbox-list', 'index');
+                Route::get('/gearbox-add', 'create');
+                Route::post('/gearbox-save', 'store');
+                Route::get('/gearbox-edit/{id}', 'edit');
+                Route::post('/gearbox-update', 'update');
+                Route::post('/gearbox-delete', 'destroy');
+            });
+
+            // Routes for CMS hammerbots
+            Route::controller(HammerBotController::class)->group(function () {
+                Route::get('/hammerbot-list', 'index');
+                Route::get('/hammerbot-add', 'create');
+                Route::post('/hammerbot-save', 'store');
+                Route::get('/hammerbot-edit/{id}', 'edit');
+                Route::post('/hammerbot-update', 'update');
+                Route::post('/hammerbot-delete', 'destroy');
+            });
+
+            // Routes for CMS hand tools
+            Route::controller(HandToolController::class)->group(function () {
+                Route::get('/hand-tool-list', 'index');
+                Route::get('/hand-tool-add', 'create');
+                Route::post('/hand-tool-save', 'store');
+                Route::get('/hand-tool-edit/{id}', 'edit');
+                Route::post('/hand-tool-update', 'update');
+                Route::post('/hand-tool-delete', 'destroy');
+            });
+
+            // Routes for CMS horizontal spinners
+            Route::controller(HorizontalSpinnerController::class)->group(function () {
+                Route::get('/horizontal-spinner-list', 'index');
+                Route::get('/horizontal-spinner-add', 'create');
+                Route::post('/horizontal-spinner-save', 'store');
+                Route::get('/horizontal-spinner-edit/{id}', 'edit');
+                Route::post('/horizontal-spinner-update', 'update');
+                Route::post('/horizontal-spinner-delete', 'destroy');
+            });
+
+            // Routes for CMS modes of transferring motion
+            Route::controller(TransferringMotionController::class)->group(function () {
+                Route::get('/transferring-motion-list', 'index');
+                Route::get('/transferring-motion-add', 'create');
+                Route::post('/transferring-motion-save', 'store');
+                Route::get('/transferring-motion-edit/{id}', 'edit');
+                Route::post('/transferring-motion-update', 'update');
+                Route::post('/transferring-motion-delete', 'destroy');
+            });
+
+            // Routes for CMS nhrl
+            Route::controller(NhrlController::class)->group(function () {
+                Route::get('/nhrl-list', 'index');
+                Route::get('/nhrl-add', 'create');
+                Route::post('/nhrl-save', 'store');
+                Route::get('/nhrl-edit/{id}', 'edit');
+                Route::post('/nhrl-update', 'update');
+                Route::post('/nhrl-delete', 'destroy');
+            });
+
+            // Routes for CMS overhead saws
+            Route::controller(OverheadSawController::class)->group(function () {
+                Route::get('/overhead-saw-list', 'index');
+                Route::get('/overhead-saw-add', 'create');
+                Route::post('/overhead-saw-save', 'store');
+                Route::get('/overhead-saw-edit/{id}', 'edit');
+                Route::post('/overhead-saw-update', 'update');
+                Route::post('/overhead-saw-delete', 'destroy');
+            });
+
+            // Routes for CMS plants
+            Route::controller(PlantController::class)->group(function () {
+                Route::get('/plant-list', 'index');
+                Route::get('/plant-add', 'create');
+                Route::post('/plant-save', 'store');
+                Route::get('/plant-edit/{id}', 'edit');
+                Route::post('/plant-update', 'update');
+                Route::post('/plant-delete', 'destroy');
+            });
+
+            // Routes for CMS power tools
+            Route::controller(PowerToolController::class)->group(function () {
+                Route::get('/power-tool-list', 'index');
+                Route::get('/power-tool-add', 'create');
+                Route::post('/power-tool-save', 'store');
+                Route::get('/power-tool-edit/{id}', 'edit');
+                Route::post('/power-tool-update', 'update');
+                Route::post('/power-tool-delete', 'destroy');
+            });
+
+            // Routes for CMS printed circuit boards
+            Route::controller(PrintedCircuitBoardController::class)->group(function () {
+                Route::get('/printed-circuit-board-list', 'index');
+                Route::get('/printed-circuit-board-add', 'create');
+                Route::post('/printed-circuit-board-save', 'store');
+                Route::get('/printed-circuit-board-edit/{id}', 'edit');
+                Route::post('/printed-circuit-board-update', 'update');
+                Route::post('/printed-circuit-board-delete', 'destroy');
+            });
+
+            // Routes for CMS drum RCL
+            Route::controller(RclController::class)->group(function () {
+                Route::get('/rcl-list', 'index');
+                Route::get('/rcl-add', 'create');
+                Route::post('/rcl-save', 'store');
+                Route::get('/rcl-edit/{id}', 'edit');
+                Route::post('/rcl-update', 'update');
+                Route::post('/rcl-delete', 'destroy');
+            });
+
+            // Routes for CMS drive system
+            Route::controller(DriveSystemController::class)->group(function () {
+                Route::get('/drive-system-list', 'index');
+                Route::get('/drive-system-add', 'create');
+                Route::post('/drive-system-save', 'store');
+                Route::get('/drive-system-edit/{id}', 'edit');
+                Route::post('/drive-system-update', 'update');
+                Route::post('/drive-system-delete', 'destroy');
+            });
+
+            // Routes for CMS ssp
+            Route::controller(SspController::class)->group(function () {
+                Route::get('/ssp-list', 'index');
+                Route::get('/ssp-add', 'create');
+                Route::post('/ssp-save', 'store');
+                Route::get('/ssp-edit/{id}', 'edit');
+                Route::post('/ssp-update', 'update');
+                Route::post('/ssp-delete', 'destroy');
+            });
+
+            // Routes for CMS turnabot
+            Route::controller(TurnaBotController::class)->group(function () {
+                Route::get('/turnabot-list', 'index');
+                Route::get('/turnabot-add', 'create');
+                Route::post('/turnabot-save', 'store');
+                Route::get('/turnabot-edit/{id}', 'edit');
+                Route::post('/turnabot-update', 'update');
+                Route::post('/turnabot-delete', 'destroy');
+            });
+
+            // Routes for CMS type of drive system
+            Route::controller(TypesOfDriveSystemController::class)->group(function () {
+                Route::get('/type-of-drive-system-list', 'index');
+                Route::get('/type-of-drive-system-add', 'create');
+                Route::post('/type-of-drive-system-save', 'store');
+                Route::get('/type-of-drive-system-edit/{id}', 'edit');
+                Route::post('/type-of-drive-system-update', 'update');
+                Route::post('/type-of-drive-system-delete', 'destroy');
+            });
+
+            // Routes for CMS vertical spinner
+            Route::controller(VerticalSpinnerController::class)->group(function () {
+                Route::get('/vertical-spinner-list', 'index');
+                Route::get('/vertical-spinner-add', 'create');
+                Route::post('/vertical-spinner-save', 'store');
+                Route::get('/vertical-spinner-edit/{id}', 'edit');
+                Route::post('/vertical-spinner-update', 'update');
+                Route::post('/vertical-spinner-delete', 'destroy');
+            });
+
+            // Routes for CMS weapon system
+            Route::controller(WeaponsSystemController::class)->group(function () {
+                Route::get('/weapon-system-list', 'index');
+                Route::get('/weapon-system-add', 'create');
+                Route::post('/weapon-system-save', 'store');
+                Route::get('/weapon-system-edit/{id}', 'edit');
+                Route::post('/weapon-system-update', 'update');
+                Route::post('/weapon-system-delete', 'destroy');
+            });
         });
 
         // Routes for all lessons

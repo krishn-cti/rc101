@@ -69,6 +69,88 @@
                                     <a href="{{ url('cms/bot-list') }}"><i class='bx bx-bot'></i> Bots</a>
                                 </li>
 
+                                <!-- Menu for Knowledgebase starts -->
+                                <li class="menu-header-title treeview ps-0 {{ request()->is('cms/knowledgebases/*') ? 'menu-open active' : '' }}">
+                                    <a href="javascript:void(0)">
+                                        <i class='bx bx-file'></i> <span>Knowledgebase</span>
+                                        <i class="fa fa-angle-right"></i>
+                                    </a>
+
+                                    @if( request()->is('cms/knowledgebases/*'))
+                                    <ul class="treeview-menu" style="display: block;">
+                                        @else
+                                        <ul class="treeview-menu menu-list" style="display: none;">
+                                            @endif
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/battlebot-list', 'cms/knowledgebases/battlebot-add', 'cms/knowledgebases/battlebot-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/battlebot-list') }}"><i class='bx bx-file'></i> Battlebots</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/controlbot-list', 'cms/knowledgebases/controlbot-add', 'cms/knowledgebases/controlbot-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/controlbot-list') }}"><i class='bx bx-file'></i> Controlbots</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/drum-spinner-list', 'cms/knowledgebases/drum-spinner-add', 'cms/knowledgebases/drum-spinner-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/drum-spinner-list') }}"><i class='bx bx-file'></i> Drum Spinners</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/firebot-list', 'cms/knowledgebases/firebot-add', 'cms/knowledgebases/firebot-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/firebot-list') }}"><i class='bx bx-file'></i> Firebots</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/flipperbot-list', 'cms/knowledgebases/flipperbot-add', 'cms/knowledgebases/flipperbot-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/flipperbot-list') }}"><i class='bx bx-file'></i> Flipper bots</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/gearbox-list', 'cms/knowledgebases/gearbox-add', 'cms/knowledgebases/gearbox-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/gearbox-list') }}"><i class='bx bx-file'></i> Gearboxes</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/hammerbot-list', 'cms/knowledgebases/hammerbot-add', 'cms/knowledgebases/hammerbot-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/hammerbot-list') }}"><i class='bx bx-file'></i> Hammerbots</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/hand-tool-list', 'cms/knowledgebases/hand-tool-add', 'cms/knowledgebases/hand-tool-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/hand-tool-list') }}"><i class='bx bx-file'></i> Hand Tools</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/horizontal-spinner-list', 'cms/knowledgebases/horizontal-spinner-add', 'cms/knowledgebases/horizontal-spinner-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/horizontal-spinner-list') }}"><i class='bx bx-file'></i> Horizontal spinners</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/transferring-motion-list', 'cms/knowledgebases/transferring-motion-add', 'cms/knowledgebases/transferring-motion-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/transferring-motion-list') }}"><i class='bx bx-file'></i> Modes of transferring motion</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/nhrl-list', 'cms/knowledgebases/nhrl-add', 'cms/knowledgebases/nhrl-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/nhrl-list') }}"><i class='bx bx-file'></i> NHRL</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/overhead-saw-list', 'cms/knowledgebases/overhead-saw-add', 'cms/knowledgebases/overhead-saw-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/overhead-saw-list') }}"><i class='bx bx-file'></i> Overhead Saws</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/plants-list', 'cms/knowledgebases/plants-add', 'cms/knowledgebases/plants-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/plants-list') }}"><i class='bx bx-file'></i> Plants</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/power-tool-list', 'cms/knowledgebases/power-tool-add', 'cms/knowledgebases/power-tool-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/power-tool-list') }}"><i class='bx bx-file'></i> Power Tools</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/printed-circuit-board-list', 'cms/knowledgebases/printed-circuit-board-add', 'cms/knowledgebases/printed-circuit-board-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/printed-circuit-board-list') }}"><i class='bx bx-file'></i> Printed Circuit Board</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/rcl-list', 'cms/knowledgebases/rcl-add', 'cms/knowledgebases/rcl-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/rcl-list') }}"><i class='bx bx-file'></i> RCL</a>
+                                            </li>
+                                            
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/drive-system-list', 'cms/knowledgebases/drive-system-add', 'cms/knowledgebases/drive-system-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/drive-system-list') }}"><i class='bx bx-file'></i> Drive Systems</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/ssp-list', 'cms/knowledgebases/ssp-add', 'cms/knowledgebases/ssp-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/ssp-list') }}"><i class='bx bx-file'></i> SSP</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/turnabot-list', 'cms/knowledgebases/turnabot-add', 'cms/knowledgebases/turnabot-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/turnabot-list') }}"><i class='bx bx-file'></i> Turnabot</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/type-of-drive-system-list', 'cms/knowledgebases/type-of-drive-system-add', 'cms/knowledgebases/type-of-drive-system-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/type-of-drive-system-list') }}"><i class='bx bx-file'></i> Types of Drive Systems</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/vertical-spinner-list', 'cms/knowledgebases/vertical-spinner-add', 'cms/knowledgebases/vertical-spinner-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/vertical-spinner-list') }}"><i class='bx bx-file'></i> Vertical Spinners</a>
+                                            </li>
+                                            <li class="menu-header-title {{ request()->is('cms/knowledgebases/weapon-system-list', 'cms/knowledgebases/weapon-system-add', 'cms/knowledgebases/weapon-system-edit/*') ? 'active' : '' }} ps-0">
+                                                <a href="{{ url('cms/knowledgebases/weapon-system-list') }}"><i class='bx bx-file'></i> Weapon Systems</a>
+                                            </li>
+                                        </ul>
+                                </li>
+
                                 <li class="menu-header-title treeview ps-0 {{ request()->is('cms/league', 'cms/tournament-list', 'cms/tournament-add', 'cms/tournament-edit/*', 'cms/presentation-list', 'cms/presentation-add', 'cms/presentation-edit/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
                                         <i class='bx bx-trophy'></i> <span>League/Tournament</span>

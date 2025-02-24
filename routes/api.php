@@ -119,7 +119,7 @@ Route::middleware('google.auth:student')->group(function () {
     });
 });
 
-// public route for CMS
+// public route for CMS Pages
 Route::controller(ContentManagementController::class)->group(function () {
     Route::get('get-all-service', 'getAllService');
     Route::get('get-service-details', 'getServiceDetails');
@@ -167,6 +167,30 @@ Route::controller(ContentManagementController::class)->group(function () {
     Route::get('get-all-weight-hobbyweight', 'getAllHobbyweight');
     Route::get('get-all-weight-plastic-antweight', 'getAllPlasticAntweight');
     Route::get('get-all-weight-sportsman', 'getAllSportsman');
+
+    // Routes for new pages displayed on Knowledgebase and Curriculum
+    Route::get('get-all-battle-bots', 'getAllBattleBots');
+    Route::get('get-all-control-bots', 'getAllControlBots');
+    Route::get('get-all-drum-spinners', 'getAllDrumSpinners');
+    Route::get('get-all-firebots', 'getAllFireBots');
+    Route::get('get-all-flipper-bots', 'getAllFlipperBots');
+    Route::get('get-all-gearboxes', 'getAllGearboxes');
+    Route::get('get-all-hammerbots', 'getAllHammerBots');
+    Route::get('get-all-hand-tools', 'getAllHandTools');
+    Route::get('get-all-horizontal-spinners', 'getAllHorizontalSpinners');
+    Route::get('get-all-modes-of-transferring-motion', 'getAllModesOfTransferringMotion');
+    Route::get('get-all-nhrl', 'getAllNhrl');
+    Route::get('get-all-overhead-saws', 'getAllOverheadSaws');
+    Route::get('get-all-plants', 'getAllPlants');
+    Route::get('get-all-power-tools', 'getAllPowerTools');
+    Route::get('get-all-printed-circuit-boards', 'getAllPrintedCircuitBoards');
+    Route::get('get-all-rcl', 'getAllRcl');
+    Route::get('get-all-ssp', 'getAllSsp');
+    Route::get('get-all-turnabots', 'getAllTurnabots');
+    Route::get('get-all-types-of-drive-systems', 'getAllTypesOfDriveSystems');
+    Route::get('get-all-vertical-spinners', 'getAllVerticalSpinners');
+    Route::get('get-all-drive-systems', 'getAllDriveSystems');
+    Route::get('get-all-weapons-systems', 'getAllWeaponsSystems');
 
     Route::post('contact-us', 'contactUs');
 });

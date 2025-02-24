@@ -3,9 +3,19 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\BattleBot;
 use App\Models\EventCoverage;
 use App\Models\Bot;
 use App\Models\BotType;
+use App\Models\ControlBot;
+use App\Models\DriveSystem;
+use App\Models\DrumSpinner;
+use App\Models\FireBot;
+use App\Models\FlipperBot;
+use App\Models\Gearbox;
+use App\Models\HammerBot;
+use App\Models\HandTool;
+use App\Models\HorizontalSpinner;
 use App\Models\Lesson3dModeling;
 use App\Models\Lesson3dPrinting;
 use App\Models\LessonBatteries;
@@ -25,8 +35,20 @@ use App\Models\Partner;
 use App\Models\Presentation;
 use App\Models\Service;
 use App\Models\LeagueRule;
+use App\Models\ModesOfTransferringMotion;
+use App\Models\Nhrl;
+use App\Models\OverheadSaw;
+use App\Models\Plant;
+use App\Models\PowerTool;
+use App\Models\PrintedCircuitBoard;
+use App\Models\Rcl;
+use App\Models\Ssp;
 use App\Models\ToolsTrade;
 use App\Models\Tournament;
+use App\Models\TurnaBot;
+use App\Models\TypesOfDriveSystem;
+use App\Models\VerticalSpinner;
+use App\Models\WeaponsSystem;
 use App\Models\WeightAntweight;
 use App\Models\WeightBeetleweight;
 use App\Models\WeightClass;
@@ -1382,6 +1404,407 @@ class ContentManagementController extends Controller
                 'success' => false,
                 'message' => 'Failed to save your message. Please try again later.',
             ], 500);
+        }
+    }
+
+    /**
+     * Write code on this method for get all data
+     *
+     * @return response()
+     */
+    public function getAllBattleBots()
+    {
+        $data = BattleBot::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Battle Bots retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllControlBots()
+    {
+        $data = ControlBot::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Control Bots retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllDrumSpinners()
+    {
+        $data = DrumSpinner::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Drum Spinners retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllFireBots()
+    {
+        $data = FireBot::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Fire Bots retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllFlipperBots()
+    {
+        $data = FlipperBot::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Flipper Bots retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllGearboxes()
+    {
+        $data = Gearbox::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Gearboxes retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllHammerBots()
+    {
+        $data = HammerBot::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Hammer Bots retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllHandTools()
+    {
+        $data = HandTool::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Hand Tools retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllHorizontalSpinners()
+    {
+        $data = HorizontalSpinner::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Horizontal Spinners retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllModesOfTransferringMotion()
+    {
+        $data = ModesOfTransferringMotion::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Modes of Transferring Motion retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllNhrl()
+    {
+        $data = Nhrl::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'NHRL retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllOverheadSaws()
+    {
+        $data = OverheadSaw::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Overhead Saws retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllPlants()
+    {
+        $data = Plant::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Plants retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllPowerTools()
+    {
+        $data = PowerTool::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Power Tools retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllPrintedCircuitBoards()
+    {
+        $data = PrintedCircuitBoard::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Printed Circuit Boards retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllRcl()
+    {
+        $data = Rcl::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'RCL retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllSsp()
+    {
+        $data = Ssp::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'SSP retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllTurnabots()
+    {
+        $data = TurnaBot::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Turnabots retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllTypesOfDriveSystems()
+    {
+        $data = TypesOfDriveSystem::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Types of Drive Systems retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllVerticalSpinners()
+    {
+        $data = VerticalSpinner::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Vertical Spinners retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllDriveSystems()
+    {
+        $data = DriveSystem::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Drive Systems retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllWeaponsSystems()
+    {
+        $data = WeaponsSystem::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Drive Systems retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
         }
     }
 }

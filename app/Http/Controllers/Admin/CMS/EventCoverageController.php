@@ -78,7 +78,7 @@ class EventCoverageController extends Controller
             'event_coverage_title' => 'required|string|max:150',
             'event_coverage_description' => 'required',
             'event_coverage_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'event_coverage_link' => 'nullable|string|max|255'
+            'event_coverage_link' => 'nullable|string|max:255'
         ]);
 
         $event_coverage_image = '';
@@ -131,7 +131,7 @@ class EventCoverageController extends Controller
             'event_coverage_title' => 'required|string|max:150',
             'event_coverage_description' => 'required',
             'event_coverage_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'event_coverage_link' => 'nullable|string|max|255'
+            'event_coverage_link' => 'nullable|string|max:255'
         ]);
 
         $id = $request->id;
