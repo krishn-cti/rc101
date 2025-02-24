@@ -55,7 +55,7 @@ class WeaponsSystemController extends Controller
                 ->make(true);
         }
 
-        return view('admin.content_management.curriculums.weaponsystem.list');
+        return view('admin.content_management.knowledgebases.weaponsystem.list');
     }
 
     /**
@@ -63,7 +63,7 @@ class WeaponsSystemController extends Controller
      */
     public function create()
     {
-        return view('admin.content_management.curriculums.weaponsystem.add');
+        return view('admin.content_management.knowledgebases.weaponsystem.add');
     }
 
     /**
@@ -113,7 +113,7 @@ class WeaponsSystemController extends Controller
     public function edit(string $id)
     {
         $data['weaponSystemData'] = WeaponsSystem::where('id', $id)->first();
-        return view('admin.content_management.curriculums.weaponsystem.edit', $data);
+        return view('admin.content_management.knowledgebases.weaponsystem.edit', $data);
     }
 
     /**

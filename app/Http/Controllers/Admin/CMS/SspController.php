@@ -55,7 +55,7 @@ class SspController extends Controller
                 ->make(true);
         }
 
-        return view('admin.content_management.curriculums.ssp.list');
+        return view('admin.content_management.knowledgebases.ssp.list');
     }
 
     /**
@@ -63,7 +63,7 @@ class SspController extends Controller
      */
     public function create()
     {
-        return view('admin.content_management.curriculums.ssp.add');
+        return view('admin.content_management.knowledgebases.ssp.add');
     }
 
     /**
@@ -113,7 +113,7 @@ class SspController extends Controller
     public function edit(string $id)
     {
         $data['sspData'] = Ssp::where('id', $id)->first();
-        return view('admin.content_management.curriculums.ssp.edit', $data);
+        return view('admin.content_management.knowledgebases.ssp.edit', $data);
     }
 
     /**

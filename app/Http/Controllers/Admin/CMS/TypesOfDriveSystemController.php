@@ -55,7 +55,7 @@ class TypesOfDriveSystemController extends Controller
                 ->make(true);
         }
 
-        return view('admin.content_management.curriculums.typeofdrivesystem.list');
+        return view('admin.content_management.knowledgebases.typeofdrivesystem.list');
     }
 
     /**
@@ -63,7 +63,7 @@ class TypesOfDriveSystemController extends Controller
      */
     public function create()
     {
-        return view('admin.content_management.curriculums.typeofdrivesystem.add');
+        return view('admin.content_management.knowledgebases.typeofdrivesystem.add');
     }
 
     /**
@@ -113,7 +113,7 @@ class TypesOfDriveSystemController extends Controller
     public function edit(string $id)
     {
         $data['typeOfDriveSystemData'] = TypesOfDriveSystem::where('id', $id)->first();
-        return view('admin.content_management.curriculums.typeofdrivesystem.edit', $data);
+        return view('admin.content_management.knowledgebases.typeofdrivesystem.edit', $data);
     }
 
     /**

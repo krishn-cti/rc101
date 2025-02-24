@@ -55,7 +55,7 @@ class DriveSystemController extends Controller
                 ->make(true);
         }
 
-        return view('admin.content_management.curriculums.drivesystem.list');
+        return view('admin.content_management.knowledgebases.drivesystem.list');
     }
 
     /**
@@ -63,7 +63,7 @@ class DriveSystemController extends Controller
      */
     public function create()
     {
-        return view('admin.content_management.curriculums.drivesystem.add');
+        return view('admin.content_management.knowledgebases.drivesystem.add');
     }
 
     /**
@@ -113,7 +113,7 @@ class DriveSystemController extends Controller
     public function edit(string $id)
     {
         $data['driveSystemData'] = DriveSystem::where('id', $id)->first();
-        return view('admin.content_management.curriculums.drivesystem.edit', $data);
+        return view('admin.content_management.knowledgebases.drivesystem.edit', $data);
     }
 
     /**

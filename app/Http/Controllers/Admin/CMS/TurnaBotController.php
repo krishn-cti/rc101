@@ -55,7 +55,7 @@ class TurnaBotController extends Controller
                 ->make(true);
         }
 
-        return view('admin.content_management.curriculums.turnabot.list');
+        return view('admin.content_management.knowledgebases.turnabot.list');
     }
 
     /**
@@ -63,7 +63,7 @@ class TurnaBotController extends Controller
      */
     public function create()
     {
-        return view('admin.content_management.curriculums.turnabot.add');
+        return view('admin.content_management.knowledgebases.turnabot.add');
     }
 
     /**
@@ -113,7 +113,7 @@ class TurnaBotController extends Controller
     public function edit(string $id)
     {
         $data['turnabotData'] = TurnaBot::where('id', $id)->first();
-        return view('admin.content_management.curriculums.turnabot.edit', $data);
+        return view('admin.content_management.knowledgebases.turnabot.edit', $data);
     }
 
     /**

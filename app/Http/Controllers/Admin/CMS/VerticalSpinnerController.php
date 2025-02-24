@@ -55,7 +55,7 @@ class VerticalSpinnerController extends Controller
                 ->make(true);
         }
 
-        return view('admin.content_management.curriculums.verticalspinner.list');
+        return view('admin.content_management.knowledgebases.verticalspinner.list');
     }
 
     /**
@@ -63,7 +63,7 @@ class VerticalSpinnerController extends Controller
      */
     public function create()
     {
-        return view('admin.content_management.curriculums.verticalspinner.add');
+        return view('admin.content_management.knowledgebases.verticalspinner.add');
     }
 
     /**
@@ -113,7 +113,7 @@ class VerticalSpinnerController extends Controller
     public function edit(string $id)
     {
         $data['verticalSpinnerData'] = VerticalSpinner::where('id', $id)->first();
-        return view('admin.content_management.curriculums.verticalspinner.edit', $data);
+        return view('admin.content_management.knowledgebases.verticalspinner.edit', $data);
     }
 
     /**
