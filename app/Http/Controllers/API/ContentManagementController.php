@@ -10,6 +10,7 @@ use App\Models\BotType;
 use App\Models\ControlBot;
 use App\Models\DriveSystem;
 use App\Models\DrumSpinner;
+use App\Models\Embed;
 use App\Models\FireBot;
 use App\Models\FlipperBot;
 use App\Models\Gearbox;
@@ -1798,6 +1799,24 @@ class ContentManagementController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Drive Systems retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllEmbeds()
+    {
+        $data = Embed::orderBy('id', 'DESC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Embeded data retrieved successfully.',
                 'data' => $data,
             ], 200);
         } else {

@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\CMS\BotController;
 use App\Http\Controllers\Admin\CMS\ControlBotController;
 use App\Http\Controllers\Admin\CMS\DriveSystemController;
 use App\Http\Controllers\Admin\CMS\DrumSpinnerController;
+use App\Http\Controllers\Admin\CMS\EmbedController;
 use App\Http\Controllers\Admin\CMS\FireBotController;
 use App\Http\Controllers\Admin\CMS\FlipperBotController;
 use App\Http\Controllers\Admin\CMS\GearboxController;
@@ -159,6 +160,17 @@ Route::group(['middleware' => ['admin']], function () {
 
     // route for Content Management
     Route::prefix('cms')->group(function () {
+
+        // route for embeds
+        Route::controller(EmbedController::class)->group(function () {
+            Route::get('/embeds-list', 'index');
+            Route::get('/embeds-add', 'create');
+            Route::post('/embeds-save', 'store');
+            Route::get('/embeds-edit/{id}', 'edit');
+            Route::post('/embeds-update', 'update');
+            Route::post('/embeds-delete', 'destroy');
+        });
+
         // route for tournaments
         Route::controller(TournamentController::class)->group(function () {
             Route::get('/tournament-list', 'index');

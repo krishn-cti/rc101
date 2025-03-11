@@ -121,6 +121,7 @@ Route::middleware('google.auth:student')->group(function () {
 
 // public route for CMS Pages
 Route::controller(ContentManagementController::class)->group(function () {
+    Route::get('get-all-embeds', 'getAllEmbeds');
     Route::get('get-all-service', 'getAllService');
     Route::get('get-service-details', 'getServiceDetails');
     Route::get('get-all-partner', 'getAllPartner');
