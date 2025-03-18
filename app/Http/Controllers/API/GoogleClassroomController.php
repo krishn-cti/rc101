@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassroomStudent;
 use App\Models\GoogleCourse;
 use App\Models\GoogleAssignment;
 use App\Models\GoogleCourseParticipant;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use Google\Client;
 use Google\Service\Classroom;
 use App\Models\User;
+use App\Models\UserSubscription;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client as GuzzleClient;
 
@@ -84,15 +86,15 @@ class GoogleClassroomController extends Controller
             $this->client->setAccessToken($accessToken);
 
             // Check if the access token is expired
-            if ($this->client->isAccessTokenExpired()) {
-                $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token'); // Assuming it's stored in the user's record
+            // if ($this->client->isAccessTokenExpired()) {
+            //     $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token'); // Assuming it's stored in the user's record
 
-                if ($refreshToken) {
-                    $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-                } else {
-                    return response()->json(['error' => 'Refresh token not found'], 401);
-                }
-            }
+            //     if ($refreshToken) {
+            //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+            //     } else {
+            //         return response()->json(['error' => 'Refresh token not found'], 401);
+            //     }
+            // }
 
             // Initialize the Google Classroom service
             $service = new \Google\Service\Classroom($this->client);
@@ -165,6 +167,7 @@ class GoogleClassroomController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
+                'message' => "An unexpected error occurred while fetching courses. Please try again later.",
             ], 500);
         }
     }
@@ -235,15 +238,15 @@ class GoogleClassroomController extends Controller
             $this->client->setAccessToken($accessToken);
 
             // Check if the access token is expired and refresh if necessary
-            if ($this->client->isAccessTokenExpired()) {
-                $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token');
-
-                if ($refreshToken) {
-                    $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-                } else {
-                    return response()->json(['error' => 'Refresh token not found'], 401);
-                }
-            }
+            // if ($this->client->isAccessTokenExpired()) {
+            //     $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token');
+            //     dd($refreshToken);
+            //     if ($refreshToken) {
+            //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+            //     } else {
+            //         return response()->json(['error' => 'Refresh token not found'], 401);
+            //     }
+            // }
 
             // Initialize Classroom Service
             // $this->classroomService = new \Google\Service\Classroom($this->client);
@@ -298,6 +301,84 @@ class GoogleClassroomController extends Controller
     }
 
     // Add a student to a course
+    // public function addStudent(Request $request)
+    // {
+    //     $accessToken = $request->bearerToken();
+
+    //     if (!$accessToken) {
+    //         return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+    //     }
+
+    //     // Validate the request to ensure it contains a single user ID
+    //     $validated = $request->validate([
+    //         'course_id' => 'required|string',
+    //         'user_id' => 'required|string', // Expecting a single user ID
+    //     ]);
+
+    //     // Debugging check
+    //     if (!is_string($validated['user_id'])) {
+    //         return response()->json(['success' => false, 'error' => 'user_id must be a string'], 400);
+    //     }
+
+    //     // Set the Google Client with the provided access token
+    //     $this->client->setAccessToken($accessToken);
+
+    //     // Check if token is expired
+    //     if ($this->client->isAccessTokenExpired()) {
+    //         $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token');
+
+    //         if ($refreshToken) {
+    //             $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+    //         } else {
+    //             return response()->json(['error' => 'Refresh token not found'], 401);
+    //         }
+    //     }
+
+    //     // Initialize the Google Classroom Service
+    //     $this->classroomService = new \Google\Service\Classroom($this->client);
+
+    //     $responses = [];
+    //     $errors = [];
+
+    //     try {
+    //         // Prepare the invitation for a single student
+    //         $invitation = new \Google\Service\Classroom\Invitation([
+    //             'courseId' => $validated['course_id'],
+    //             'role' => 'STUDENT',
+    //             'userId' => $validated['user_id'], // Use the single user_id
+    //         ]);
+
+    //         // Send the invitation
+    //         $result = $this->classroomService->invitations->create($invitation);
+
+    //         $responses[] = [
+    //             'user_google_id' => $validated['user_id'],
+    //             'message' => 'Invitation sent successfully',
+    //             'invitation' => $result,
+    //         ];
+    //     } catch (\Google\Service\Exception $e) {
+    //         // Handle specific errors such as entity already existing
+    //         $errors[] = [
+    //             'user_google_id' => $validated['user_id'],
+    //             'message' => 'Requested entity already exists',
+    //         ];
+    //     } catch (\Exception $e) {
+    //         // General errors
+    //         $errors[] = [
+    //             'user_google_id' => $validated['user_id'],
+    //             'message' => 'The invited user already has the course role of a student',
+    //         ];
+    //     }
+
+    //     // Return the response
+    //     return response()->json([
+    //         'success' => empty($errors),
+    //         'message' => !empty($responses) ? $responses[0]['message'] : $errors[0]['message'],
+    //         'responses' => $responses,
+    //         'errors' => $errors,
+    //     ], 200);
+    // }
+
     public function addStudent(Request $request)
     {
         $accessToken = $request->bearerToken();
@@ -306,30 +387,51 @@ class GoogleClassroomController extends Controller
             return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
         }
 
-        // Validate the request to ensure it contains a single user ID
+        // Get the authenticated teacher
+        $teacher = User::where('google_token', $accessToken)->first();
+
+        if (!$teacher || $teacher->google_classroom_role !== "teacher") {
+            return response()->json(['success' => false, 'error' => 'Access denied. Only teachers can add students.'], 403);
+        }
+
+        // Validate request
         $validated = $request->validate([
             'course_id' => 'required|string',
             'user_id' => 'required|string', // Expecting a single user ID
         ]);
 
-        // Debugging check
-        if (!is_string($validated['user_id'])) {
-            return response()->json(['success' => false, 'error' => 'user_id must be a string'], 400);
+        // Check the teacher's subscription
+        $subscription = UserSubscription::where('user_id', $teacher->id)
+            ->where('status', 1) // Active subscription
+            ->with('subscription') // Get subscription details
+            ->first();
+
+        if (!$subscription) {
+            return response()->json(['success' => false, 'error' => 'No active subscription found. Please subscribe to a plan.'], 403);
         }
 
-        // Set the Google Client with the provided access token
+        // Define student limits based on subscription type
+        $maxStudents = ($subscription->type === 'monthly') ? 10 : 50; // Example limits
+        $currentStudents = ClassroomStudent::where('teacher_id', $teacher->id)->count();
+
+        if ($currentStudents >= $maxStudents) {
+            return response()->json([
+                'success' => false,
+                'error' => "You have reached the limit of $maxStudents students for your subscription."
+            ], 403);
+        }
+        // Google Classroom API setup
         $this->client->setAccessToken($accessToken);
 
-        // Check if token is expired
-        if ($this->client->isAccessTokenExpired()) {
-            $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token');
+        // if ($this->client->isAccessTokenExpired()) {
+        //     $refreshToken = $teacher->google_refresh_token;
 
-            if ($refreshToken) {
-                $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            } else {
-                return response()->json(['error' => 'Refresh token not found'], 401);
-            }
-        }
+        //     if ($refreshToken) {
+        //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+        //     } else {
+        //         return response()->json(['error' => 'Refresh token not found'], 401);
+        //     }
+        // }
 
         // Initialize the Google Classroom Service
         $this->classroomService = new \Google\Service\Classroom($this->client);
@@ -338,15 +440,22 @@ class GoogleClassroomController extends Controller
         $errors = [];
 
         try {
-            // Prepare the invitation for a single student
+            // Prepare the invitation
             $invitation = new \Google\Service\Classroom\Invitation([
                 'courseId' => $validated['course_id'],
                 'role' => 'STUDENT',
-                'userId' => $validated['user_id'], // Use the single user_id
+                'userId' => $validated['user_id'],
             ]);
 
             // Send the invitation
             $result = $this->classroomService->invitations->create($invitation);
+
+            // Log the added student
+            ClassroomStudent::create([
+                'teacher_id' => $teacher->id,
+                'course_id' => $validated['course_id'],
+                'student_google_id' => $validated['user_id']
+            ]);
 
             $responses[] = [
                 'user_google_id' => $validated['user_id'],
@@ -354,20 +463,17 @@ class GoogleClassroomController extends Controller
                 'invitation' => $result,
             ];
         } catch (\Google\Service\Exception $e) {
-            // Handle specific errors such as entity already existing
             $errors[] = [
                 'user_google_id' => $validated['user_id'],
                 'message' => 'Requested entity already exists',
             ];
         } catch (\Exception $e) {
-            // General errors
             $errors[] = [
                 'user_google_id' => $validated['user_id'],
                 'message' => 'The invited user already has the course role of a student',
             ];
         }
-
-        // Return the response
+        
         return response()->json([
             'success' => empty($errors),
             'message' => !empty($responses) ? $responses[0]['message'] : $errors[0]['message'],
@@ -627,7 +733,7 @@ class GoogleClassroomController extends Controller
             $studentCount = User::where('google_classroom_role', 'student')
                 ->whereNotNull('google_id')
                 ->count();
-            
+
             $activeAssignments = $courses->map(function ($course) {
                 return $course->assignments->where('due_date', '>', now())->count();
             })->sum();

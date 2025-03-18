@@ -11,6 +11,7 @@ use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\ContentManagementController;
 use App\Http\Controllers\API\GoogleClassroomController;
 use App\Http\Controllers\API\GoogleController;
+use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
@@ -116,6 +117,18 @@ Route::middleware('google.auth:student')->group(function () {
         Route::get('get-my-orders', 'getMyOrders');
         Route::get('create-order', 'createOrder');
         Route::post('complete-order', 'completeOrder');
+    });
+});
+
+// private route for teachers
+Route::middleware(['google.auth:teacher'])->group(function () {
+    Route::prefix('teacher')->group(function () {
+        Route::controller(PaymentController::class)->group(function () {
+            Route::get('subscriptions', 'getSubscriptions');
+            Route::post('checkout', 'checkout');
+            Route::post('payment-success', 'success');
+            Route::post('cancel-subscription', 'cancelSubscription');
+        });
     });
 });
 

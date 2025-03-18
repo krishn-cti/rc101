@@ -48,6 +48,7 @@ use App\Http\Controllers\Admin\CMS\PowerToolController;
 use App\Http\Controllers\Admin\CMS\PrintedCircuitBoardController;
 use App\Http\Controllers\Admin\CMS\RclController;
 use App\Http\Controllers\Admin\CMS\SspController;
+use App\Http\Controllers\Admin\CMS\SubscriptionController;
 use App\Http\Controllers\Admin\CMS\ToolsTradeController;
 use App\Http\Controllers\Admin\CMS\TournamentController;
 use App\Http\Controllers\Admin\CMS\TurnaBotController;
@@ -156,6 +157,16 @@ Route::group(['middleware' => ['admin']], function () {
         Route::get('/partner-edit/{id}', 'edit');
         Route::post('/partner-update', 'update');
         Route::post('/partner-delete', 'destroy');
+    });
+
+    // route for subscriptions
+    Route::controller(SubscriptionController::class)->group(function () {
+        Route::get('/subscription-list', 'index');
+        Route::get('/subscription-add', 'create');
+        Route::post('/subscription-save', 'store');
+        Route::get('/subscription-edit/{id}', 'edit');
+        Route::post('/subscription-update', 'update');
+        Route::post('/subscription-delete', 'destroy');
     });
 
     // route for Content Management

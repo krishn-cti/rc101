@@ -42,6 +42,10 @@
                         <a href="{{ url('partner-list') }}"><i class='bx bx-buildings'></i> Partners</a>
                     </li>
 
+                    <li class="menu-header-title {{ request()->is('subscription-list', 'subscription-add', 'subscription-edit/*') ? 'active' : '' }} ps-0">
+                        <a href="{{ url('subscription-list') }}"><i class='bx bx-credit-card'></i> Subscriptions</a>
+                    </li>
+
                     <li class="menu-header-title {{ request()->is('list-order') ? 'active' : '' }} ps-0">
                         <a href="{{ url('list-order') }}"><i class='bx bx-receipt'></i> Orders</a>
                     </li>
@@ -57,9 +61,9 @@
                             @else
                             <ul class="treeview-menu" style="display: none;">
                                 @endif
-                                <!-- <li class="menu-header-title {{ request()->is('cms/embeds-list', 'cms/embeds-add', 'cms/embeds-edit/*') ? 'active' : '' }} ps-0">
+                                <li class="menu-header-title {{ request()->is('cms/embeds-list', 'cms/embeds-add', 'cms/embeds-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/embeds-list') }}"><i class='bx bx-file'></i> Embeded Docs/Sildes</a>
-                                </li> -->
+                                </li>
 
                                 <li class="menu-header-title {{ request()->is('cms/home') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/home') }}"><i class='bx bx-home'></i> Home</a>
