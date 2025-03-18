@@ -111,4 +111,9 @@ class User extends Authenticatable
     {
         return $this->role_id === 3;
     }
+
+    public function isTeam()
+    {
+        return $this->role_id === 4;
+    }
 }
