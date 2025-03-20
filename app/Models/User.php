@@ -78,6 +78,11 @@ class User extends Authenticatable
         return $this->belongsTo(Bot::class, 'bot_id', 'id')->select(['id', 'name']);
     }
 
+    public function allBots()
+    {
+        return $this->hasMany(Bot::class, 'created_by', 'id');
+    }
+
     public function weightClass()
     {
         return $this->belongsTo(WeightClassCategory::class, 'weight_class_id', 'id')->select(['id', 'name']);

@@ -320,7 +320,7 @@ class ContentManagementController extends Controller
      */
     public function getAllWeightClassCategories()
     {
-        $weightClassCategory = WeightClassCategory::orderBy('id', 'DESC')->get();
+        $weightClassCategory = WeightClassCategory::orderBy('id', 'ASC')->get();
 
         if ($weightClassCategory->isEmpty()) {
             return response()->json([
@@ -345,7 +345,7 @@ class ContentManagementController extends Controller
      */
     public function getAllBots()
     {
-        $bots = Bot::orderBy('id', 'DESC')->with(['botType', 'weightClass', 'createdBy'])->get();
+        $bots = Bot::orderBy('name', 'ASC')->with(['botType', 'weightClass', 'createdBy'])->get();
 
         if ($bots->isEmpty()) {
             return response()->json([

@@ -232,11 +232,11 @@ class RegisterController extends BaseController
     }
 
     // this method is used to get all the team members
-    public function getAllMembers(Request $request)
+    public function getAllMembers()
     {
         $users = User::where('role_id', 4)
-            ->with(['bot', 'weightClass'])
-            ->orderBy('id', 'DESC')
+            ->with(['bot', 'allBots', 'weightClass'])
+            ->orderBy('name', 'ASC')
             ->get();
 
         return response()->json([
