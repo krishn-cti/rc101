@@ -167,8 +167,8 @@ class GoogleClassroomController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
-                'message' => "An unexpected error occurred while fetching courses. Please try again later.",
-            ], 500);
+                'message' => "An unexpected error occurred",
+            ], 401);
         }
     }
 
@@ -829,7 +829,7 @@ class GoogleClassroomController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'An unexpected error occurred',
-            ], 500);
+            ], 401);
         }
     }
 
@@ -887,7 +887,7 @@ class GoogleClassroomController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => 'An unexpected error occurred',
-            ], 500);
+            ], 401);
         }
     }
 
