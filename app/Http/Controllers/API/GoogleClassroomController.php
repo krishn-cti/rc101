@@ -323,9 +323,15 @@ class GoogleClassroomController extends Controller
         ]);
 
         // Check the teacher's subscription
+        // $subscription = UserSubscription::where('user_id', $teacher->id)
+        //     ->where('status', 1) // Active subscription
+        //     ->with('subscription') // Get subscription details
+        //     ->first();
+
         $subscription = UserSubscription::where('user_id', $teacher->id)
-            ->where('status', 1) // Active subscription
-            ->with('subscription') // Get subscription details
+            ->where('status', 1)
+            ->with('subscription')
+            ->orderByDesc('subscription_id')
             ->first();
 
         if (!$subscription) {
@@ -385,7 +391,7 @@ class GoogleClassroomController extends Controller
                 'message' => 'The invited user already has the course role of a student',
             ];
         }
-        
+
         return response()->json([
             'success' => empty($errors),
             'message' => !empty($responses) ? $responses[0]['message'] : $errors[0]['message'],
@@ -489,15 +495,15 @@ class GoogleClassroomController extends Controller
         $this->client->setAccessToken($teacher->google_token);
 
         // Refresh token if needed
-        if ($this->client->isAccessTokenExpired()) {
-            $refreshToken = $teacher->google_refresh_token;
+        // if ($this->client->isAccessTokenExpired()) {
+        //     $refreshToken = $teacher->google_refresh_token;
 
-            if ($refreshToken) {
-                $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            } else {
-                return response()->json(['message' => 'Refresh token not found'], 401);
-            }
-        }
+        //     if ($refreshToken) {
+        //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+        //     } else {
+        //         return response()->json(['message' => 'Refresh token not found'], 401);
+        //     }
+        // }
 
         $this->classroomService = new \Google\Service\Classroom($this->client);
 
@@ -556,15 +562,15 @@ class GoogleClassroomController extends Controller
         $this->client->setAccessToken($teacher->google_token);
 
         // Check if the token has expired
-        if ($this->client->isAccessTokenExpired()) {
-            $refreshToken = $teacher->google_refresh_token;
+        // if ($this->client->isAccessTokenExpired()) {
+        //     $refreshToken = $teacher->google_refresh_token;
 
-            if ($refreshToken) {
-                $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            } else {
-                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
-            }
-        }
+        //     if ($refreshToken) {
+        //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+        //     } else {
+        //         return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
+        //     }
+        // }
 
         $this->classroomService = new Classroom($this->client);
 
@@ -633,6 +639,8 @@ class GoogleClassroomController extends Controller
         try {
             // Fetch all courses owned by the teacher
             $courses = GoogleCourse::where('owner_id', $teacher->id)->get();
+            $totalCourses = $courses->count();
+            // dd(count($courses));
 
             $totalAssignments = $courses->map(function ($course) {
                 return $course->assignments->count();
@@ -652,7 +660,6 @@ class GoogleClassroomController extends Controller
 
             // $service = new Classroom($this->client);
             // $totalCourses = $service->courses->listCourses();
-            $totalCourses = $courses->count();
 
             return response()->json([
                 'success' => true,
@@ -689,24 +696,11 @@ class GoogleClassroomController extends Controller
         }
 
         $this->client->setAccessToken($accessToken);
-
-        // Check if the token has expired
-        if ($this->client->isAccessTokenExpired()) {
-            $refreshToken = $student->google_refresh_token;
-
-            if ($refreshToken) {
-                $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            } else {
-                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
-            }
-        }
-
-        // Initialize Google Classroom Service
         $this->classroomService = new \Google\Service\Classroom($this->client);
 
         // Validate request parameters
         $validated = $request->validate([
-            'user_google_id' => 'nullable|string', // Either user_google_id or course_id should be provided
+            'user_google_id' => 'nullable|string',
             'course_id' => 'nullable|string',
         ]);
 
@@ -715,13 +709,11 @@ class GoogleClassroomController extends Controller
         }
 
         try {
-            // Prepare the query parameters
+            // Prepare query parameters
             $queryParams = [];
 
             if (!empty($validated['user_google_id'])) {
                 $queryParams['userId'] = $validated['user_google_id'];
-            } else {
-                $queryParams['userId'] = 'me'; // Default to the current authenticated user
             }
 
             if (!empty($validated['course_id'])) {
@@ -732,7 +724,6 @@ class GoogleClassroomController extends Controller
             $invitationsList = $this->classroomService->invitations->listInvitations($queryParams);
             $invitations = $invitationsList->getInvitations();
 
-            // Prepare response data
             $responseData = [];
 
             if ($invitations) {
@@ -743,7 +734,7 @@ class GoogleClassroomController extends Controller
 
                         // Fetch inviter details
                         $inviterName = null;
-                        if ($course->getOwnerId()) {
+                        if (!empty($course->getOwnerId())) {
                             $inviterProfile = $this->classroomService->userProfiles->get($course->getOwnerId());
                             $inviterName = $inviterProfile->getName()->getFullName();
                         }
@@ -793,15 +784,15 @@ class GoogleClassroomController extends Controller
         $this->client->setAccessToken($accessToken);
 
         // Check if the token has expired
-        if ($this->client->isAccessTokenExpired()) {
-            $refreshToken = $student->google_refresh_token;
+        // if ($this->client->isAccessTokenExpired()) {
+        //     $refreshToken = $student->google_refresh_token;
 
-            if ($refreshToken) {
-                $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            } else {
-                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
-            }
-        }
+        //     if ($refreshToken) {
+        //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+        //     } else {
+        //         return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
+        //     }
+        // }
 
         // Initialize Google Classroom Service
         $this->classroomService = new \Google\Service\Classroom($this->client);
@@ -852,15 +843,15 @@ class GoogleClassroomController extends Controller
         $this->client->setAccessToken($accessToken);
 
         // Check if the token has expired
-        if ($this->client->isAccessTokenExpired()) {
-            $refreshToken = $student->google_refresh_token;
+        // if ($this->client->isAccessTokenExpired()) {
+        //     $refreshToken = $student->google_refresh_token;
 
-            if ($refreshToken) {
-                $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            } else {
-                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
-            }
-        }
+        //     if ($refreshToken) {
+        //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+        //     } else {
+        //         return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
+        //     }
+        // }
 
         // Initialize Google Classroom Service
         $this->classroomService = new \Google\Service\Classroom($this->client);
@@ -910,15 +901,15 @@ class GoogleClassroomController extends Controller
         $this->client->setAccessToken($accessToken);
 
         // Check if the token has expired
-        if ($this->client->isAccessTokenExpired()) {
-            $refreshToken = $student->google_refresh_token;
+        // if ($this->client->isAccessTokenExpired()) {
+        //     $refreshToken = $student->google_refresh_token;
 
-            if ($refreshToken) {
-                $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            } else {
-                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
-            }
-        }
+        //     if ($refreshToken) {
+        //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
+        //     } else {
+        //         return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
+        //     }
+        // }
 
         // Initialize the Google Classroom service
         $classroomService = new \Google\Service\Classroom($this->client);

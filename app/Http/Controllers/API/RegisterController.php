@@ -457,26 +457,33 @@ class RegisterController extends BaseController
      */
     public function deleteMember(Request $request)
     {
-        $request->validate([
+        $validate = Validator::make($request->all(), [
             'member_id' => 'required|exists:users,id',
         ]);
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
 
-        $user = User::where('id', $request->member_id)->first();
+        $member = User::where('id', $request->member_id)->first();
 
-        if (!$user) {
+        if (!$member) {
             return response()->json([
                 'success' => false,
                 'message' => 'Member not found.',
             ], 404);
         }
 
-        // Delete all bots associated with the user (check if the relation exists)
-        if ($user->allBots()->exists()) {
-            $user->allBots()->delete();
+        // Delete all bots associated with the member (check if the relation exists)
+        if ($member->allBots()->exists()) {
+            $member->allBots()->delete();
         }
 
-        // Delete the user
-        $user->delete();
+        // Delete the member
+        $member->delete();
 
         return response()->json([
             'success' => true,
@@ -492,10 +499,16 @@ class RegisterController extends BaseController
      */
     public function deleteBot(Request $request)
     {
-        $request->validate([
+        $validate = Validator::make($request->all(), [
             'bot_id' => 'required|exists:cms_bots,id',
         ]);
-
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
         $bot = Bot::find($request->bot_id);
 
         if (!$bot) {
@@ -511,6 +524,60 @@ class RegisterController extends BaseController
         return response()->json([
             'success' => true,
             'message' => 'Bot deleted successfully.',
+        ], 200);
+    }
+
+    /**
+     * get logged in member details from application.
+     * @return \Illuminate\Http\Response
+     */
+    public function getMemberDetail(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            'member_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation Error!',
+                'data' => $validate->errors(),
+            ], 403);
+        }
+
+        // Fetch the member with related bots, bot type, and weight class
+        // $member = User::where('role_id', 4)
+        //     ->where('id', $request->member_id)
+        //     ->with([
+        //         'allBots' => function ($query) {
+        //             $query->with(['botType', 'weightClass']);
+        //         }
+        //     ])
+        //     ->first();
+
+        $member = User::where('role_id', 4)
+            ->where('id', $request->member_id)
+            ->with([
+                'bot',
+                'weightClass',
+                'allBots' => function ($query) {
+                    $query->with(['botType', 'weightClass']);
+                }
+            ])
+            ->orderBy('name', 'ASC')
+            ->first();
+
+        if (!$member) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Member not found.',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Member details fetched successfully.',
+            'data' => $member,
         ], 200);
     }
 

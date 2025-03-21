@@ -31,9 +31,14 @@ class PaymentController extends Controller
         $subscriptions = Subscription::all();
 
         // Fetch the user's active subscription (if any)
+        // $userSubscription = UserSubscription::where('user_id', $teacher->id)
+        //     ->where('status', 1) // Only fetch active subscriptions
+        //     ->with('subscription') // Eager load subscription details
+        //     ->first();
         $userSubscription = UserSubscription::where('user_id', $teacher->id)
-            ->where('status', 1) // Only fetch active subscriptions
-            ->with('subscription') // Eager load subscription details
+            ->where('status', 1)
+            ->with('subscription')
+            ->orderByDesc('subscription_id')
             ->first();
 
         return response()->json([

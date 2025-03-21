@@ -80,6 +80,7 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 Route::get('email/verify/{id}', [VerificationController::class, 'verify'])->name('verification.verify');
 Route::get('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
 Route::get('/get-all-members', [RegisterController::class, 'getAllMembers']);
+Route::post('/get-member-details', [RegisterController::class, 'getMemberDetail']);
 Route::post('/update-member-detail', [RegisterController::class, 'updateMemberDetail']);
 Route::post('/delete-member', [RegisterController::class, 'deleteMember']);
 Route::post('/delete-bot', [RegisterController::class, 'deleteBot']);
