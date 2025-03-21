@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Models\Bot;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
@@ -132,7 +133,7 @@ class RegisterController extends BaseController
             $user->is_popup_display = 1;
         } else {
             $user->is_popup_display = 0;
-        }        
+        }
 
         // Increment login count
         $user->login_count++;
@@ -235,7 +236,15 @@ class RegisterController extends BaseController
     public function getAllMembers()
     {
         $users = User::where('role_id', 4)
-            ->with(['bot', 'allBots', 'weightClass'])
+            ->with([
+                'bot' => function ($query) {
+                    $query->with(['botType', 'weightClass']);
+                },
+                'allBots' => function ($query) {
+                    $query->with(['botType', 'weightClass']);
+                },
+                'weightClass'
+            ])
             ->orderBy('name', 'ASC')
             ->get();
 
@@ -380,7 +389,7 @@ class RegisterController extends BaseController
     }
 
     /**
-     * Log out the user from application.
+     * update member profile from application.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -440,6 +449,70 @@ class RegisterController extends BaseController
         ], 200);
     }
 
+    /**
+     * Delete member from application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteMember(Request $request)
+    {
+        $request->validate([
+            'member_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::where('id', $request->member_id)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Member not found.',
+            ], 404);
+        }
+
+        // Delete all bots associated with the user (check if the relation exists)
+        if ($user->allBots()->exists()) {
+            $user->allBots()->delete();
+        }
+
+        // Delete the user
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Member and all associated bots deleted successfully.',
+        ], 200);
+    }
+
+    /**
+     * Delete member from application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteBot(Request $request)
+    {
+        $request->validate([
+            'bot_id' => 'required|exists:cms_bots,id',
+        ]);
+
+        $bot = Bot::find($request->bot_id);
+
+        if (!$bot) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bot not found.'
+            ], 404);
+        }
+
+        // Delete the bot
+        $bot->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bot deleted successfully.',
+        ], 200);
+    }
 
     /**
      * get logged in user details from application.

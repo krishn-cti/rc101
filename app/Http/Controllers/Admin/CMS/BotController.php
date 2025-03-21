@@ -26,7 +26,7 @@ class BotController extends Controller
                 ->addColumn('image', function ($row) {
                     if ($row->image) {
                         $src = $row->image;
-                        $image = '<img src="' . asset('cms_images/bots') . '/' . $src . '" alt="Profile Image" class="td_img_50">';
+                        $image = '<img src="' . $src . '" alt="Profile Image" class="td_img_50">';
                     } else {
                         $image = '<img src="' . asset('admin/img/shop-img/no_image.png') . '" alt="Company Image" class="td_img_50">';
                     }

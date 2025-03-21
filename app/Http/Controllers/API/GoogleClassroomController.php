@@ -44,7 +44,7 @@ class GoogleClassroomController extends Controller
     //         $accessToken = $request->bearerToken();
 
     //         if (!$accessToken) {
-    //             return response()->json(['error' => 'Google token not found'], 400);
+    //             return response()->json(['message' => 'Google token not found'], 400);
     //         }
 
     //         if ($this->client->isAccessTokenExpired()) {
@@ -53,7 +53,7 @@ class GoogleClassroomController extends Controller
     //             if ($refreshToken) {
     //                 $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
     //             } else {
-    //                 return response()->json(['error' => 'Refresh token not found'], 401);
+    //                 return response()->json(['message' => 'Refresh token not found'], 401);
     //             }
     //         }
 
@@ -68,7 +68,7 @@ class GoogleClassroomController extends Controller
     //     } catch (\Exception $e) {
     //         return response()->json([
     //             'success' => false,
-    //             'error' => $e->getMessage(),
+    //             'message' => $e->getMessage(),
     //         ], 500);
     //     }
     // }
@@ -79,7 +79,7 @@ class GoogleClassroomController extends Controller
             $accessToken = $request->bearerToken();
 
             if (!$accessToken) {
-                return response()->json(['error' => 'Google token not found'], 400);
+                return response()->json(['message' => 'Google token not found'], 400);
             }
 
             // Set the access token for the Google client
@@ -92,7 +92,7 @@ class GoogleClassroomController extends Controller
             //     if ($refreshToken) {
             //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
             //     } else {
-            //         return response()->json(['error' => 'Refresh token not found'], 401);
+            //         return response()->json(['message' => 'Refresh token not found'], 401);
             //     }
             // }
 
@@ -166,7 +166,7 @@ class GoogleClassroomController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
                 'message' => "An unexpected error occurred",
             ], 401);
         }
@@ -179,7 +179,7 @@ class GoogleClassroomController extends Controller
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
         }
 
         $validated = $request->validate([
@@ -193,7 +193,7 @@ class GoogleClassroomController extends Controller
         $teacher = User::find($validated['owner_id']);
 
         if ($teacher->role_id !== 3) { // Ensure the user is a Teacher
-            return response()->json(['success' => false, 'error' => 'Invalid teacher role'], 403);
+            return response()->json(['success' => false, 'message' => 'Invalid teacher role'], 403);
         }
 
         $this->client->setAccessToken($teacher->google_token);
@@ -229,7 +229,7 @@ class GoogleClassroomController extends Controller
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['error' => 'Google token not found'], 400);
+            return response()->json(['message' => 'Google token not found'], 400);
         }
 
         try {
@@ -244,7 +244,7 @@ class GoogleClassroomController extends Controller
             //     if ($refreshToken) {
             //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
             //     } else {
-            //         return response()->json(['error' => 'Refresh token not found'], 401);
+            //         return response()->json(['message' => 'Refresh token not found'], 401);
             //     }
             // }
 
@@ -290,12 +290,12 @@ class GoogleClassroomController extends Controller
         } catch (\Google\Service\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 401);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -306,14 +306,14 @@ class GoogleClassroomController extends Controller
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
         }
 
         // Get the authenticated teacher
         $teacher = User::where('google_token', $accessToken)->first();
 
         if (!$teacher || $teacher->google_classroom_role !== "teacher") {
-            return response()->json(['success' => false, 'error' => 'Access denied. Only teachers can add students.'], 403);
+            return response()->json(['success' => false, 'message' => 'Access denied. Only teachers can add students.'], 403);
         }
 
         // Validate request
@@ -329,7 +329,7 @@ class GoogleClassroomController extends Controller
             ->first();
 
         if (!$subscription) {
-            return response()->json(['success' => false, 'error' => 'No active subscription found. Please subscribe to a plan.'], 403);
+            return response()->json(['success' => false, 'message' => 'No active subscription found. Please subscribe to a plan.'], 403);
         }
 
         // Define student limits based on subscription type
@@ -400,7 +400,7 @@ class GoogleClassroomController extends Controller
     //     $accessToken = $request->bearerToken();
 
     //     if (!$accessToken) {
-    //         return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+    //         return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
     //     }
 
     //     $validated = $request->validate([
@@ -412,7 +412,7 @@ class GoogleClassroomController extends Controller
 
     //     // Debugging check
     //     if (!is_array($validated['user_ids'])) {
-    //         return response()->json(['success' => false, 'error' => 'user_ids must be an array'], 400);
+    //         return response()->json(['success' => false, 'message' => 'user_ids must be an array'], 400);
     //     }
 
     //     $this->client->setAccessToken($accessToken);
@@ -424,7 +424,7 @@ class GoogleClassroomController extends Controller
     //         if ($refreshToken) {
     //             $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
     //         } else {
-    //             return response()->json(['error' => 'Refresh token not found'], 401);
+    //             return response()->json(['message' => 'Refresh token not found'], 401);
     //         }
     //     }
 
@@ -452,13 +452,13 @@ class GoogleClassroomController extends Controller
     //             $errors[] = [
     //                 'user_google_id' => $studentGoogleId,
     //                 'message' => 'Requested entity already exists',
-    //                 // 'error' => $e->getMessage(),
+    //                 // 'message' => $e->getMessage(),
     //             ];
     //         } catch (\Exception $e) {
     //             $errors[] = [
     //                 'user_google_id' => $studentGoogleId,
     //                 'message' => 'The invited user already has the course role of a student',
-    //                 // 'error' => $e->getMessage(),
+    //                 // 'message' => $e->getMessage(),
     //             ];
     //         }
     //     }
@@ -476,7 +476,7 @@ class GoogleClassroomController extends Controller
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
         }
 
         $validated = $request->validate([
@@ -495,7 +495,7 @@ class GoogleClassroomController extends Controller
             if ($refreshToken) {
                 $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
             } else {
-                return response()->json(['error' => 'Refresh token not found'], 401);
+                return response()->json(['message' => 'Refresh token not found'], 401);
             }
         }
 
@@ -527,9 +527,9 @@ class GoogleClassroomController extends Controller
                 'assignments' => $assignments,
             ], 200);
         } catch (\Google\Service\Exception $e) {
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -539,7 +539,7 @@ class GoogleClassroomController extends Controller
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
         }
 
         $validated = $request->validate([
@@ -562,7 +562,7 @@ class GoogleClassroomController extends Controller
             if ($refreshToken) {
                 $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
             } else {
-                return response()->json(['success' => false, 'error' => 'Refresh token not found'], 401);
+                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
             }
         }
 
@@ -667,7 +667,7 @@ class GoogleClassroomController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error fetching dashboard data',
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -678,14 +678,14 @@ class GoogleClassroomController extends Controller
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
         }
 
         // Validate if the Google token is valid for a student
         $student = User::where('google_token', $accessToken)->first();
 
         if (!$student) {
-            return response()->json(['success' => false, 'error' => 'Student not found or invalid token'], 404);
+            return response()->json(['success' => false, 'message' => 'Student not found or invalid token'], 404);
         }
 
         $this->client->setAccessToken($accessToken);
@@ -697,7 +697,7 @@ class GoogleClassroomController extends Controller
             if ($refreshToken) {
                 $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
             } else {
-                return response()->json(['success' => false, 'error' => 'Refresh token not found'], 401);
+                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
             }
         }
 
@@ -711,7 +711,7 @@ class GoogleClassroomController extends Controller
         ]);
 
         if (empty($validated['user_google_id']) && empty($validated['course_id'])) {
-            return response()->json(['success' => false, 'error' => 'Either user_google_id or course_id must be provided'], 400);
+            return response()->json(['success' => false, 'message' => 'Either user_google_id or course_id must be provided'], 400);
         }
 
         try {
@@ -781,14 +781,14 @@ class GoogleClassroomController extends Controller
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
         }
 
         // Validate if the Google token is valid for a student
         $student = User::where('google_token', $accessToken)->first();
 
         if (!$student) {
-            return response()->json(['success' => false, 'error' => 'Student not found or invalid token'], 404);
+            return response()->json(['success' => false, 'message' => 'Student not found or invalid token'], 404);
         }
         $this->client->setAccessToken($accessToken);
 
@@ -799,7 +799,7 @@ class GoogleClassroomController extends Controller
             if ($refreshToken) {
                 $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
             } else {
-                return response()->json(['success' => false, 'error' => 'Refresh token not found'], 401);
+                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
             }
         }
 
@@ -823,7 +823,7 @@ class GoogleClassroomController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error accepting invitation',
-                // 'error' => 'Error accepting invitation: ' . $e->getMessage(),
+                // 'message' => 'Error accepting invitation: ' . $e->getMessage(),
             ], 500);
         } catch (\Exception $e) {
             return response()->json([
@@ -839,14 +839,14 @@ class GoogleClassroomController extends Controller
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['success' => false, 'error' => 'Google token not found'], 400);
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
         }
 
         // Validate if the Google token is valid for a student
         $student = User::where('google_token', $accessToken)->first();
 
         if (!$student) {
-            return response()->json(['success' => false, 'error' => 'Student not found or invalid token'], 404);
+            return response()->json(['success' => false, 'message' => 'Student not found or invalid token'], 404);
         }
 
         $this->client->setAccessToken($accessToken);
@@ -858,7 +858,7 @@ class GoogleClassroomController extends Controller
             if ($refreshToken) {
                 $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
             } else {
-                return response()->json(['success' => false, 'error' => 'Refresh token not found'], 401);
+                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
             }
         }
 
@@ -886,7 +886,7 @@ class GoogleClassroomController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => 'An unexpected error occurred',
+                'message' => 'An unexpected error occurred',
             ], 401);
         }
     }
@@ -916,7 +916,7 @@ class GoogleClassroomController extends Controller
             if ($refreshToken) {
                 $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
             } else {
-                return response()->json(['success' => false, 'error' => 'Refresh token not found'], 401);
+                return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
             }
         }
 

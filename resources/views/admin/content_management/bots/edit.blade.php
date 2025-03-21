@@ -128,10 +128,10 @@
                                                 <label for="" class="mb-2"><strong>Image</strong></label>
                                                 <input name="image" type="file" class="form-control ct_input" onchange="loadImage(event)" accept="image/*">
 
-                                                @if(!empty($botData->image) && file_exists(public_path('cms_images/bots/' . $botData->image)))
+                                                @if(!empty($botData->image))
 
                                                 <div id="imagePreviewWrapper" class="mt-2" style="display: 'block';">
-                                                    <img id="imagePreview" src="{{ asset('cms_images/bots/'.$botData->image) }}" alt="Current Image" style="width: 100px; height: 100px; border-radius: 8px;">
+                                                    <img id="imagePreview" src="{{ $botData->image }}" alt="Current Image" style="width: 100px; height: 100px; border-radius: 8px;">
                                                 </div>
                                                 @else
                                                 <div id="imagePreviewWrapper" class="mt-2" style="display: 'none';">

@@ -18,6 +18,13 @@
         .error {
             color: red;
         }
+
+        .rc_logo img {
+            max-width: 100px;
+            display: block;
+            margin-inline: auto;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 
@@ -54,7 +61,12 @@
                             @if (Session::has('success_msg'))
                             <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
                             @endif
+
                             <div class="log-header-area card p-4 mb-4 text-center">
+                                <div class="rc_logo">
+                                    <img src="{{asset('admin/img/logo/logo.png')}}" alt="">
+
+                                </div>
                                 <h5 class="text-white">Welcome Back !</h5>
                                 <p class="mb-0 text-white">Log in to continue.</p>
                             </div>

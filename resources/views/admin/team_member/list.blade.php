@@ -5,32 +5,31 @@
         <div class="dashboard-area">
             <div class="container-fluid">
                 <div class="row g-4">
-                    @if(Session::has('error_msg'))
-                    <div class="alert alert-danger"> {{ Session::get('error_msg') }} </div>
-                    @endif
-
-                    @if (Session::has('success_msg'))
-                    <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
-                    @endif
                     <div class="col-lg-12">
                         <div class="card">
                             <div class="card-body">
+                                @if(Session::has('error_msg'))
+                                <div class="alert alert-danger"> {{ Session::get('error_msg') }} </div>
+                                @endif
+
+                                @if (Session::has('success_msg'))
+                                <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
+                                @endif
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Subscription Plans</h6>
-                                    <a href="{{ url('subscription-add') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Plan</button>
+                                    <h6 class="mb-0">All Team Members</h6>
+                                    <a href="{{ url('users/add-member') }}">
+                                        <button class="ct_custom_btn1 mx-auto">Add New Team Member</button>
                                     </a>
                                 </div>
-
-                                <table class="table subscription-data-table table-responsive table-bordered table-hover mb-0" id="nhrlTable">
+                                <table class="table member-data-table table-responsive table-bordered table-hover mb-0" id="userTable">
                                     <thead>
                                         <tr>
                                             <th>No</th>
+                                            <th>Profile</th>
                                             <th>Name</th>
-                                            <th>Monthly Price</th>
-                                            <th>Yearly Price</th>
-                                            <th>User Access Count</th>
-                                            <th>Description</th>
+                                            <th>Email</th>
+                                            <th>Registered On</th>
+                                            <!-- <th>Number</th> -->
                                             <th width="100px">Action</th>
                                         </tr>
                                     </thead>
@@ -49,40 +48,32 @@
 
 <script type="text/javascript">
     $(function() {
-        var table = $('.subscription-data-table').DataTable({
+        var table = $('.member-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('subscription-list') }}",
+            ajax: "{{ url('users/list-member') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
                 }, // Change 'id' to 'serial_number'
                 {
+                    data: 'profile_image',
+                    name: 'profile_image'
+                },
+                {
                     data: 'name',
                     name: 'name'
                 },
                 {
-                    data: 'monthly_price',
-                    name: 'monthly_price'
+                    data: 'email',
+                    name: 'email'
                 },
                 {
-                    data: 'yearly_price',
-                    name: 'yearly_price'
+                    data: 'created_at',
+                    name: 'created_at'
                 },
-                {
-                    data: 'user_access_count',
-                    name: 'user_access_count'
-                },
-                {
-                    data: 'description',
-                    name: 'description'
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
+                // {data: 'number', name: 'number'},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });
     });
@@ -105,7 +96,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('subscription-delete') }}",
+                        url: "{{ url('users/delete-member') }}",
                         type: "POST",
                         cache: false,
                         data: {
@@ -117,7 +108,7 @@
                                 toastr.error(response.error);
                             } else {
                                 toastr.success(response.message);
-                                $('#nhrlTable').DataTable().ajax.reload(null, false);
+                                $('#userTable').DataTable().ajax.reload(null, false);
                             }
                         },
                         error: function(xhr, textStatus, errorThrown) {

@@ -81,6 +81,8 @@ Route::get('email/verify/{id}', [VerificationController::class, 'verify'])->name
 Route::get('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
 Route::get('/get-all-members', [RegisterController::class, 'getAllMembers']);
 Route::post('/update-member-detail', [RegisterController::class, 'updateMemberDetail']);
+Route::post('/delete-member', [RegisterController::class, 'deleteMember']);
+Route::post('/delete-bot', [RegisterController::class, 'deleteBot']);
 
 // Public routes of product
 Route::controller(ProductController::class)->group(function () {

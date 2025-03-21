@@ -67,6 +67,8 @@ use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ContentManagementController;
+use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Admin\TeamMemberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -138,15 +140,38 @@ Route::group(['middleware' => ['admin']], function () {
         Route::post('/update-sub-category', 'update');
         Route::post('/delete-sub-category', 'destroy');
     });
+    // route for All users
+    Route::prefix('users')->group(function () {
 
-    // route for user
-    Route::controller(UserController::class)->group(function () {
-        Route::get('/list-user', 'index');
-        Route::get('/add-user', 'create');
-        Route::get('/edit-user/{id}', 'edit');
-        Route::post('/save-user', 'store');
-        Route::post('/update-user', 'update');
-        Route::post('/delete-user', 'destroy');
+        // route for users
+        Route::controller(UserController::class)->group(function () {
+            Route::get('/list-student', 'index');
+            Route::get('/add-student', 'create');
+            Route::get('/edit-student/{id}', 'edit');
+            Route::post('/save-student', 'store');
+            Route::post('/update-student', 'update');
+            Route::post('/delete-student', 'destroy');
+        });
+
+        // route for teachers
+        Route::controller(TeacherController::class)->group(function () {
+            Route::get('/list-teacher', 'index');
+            Route::get('/add-teacher', 'create');
+            Route::get('/edit-teacher/{id}', 'edit');
+            Route::post('/save-teacher', 'store');
+            Route::post('/update-teacher', 'update');
+            Route::post('/delete-teacher', 'destroy');
+        });
+
+        // route for team members
+        Route::controller(TeamMemberController::class)->group(function () {
+            Route::get('/list-member', 'index');
+            Route::get('/add-member', 'create');
+            Route::get('/edit-member/{id}', 'edit');
+            Route::post('/save-member', 'store');
+            Route::post('/update-member', 'update');
+            Route::post('/delete-member', 'destroy');
+        });
     });
 
     // route for partners(companies)

@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Yajra\DataTables\Facades\DataTables;
 use App\Mail\UserWelcomeMail;
 use Illuminate\Support\Facades\Mail;
 
-class UserController extends Controller
+class TeamMemberController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -20,13 +20,12 @@ class UserController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = User::whereNotNull('google_id')
-                ->where('role_id', 2)
+            $data = User::where('role_id', 4)
                 ->where('status', 1)
                 ->orderBy('id', 'DESC')
                 ->get();
 
-            return Datatables::of($data)
+            return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('serial_number', function ($row) {
                     static $index = 0;
@@ -42,13 +41,12 @@ class UserController extends Controller
                 ->addColumn('created_at', function ($row) {
                     return $row->created_at;
                 })
-                // for edit action button
-                // <a href="' . url('edit-student/' . $row->id) . '">
-                //             <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
-                //             </lord-icon>
-                //         </a>
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
+                        <a href="' . url('users/edit-member/' . $row->id) . '">
+                            <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
+                            </lord-icon>
+                        </a>
                         <a href="javascript:;"  title="Delete" onclick="deleteConfirm(' . $row->id . ')">
                             <lord-icon src="https://cdn.lordicon.com/drxwpfop.json" trigger="hover" colors="primary:#ff0000,secondary:#ff0000" style="width:20px;height:20px">
                             </lord-icon>
@@ -60,12 +58,12 @@ class UserController extends Controller
                 ->make(true);
         }
 
-        return view('admin.user.list');
+        return view('admin.team_member.list');
     }
 
     public function create()
     {
-        return view('admin.user.add');
+        return view('admin.team_member.add');
     }
 
     public function store(Request $request)
@@ -82,6 +80,7 @@ class UserController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->number = $request->number;
+        $user->role_id = 4;
         $user->show_password = '12345678';
         $user->password = Hash::make('12345678');
         $user->email_verified_at = date('Y-m-d h:i:s');
@@ -96,17 +95,17 @@ class UserController extends Controller
 
         if ($user->save()) {
             Mail::to($user->email)->send(new UserWelcomeMail($user));
-            return redirect('users/list-student')->with('success_msg', 'User added successfully!!');
+            return redirect('users/list-member')->with('success_msg', 'User added successfully!!');
         } else {
-            return redirect('users/list-student')->with('error_msg', 'Something went wrong!!');
+            return redirect('users/list-member')->with('error_msg', 'Something went wrong!!');
         }
-        return redirect('users/list-student');
+        return redirect('users/list-member');
     }
 
     public function edit($id)
     {
-        $data['user'] = User::where('id', $id)->first();
-        return view('admin.user.edit', $data);
+        $data['member'] = User::where('id', $id)->first();
+        return view('admin.team_member.edit', $data);
     }
 
     /**
@@ -125,7 +124,7 @@ class UserController extends Controller
         $user = User::find($id);
 
         if (!$user) {
-            return redirect('users/list-student')->with('error_msg', 'User not found.');
+            return redirect('users/list-member')->with('error_msg', 'User not found.');
         }
 
         $user->name = $request->name;
@@ -149,18 +148,56 @@ class UserController extends Controller
         }
 
         if ($user->save()) {
-            return redirect('users/list-student')->with('success_msg', 'User updated successfully!');
+            return redirect('users/list-member')->with('success_msg', 'Member updated successfully!');
         } else {
-            return redirect('users/list-student')->with('error_msg', 'Something went wrong while updating user.');
+            return redirect('users/list-member')->with('error_msg', 'Something went wrong while updating member.');
         }
     }
 
 
+    // public function destroy(Request $request)
+    // {
+    //     $member = User::where('role_id', 4)->where('id', $request->id)->first();
+    //     if (!empty($member->profile_image)) {
+    //         $imagePath = public_path('profile_images/' . $member->profile_image);
+    //         if (file_exists($imagePath)) {
+    //             unlink($imagePath);
+    //         }
+    //         User::where('id', $request->id)->delete();
+    //         return response()->json(['success' => true, 'message' => 'Member deleted successfully.'], 200);
+    //     }else {
+    //         return response()->json(['success' => false, 'message' => 'Data not found.'], 404);
+    //     }
+    // }
     public function destroy(Request $request)
     {
-        $user = User::where('id', $request->id)->first();
-        $user->delete();
+        $request->validate([
+            'id' => 'required|exists:users,id',
+        ]);
 
-        return response()->json(['success' => true, 'message' => 'User deleted successfully.'], 200);
+        $member = User::where('role_id', 4)->where('id', $request->id)->first();
+
+        if (!$member) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Member not found.',
+            ], 404);
+        }
+
+        // Check and delete profile image if it exists
+        if (!empty($member->profile_image_path)) { // Using accessor
+            $imagePath = public_path($member->profile_image_path);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        // Delete the user
+        $member->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Member deleted successfully.',
+        ], 200);
     }
 }

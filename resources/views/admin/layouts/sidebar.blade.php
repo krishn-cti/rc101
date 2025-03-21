@@ -34,8 +34,29 @@
                         <a href="{{ url('list-sub-category') }}"><i class='bx bx-food-menu'></i> Sub Categories</a>
                     </li>
 
-                    <li class="menu-header-title {{ request()->is('list-user', 'add-user', 'edit-user/*') ? 'active' : '' }} ps-0">
-                        <a href="{{ url('list-user') }}"><i class='bx bx-group'></i>All Users</a>
+                    <li class="menu-header-title treeview ps-0 {{ request()->is('users/*') ? 'menu-open active' : '' }}">
+                        <a href="javascript:void(0)">
+                            <i class='bx bx-group'></i> <span>All Users</span>
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+
+                        @if(request()->is('users/*'))
+                        <ul class="treeview-menu" style="display: block;">
+                            @else
+                            <ul class="treeview-menu" style="display: none;">
+                                @endif
+                                <li class="menu-header-title {{ request()->is('users/list-student') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('users/list-student') }}"><i class='bx bx-user'></i> Students</a>
+                                </li>
+
+                                <li class="menu-header-title {{ request()->is('users/list-teacher') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('users/list-teacher') }}"><i class='bx bx-user'></i> Teachers</a>
+                                </li>
+                                <li class="menu-header-title {{ request()->is('users/list-member', 'users/member-add', 'users/member-edit/*') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('users/list-member') }}"><i class='bx bx-user'></i> Team Members</a>
+                                </li>
+
+                            </ul>
                     </li>
 
                     <li class="menu-header-title {{ request()->is('partner-list', 'partner-add', 'partner-edit/*') ? 'active' : '' }} ps-0">
@@ -137,7 +158,7 @@
                                             <li class="menu-header-title {{ request()->is('cms/knowledgebases/rcl-list', 'cms/knowledgebases/rcl-add', 'cms/knowledgebases/rcl-edit/*') ? 'active' : '' }} ps-0">
                                                 <a href="{{ url('cms/knowledgebases/rcl-list') }}"><i class='bx bx-file'></i> RCL</a>
                                             </li>
-                                            
+
                                             <li class="menu-header-title {{ request()->is('cms/knowledgebases/drive-system-list', 'cms/knowledgebases/drive-system-add', 'cms/knowledgebases/drive-system-edit/*') ? 'active' : '' }} ps-0">
                                                 <a href="{{ url('cms/knowledgebases/drive-system-list') }}"><i class='bx bx-file'></i> Drive Systems</a>
                                             </li>

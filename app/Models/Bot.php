@@ -48,4 +48,13 @@ class Bot extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'id')->select(['id', 'name']);
     }
+
+    public function getImageAttribute($value)
+    {
+        if ($value) {
+            return asset('cms_images/bots/' . $value);
+        } else {
+            return asset('admin/img/shop-img/no_image.png');
+        }
+    }
 }

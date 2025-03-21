@@ -353,16 +353,7 @@ class ContentManagementController extends Controller
                 'message' => 'No bot details found!',
             ], 200);
         }
-
-        // Append full image path to each bot
-        foreach ($bots as $bot) {
-            if ($bot->image) {
-                $bot->image = asset('cms_images/bots/' . $bot->image);
-            } else {
-                $bot->image = asset('admin/img/shop-img/no_image.png');
-            }
-        }
-
+        
         $response = [
             'success' => true,
             'message' => 'Bots retrieved successfully.',

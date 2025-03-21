@@ -21,7 +21,7 @@
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
                                     <h3 class="mb-0 ct_fs_22">Add User</h3>
-                                    <a href="{{url('list-user')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <a href="{{url('users/list-student')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
                                 <form action="{{url('save-user')}}" method="POST" id="addUser" enctype="multipart/form-data">
                                     @csrf

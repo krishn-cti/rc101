@@ -20,17 +20,17 @@
                                 @endif
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-0 ct_fs_22">Edit User</h3>
-                                    <a href="{{url('users/list-student')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <h3 class="mb-0 ct_fs_22">Edit Team Member</h3>
+                                    <a href="{{url('users/list-member')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('update-user')}}" method="POST" id="addUser" enctype="multipart/form-data">
+                                <form action="{{url('users/update-member')}}" method="POST" id="addUser" enctype="multipart/form-data">
                                     @csrf
-                                    <input type="hidden" name="id" value="{{$user->id}}">
+                                    <input type="hidden" name="id" value="{{$member->id}}">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
-                                                <label for="" class="mb-2">Name</label>
-                                                <input type="text" class="form-control ct_input" name="name" placeholder="Name" value="{{$user->name}}">
+                                                <label for="" class="mb-2">Team Name</label>
+                                                <input type="text" class="form-control ct_input" name="name" placeholder="Team Name" value="{{$member->name}}">
                                                 @error('name')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -39,7 +39,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
                                                 <label for="" class="mb-2">Email</label>
-                                                <input type="email" class="form-control ct_input" name="email" placeholder="Email" value="{{ $user->email}}">
+                                                <input type="email" class="form-control ct_input" name="email" placeholder="Email" value="{{ $member->email}}">
                                                 @error('email')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -48,7 +48,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
                                                 <label for="" class="mb-2">Number</label>
-                                                <input type="number" class="form-control ct_input" name="number" placeholder="Number" value="{{$user->number}}">
+                                                <input type="number" class="form-control ct_input" name="number" placeholder="Number" value="{{$member->number}}">
                                                 @error('number')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -61,7 +61,7 @@
 
                                                 <!-- Display Current or Default Profile Image -->
                                                 <div id="imagePreviewWrapper" class="mt-2" style="display: block;">
-                                                    <img id="imagePreview" src="{{ old('profile_image', $user->profile_image) }}" alt="Current Image" style="width: 100px; height: 100px; border-radius: 8px;">
+                                                    <img id="imagePreview" src="{{ old('profile_image', $member->profile_image) }}" alt="Current Image" style="width: 100px; height: 100px; border-radius: 8px;">
                                                 </div>
 
                                                 @error('profile_image')
@@ -102,14 +102,14 @@
             },
             messages: {
                 name: {
-                    required: "Please enter name.",
-                    maxlength: "The name must not exceed 100 characters.",
+                    required: "Please enter team name.",
+                    maxlength: "The team name must not exceed 100 characters.",
                 },
                 email: {
                     required: "Please enter your email address.",
                     email: "Please enter a valid email address.",
                 },
-                number: 'Please enter user mobile number.',
+                number: 'Please enter member mobile number.',
             },
 
             submitHandler: function(form) {

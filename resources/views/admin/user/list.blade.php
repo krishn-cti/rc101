@@ -9,11 +9,11 @@
                         <div class="card">
                             <div class="card-body">
                                 @if(Session::has('error_msg'))
-                                    <div class="alert alert-danger"> {{ Session::get('error_msg') }} </div>
+                                <div class="alert alert-danger"> {{ Session::get('error_msg') }} </div>
                                 @endif
-                    
+
                                 @if (Session::has('success_msg'))
-                                    <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
+                                <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
                                 @endif
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
                                     <h6 class="mb-0">All Users</h6>
@@ -21,14 +21,14 @@
                                         <button class="ct_custom_btn1 mx-auto">Add New User</button>
                                     </a> -->
                                 </div>
-                                <table class="table user-data-table table-responsive table-bordered table-hover mb-0" id="userTable">
+                                <table class="table student-data-table table-responsive table-bordered table-hover mb-0" id="userTable">
                                     <thead>
                                         <tr>
                                             <th>No</th>
                                             <th>Profile</th>
                                             <th>Name</th>
-                                            <th>Role</th>
                                             <th>Email</th>
+                                            <th>Registered On</th>
                                             <!-- <th>Number</th> -->
                                             <!-- <th width="100px">Action</th> -->
                                         </tr>
@@ -45,19 +45,33 @@
         </div>
     </div>
 </div>
-     
+
 <script type="text/javascript">
-    $(function () {  
-        var table = $('.user-data-table').DataTable({
+    $(function() {
+        var table = $('.student-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('list-user') }}",
-            columns: [
-                {data: 'serial_number', name: 'serial_number'}, // Change 'id' to 'serial_number'
-                {data: 'profile_image', name: 'profile_image'},
-                {data: 'name', name: 'name'},
-                {data: 'role', name: 'role'},
-                {data: 'email', name: 'email'},
+            ajax: "{{ url('users/list-student') }}",
+            columns: [{
+                    data: 'serial_number',
+                    name: 'serial_number'
+                }, // Change 'id' to 'serial_number'
+                {
+                    data: 'profile_image',
+                    name: 'profile_image'
+                },
+                {
+                    data: 'name',
+                    name: 'name'
+                },
+                {
+                    data: 'email',
+                    name: 'email'
+                },
+                {
+                    data: 'created_at',
+                    name: 'created_at'
+                },
                 // {data: 'number', name: 'number'},
                 // {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
@@ -112,6 +126,5 @@
             }
         });
     }
-
 </script>
 @endsection
