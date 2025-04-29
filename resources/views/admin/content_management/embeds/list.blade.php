@@ -29,6 +29,7 @@
                                                 <th>No</th>
                                                 <th>Title</th>
                                                 <th>Type(Doc/Slide)</th>
+                                                <th>Menu</th>
                                                 <th>Embed Link</th>
                                                 <th width="100px">Action</th>
                                             </tr>
@@ -64,6 +65,10 @@
                 {
                     data: 'type',
                     name: 'type'
+                },
+                {
+                    data: 'menu_type',
+                    name: 'menu_type'
                 },
                 {
                     data: 'embed_link',

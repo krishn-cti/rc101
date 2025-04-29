@@ -62,12 +62,14 @@ class EmbedController extends Controller
         $request->validate([
             'title' => 'required|string|max:150',
             'type' => 'required|in:doc,slide',
+            'menu_type' => 'required|in:lexicon,category,curriculum',
             'embed_link' => 'required|url',
         ]);
 
         $isInserted = Embed::insert([
             'title' => $request->title,
             'type' => $request->type,
+            'menu_type' => $request->menu_type,
             'embed_link' => $request->embed_link,
         ]);
 
@@ -104,6 +106,7 @@ class EmbedController extends Controller
             'id' => 'required', // Ensure an id is provided for updating
             'title' => 'required|string|max:150',
             'type' => 'required|in:doc,slide',
+            'menu_type' => 'required|in:lexicon,category,curriculum',
             'embed_link' => 'required|url',
         ]);
 
@@ -119,6 +122,7 @@ class EmbedController extends Controller
         $updateData = [
             'title' => $request->title,
             'type' => $request->type,
+            'menu_type' => $request->menu_type,
             'embed_link' => $request->embed_link,
         ];
 

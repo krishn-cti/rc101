@@ -52,11 +52,12 @@ class GoogleController extends Controller
                 'https://www.googleapis.com/auth/classroom.coursework.students',
                 'https://www.googleapis.com/auth/classroom.profile.emails',
                 'https://www.googleapis.com/auth/userinfo.profile',
-                'https://www.googleapis.com/auth/userinfo.email'
+                'https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/classroom.coursework.me'
             ])
             ->with([
                 'access_type' => 'offline',
-                'prompt' => 'select_account'
+                'prompt' => 'select_account',
             ])
             ->redirect();
     }

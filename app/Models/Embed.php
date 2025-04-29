@@ -25,6 +25,7 @@ class Embed extends Model
         'title',
         'embed_link',
         'type',
+        'menu_type',
         'created_at'
     ];
 }

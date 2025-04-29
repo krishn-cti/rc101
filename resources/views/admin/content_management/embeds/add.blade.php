@@ -50,6 +50,20 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
+                                                <label for="menu_type" class="mb-2">Select Menu Type</label>
+                                                <select name="menu_type" class="form-control ct_input">
+                                                    <option value="" disabled selected>Select Menu</option>
+                                                    <option value="lexicon" {{ old('menu_type') == 'lexicon' ? 'selected' : '' }}>Lexicon</option>
+                                                    <option value="category" {{ old('menu_type') == 'category' ? 'selected' : '' }}>Category</option>
+                                                    <option value="curriculum" {{ old('menu_type') == 'curriculum' ? 'selected' : '' }}>Curriculum</option>
+                                                </select>
+                                                @error('menu_type')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
                                                 <label for="embed_link" class="mb-2">Embed Link</label>
                                                 <input type="text" class="form-control ct_input" name="embed_link" placeholder="Embed Link" value="{{ old('embed_link')}}">
                                                 @error('embed_link')

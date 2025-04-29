@@ -22,17 +22,17 @@
                         <a href="{{ url('dashboard') }}"><i class='bx bxs-dashboard'></i> Dashboard</a>
                     </li>
 
-                    <li class="menu-header-title {{ request()->is('list-product', 'add-product', 'edit-product/*') ? 'active' : '' }} ps-0">
+                    <!-- <li class="menu-header-title {{ request()->is('list-product', 'add-product', 'edit-product/*') ? 'active' : '' }} ps-0">
                         <a href="{{ url('list-product') }}"><i class='bx bxl-product-hunt'></i> Products</a>
-                    </li>
+                    </li> -->
 
-                    <li class="menu-header-title {{ request()->is('list-category', 'add-category', 'edit-category/*') ? 'active' : '' }} ps-0">
+                    <!-- <li class="menu-header-title {{ request()->is('list-category', 'add-category', 'edit-category/*') ? 'active' : '' }} ps-0">
                         <a href="{{ url('list-category') }}"><i class='bx bx-notepad'></i> Categories</a>
                     </li>
 
                     <li class="menu-header-title {{ request()->is('list-sub-category', 'add-sub-category', 'edit-sub-category/*') ? 'active' : '' }} ps-0">
                         <a href="{{ url('list-sub-category') }}"><i class='bx bx-food-menu'></i> Sub Categories</a>
-                    </li>
+                    </li> -->
 
                     <li class="menu-header-title treeview ps-0 {{ request()->is('users/*') ? 'menu-open active' : '' }}">
                         <a href="javascript:void(0)">
@@ -67,9 +67,9 @@
                         <a href="{{ url('subscription-list') }}"><i class='bx bx-credit-card'></i> Subscriptions</a>
                     </li>
 
-                    <li class="menu-header-title {{ request()->is('list-order') ? 'active' : '' }} ps-0">
+                    <!-- <li class="menu-header-title {{ request()->is('list-order') ? 'active' : '' }} ps-0">
                         <a href="{{ url('list-order') }}"><i class='bx bx-receipt'></i> Orders</a>
-                    </li>
+                    </li> -->
 
                     <li class="menu-header-title treeview ps-0 {{ request()->is('cms/*') ? 'menu-open active' : '' }}">
                         <a href="javascript:void(0)">
@@ -99,7 +99,7 @@
                                 </li>
 
                                 <!-- Menu for Knowledgebase starts -->
-                                <li class="menu-header-title treeview ps-0 {{ request()->is('cms/knowledgebases/*') ? 'menu-open active' : '' }}">
+                                <!-- <li class="menu-header-title treeview ps-0 {{ request()->is('cms/knowledgebases/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
                                         <i class='bx bx-file'></i> <span>Knowledgebase</span>
                                         <i class="fa fa-angle-right"></i>
@@ -178,9 +178,9 @@
                                                 <a href="{{ url('cms/knowledgebases/weapon-system-list') }}"><i class='bx bx-file'></i> Weapon Systems</a>
                                             </li>
                                         </ul>
-                                </li>
+                                </li> -->
 
-                                <li class="menu-header-title treeview ps-0 {{ request()->is('cms/league', 'cms/tournament-list', 'cms/tournament-add', 'cms/tournament-edit/*', 'cms/presentation-list', 'cms/presentation-add', 'cms/presentation-edit/*') ? 'menu-open active' : '' }}">
+                                <!-- <li class="menu-header-title treeview ps-0 {{ request()->is('cms/league', 'cms/tournament-list', 'cms/tournament-add', 'cms/tournament-edit/*', 'cms/presentation-list', 'cms/presentation-add', 'cms/presentation-edit/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
                                         <i class='bx bx-trophy'></i> <span>League/Tournament</span>
                                         <i class="fa fa-angle-right"></i>
@@ -201,9 +201,9 @@
                                                 <a href="{{ url('cms/presentation-list') }}"><i class='bx bx-slideshow'></i> Presentations</a>
                                             </li>
                                         </ul>
-                                </li>
+                                </li> -->
 
-                                <li class="menu-header-title treeview ps-0 {{ request()->is('cms/lessons/*') ? 'menu-open active' : '' }}">
+                                <!-- <li class="menu-header-title treeview ps-0 {{ request()->is('cms/lessons/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
                                         <i class='bx bxs-file-plus'></i> <span>Lessons</span>
                                         <i class="fa fa-angle-right"></i>
@@ -263,7 +263,7 @@
                                                 <a href="{{ url('cms/lessons/weapon-physics-list') }}"><i class='bx bx-target-lock'></i> Weapon Physics</a>
                                             </li>
                                         </ul>
-                                </li>
+                                </li> -->
 
                                 <li class="menu-header-title treeview ps-0 {{ request()->is('cms/weight-classes/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
@@ -300,12 +300,12 @@
                                         </ul>
                                 </li>
 
-                                <li class="menu-header-title {{ request()->is('cms/weight-class-list', 'cms/weight-class-add', 'cms/weight-class-edit/*') ? 'active' : '' }} ps-0">
+                                <!-- <li class="menu-header-title {{ request()->is('cms/weight-class-list', 'cms/weight-class-add', 'cms/weight-class-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/weight-class-list') }}"><i class='bx bx-slider-alt'></i> Weight Class/Restrictions</a>
-                                </li>
-                                <li class="menu-header-title {{ request()->is('cms/league-rule-list', 'cms/league-rule-add', 'cms/league-rule-edit/*') ? 'active' : '' }} ps-0">
+                                </li> -->
+                                <!-- <li class="menu-header-title {{ request()->is('cms/league-rule-list', 'cms/league-rule-add', 'cms/league-rule-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/league-rule-list') }}"><i class="bx bx-task"></i> League Rules</a>
-                                </li>
+                                </li> -->
                                 <li class="menu-header-title {{ request()->is('cms/event-coverage-list', 'cms/event-coverage-add', 'cms/event-coverage-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/event-coverage-list') }}"><i class="bx bx-calendar-event"></i> Event Coverage/Results</a>
                                 </li>
