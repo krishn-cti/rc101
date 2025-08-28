@@ -26,8 +26,8 @@
                         <a href="{{ url('list-product') }}"><i class='bx bxl-product-hunt'></i> Products</a>
                     </li> -->
 
-                    <!-- <li class="menu-header-title {{ request()->is('list-category', 'add-category', 'edit-category/*') ? 'active' : '' }} ps-0">
-                        <a href="{{ url('list-category') }}"><i class='bx bx-notepad'></i> Categories</a>
+                    <!-- <li class="menu-header-title {{ request()->is('category-list', 'category-add', 'category-edit/*') ? 'active' : '' }} ps-0">
+                        <a href="{{ url('category-list') }}"><i class='bx bx-notepad'></i> Categories</a>
                     </li>
 
                     <li class="menu-header-title {{ request()->is('list-sub-category', 'add-sub-category', 'edit-sub-category/*') ? 'active' : '' }} ps-0">
@@ -59,8 +59,36 @@
                             </ul>
                     </li>
 
+                    <li class="menu-header-title {{ request()->is('bot-list', 'bot-add', 'bot-edit/*') ? 'active' : '' }} ps-0">
+                        <a href="{{ url('bot-list') }}"><i class='bx bx-bot'></i> Bots</a>
+                    </li>
+
                     <li class="menu-header-title {{ request()->is('partner-list', 'partner-add', 'partner-edit/*') ? 'active' : '' }} ps-0">
                         <a href="{{ url('partner-list') }}"><i class='bx bx-buildings'></i> Partners</a>
+                    </li>
+
+                    <!-- <li class="menu-header-title {{ request()->is('curriculums-list', 'curriculums-add', 'curriculums-edit/*') ? 'active' : '' }} ps-0">
+                        <a href="{{ url('curriculums-list') }}"><i class='bx bx-buildings'></i> Curriculums</a>
+                    </li> -->
+
+                    <li class="menu-header-title treeview ps-0 {{ request()->is('curriculums/*') ? 'menu-open active' : '' }}">
+                        <a href="javascript:void(0)">
+                            <i class='bx bx-group'></i> <span>Curriculums</span>
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+
+                        @if(request()->is('curriculums/*'))
+                        <ul class="treeview-menu" style="display: block;">
+                            @else
+                            <ul class="treeview-menu" style="display: none;">
+                                @endif
+                                <li class="menu-header-title {{ request()->is('curriculums/unit-list', 'curriculums/unit-add', 'curriculums/unit-edit/*') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('curriculums/unit-list') }}"><i class='bx bx-buildings'></i> Curriculum Lessons</a>
+                                </li>
+                                <li class="menu-header-title {{ request()->is('curriculums/category-list', 'curriculums/category-add', 'curriculums/category-edit/*') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('curriculums/category-list') }}"><i class='bx bx-file'></i> Unit Categories</a>
+                                </li>
+                            </ul>
                     </li>
 
                     <li class="menu-header-title {{ request()->is('subscription-list', 'subscription-add', 'subscription-edit/*') ? 'active' : '' }} ps-0">
@@ -70,6 +98,10 @@
                     <!-- <li class="menu-header-title {{ request()->is('list-order') ? 'active' : '' }} ps-0">
                         <a href="{{ url('list-order') }}"><i class='bx bx-receipt'></i> Orders</a>
                     </li> -->
+                    
+                    <li class="menu-header-title {{ request()->is('list-subscriber') ? 'active' : '' }} ps-0">
+                        <a href="{{ url('list-subscriber') }}"><i class='bx bx-receipt'></i> Subscribers</a>
+                    </li>
 
                     <li class="menu-header-title treeview ps-0 {{ request()->is('cms/*') ? 'menu-open active' : '' }}">
                         <a href="javascript:void(0)">
@@ -83,19 +115,19 @@
                             <ul class="treeview-menu" style="display: none;">
                                 @endif
                                 <li class="menu-header-title {{ request()->is('cms/embeds-list', 'cms/embeds-add', 'cms/embeds-edit/*') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/embeds-list') }}"><i class='bx bx-file'></i> Embeded Docs/Sildes</a>
+                                    <a href="{{ url('cms/embeds-list') }}"><i class='bx bx-file'></i> Knowledgebase Articles</a>
                                 </li>
 
                                 <li class="menu-header-title {{ request()->is('cms/home') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/home') }}"><i class='bx bx-home'></i> Home</a>
                                 </li>
 
-                                <li class="menu-header-title {{ request()->is('cms/about') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/about') }}"><i class='bx bx-info-circle'></i> About</a>
+                                <li class="menu-header-title {{ request()->is('cms/media-content-list', 'cms/media-content-add', 'cms/media-content-edit/*') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('cms/media-content-list') }}"><i class="bx bx-video"></i> Media Contents</a>
                                 </li>
 
-                                <li class="menu-header-title {{ request()->is('cms/bot-list', 'cms/bot-add', 'cms/bot-edit/*') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('cms/bot-list') }}"><i class='bx bx-bot'></i> Bots</a>
+                                <li class="menu-header-title {{ request()->is('cms/about') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('cms/about') }}"><i class='bx bx-info-circle'></i> About</a>
                                 </li>
 
                                 <!-- Menu for Knowledgebase starts -->
@@ -265,7 +297,8 @@
                                         </ul>
                                 </li> -->
 
-                                <li class="menu-header-title treeview ps-0 {{ request()->is('cms/weight-classes/*') ? 'menu-open active' : '' }}">
+                                <!-- commented on 13-05-2025 -->
+                                <!-- <li class="menu-header-title treeview ps-0 {{ request()->is('cms/weight-classes/*') ? 'menu-open active' : '' }}">
                                     <a href="javascript:void(0)">
                                         <i class='bx bx-slider'></i> <span>Weight Classes</span>
                                         <i class="fa fa-angle-right"></i>
@@ -298,7 +331,7 @@
                                                 <a href="{{ url('cms/weight-classes/sportsman-list') }}"><i class='bx bx-run'></i> Sportsmans (30lb.)</a>
                                             </li>
                                         </ul>
-                                </li>
+                                </li> -->
 
                                 <!-- <li class="menu-header-title {{ request()->is('cms/weight-class-list', 'cms/weight-class-add', 'cms/weight-class-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/weight-class-list') }}"><i class='bx bx-slider-alt'></i> Weight Class/Restrictions</a>
@@ -309,9 +342,11 @@
                                 <li class="menu-header-title {{ request()->is('cms/event-coverage-list', 'cms/event-coverage-add', 'cms/event-coverage-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/event-coverage-list') }}"><i class="bx bx-calendar-event"></i> Event Coverage/Results</a>
                                 </li>
-                                <li class="menu-header-title {{ request()->is('cms/tools-trade-list', 'cms/tools-trade-add', 'cms/tools-trade-edit/*') ? 'active' : '' }} ps-0">
+
+                                <!-- commented on 13-05-2025 -->
+                                <!-- <li class="menu-header-title {{ request()->is('cms/tools-trade-list', 'cms/tools-trade-add', 'cms/tools-trade-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/tools-trade-list') }}"><i class="bx bx-wrench"></i> Tools of the Trade</a>
-                                </li>
+                                </li> -->
                                 <li class="menu-header-title {{ request()->is('cms/service-list', 'cms/service-add', 'cms/service-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('cms/service-list') }}"><i class='bx bxs-offer'></i> Services</a>
                                 </li>

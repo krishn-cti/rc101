@@ -16,23 +16,19 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Bots</h6>
-                                    <a href="{{ url('bot-add') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Bot</button>
+                                    <h6 class="mb-0">All Media Contents</h6>
+                                    <a href="{{ url('cms/media-content-add') }}">
+                                        <button class="ct_custom_btn1 mx-auto">Add New Media Content</button>
                                     </a>
                                 </div>
 
-                                <table class="table bot-data-table table-responsive table-bordered table-hover mb-0" id="botTable">
+                                <table class="table media-content-data-table table-responsive table-bordered table-hover mb-0" id="mediaContentTable">
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
+                                            <th>Title</th>
                                             <th>Type</th>
-                                            <th>Design Type</th>
-                                            <th>Weight Class</th>
-                                            <th>Start Date</th>
-                                            <th>Created By</th>
+                                            <th>Link</th>
                                             <th width="100px">Action</th>
                                         </tr>
                                     </thead>
@@ -51,41 +47,25 @@
 
 <script type="text/javascript">
     $(function() {
-        var table = $('.bot-data-table').DataTable({
+        var table = $('.media-content-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('bot-list') }}",
+            ajax: "{{ url('cms/media-content-list') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
                 }, // Change 'id' to 'serial_number'
                 {
-                    data: 'image',
-                    name: 'image'
+                    data: 'title',
+                    name: 'title'
                 },
                 {
-                    data: 'name',
-                    name: 'name'
+                    data: 'type',
+                    name: 'type'
                 },
                 {
-                    data: 'bot_type',
-                    name: 'bot_type'
-                },
-                {
-                    data: 'design_type',
-                    name: 'design_type'
-                },
-                {
-                    data: 'weight_class',
-                    name: 'weight_class'
-                },
-                {
-                    data: 'start_date',
-                    name: 'start_date'
-                },
-                {
-                    data: 'created_by',
-                    name: 'created_by'
+                    data: 'link',
+                    name: 'link'
                 },
                 {
                     data: 'action',
@@ -115,7 +95,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('bot-delete') }}",
+                        url: "{{ url('cms/media-content-delete') }}",
                         type: "POST",
                         cache: false,
                         data: {
@@ -127,7 +107,7 @@
                                 toastr.error(response.error);
                             } else {
                                 toastr.success(response.message);
-                                $('#botTable').DataTable().ajax.reload(null, false);
+                                $('#mediaContentTable').DataTable().ajax.reload(null, false);
                             }
                         },
                         error: function(xhr, textStatus, errorThrown) {

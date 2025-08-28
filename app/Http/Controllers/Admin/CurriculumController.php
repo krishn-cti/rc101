@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Admin\CMS;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Embed;
+use App\Models\Category;
+use App\Models\Curriculum;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
-class EmbedController extends Controller
+class CurriculumController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +16,7 @@ class EmbedController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Embed::orderBy('title', 'ASC')->get();
+            $data = Curriculum::with('category')->orderBy('id', 'DESC')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('serial_number', function ($row) {
@@ -25,18 +26,26 @@ class EmbedController extends Controller
                 ->addColumn('embed_link', function ($row) {
                     return '<span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span>';
                 })
-                ->addColumn('menu_type', function ($row) {
+                ->addColumn('file_type', function ($row) {
                     $types = [
-                        'lexicon' => 'Lexicon',
-                        'weight_classes' => 'Weight Classes',
-                        'tools_of_trades' => 'Tools of the Trade',
+                        'slide_decks' => 'Slide Decks',
+                        'student_pages' => 'Student Pages',
+                        'instructions' => 'Instructions',
+                        'samples' => 'Samples',
                     ];
-                
-                    return $types[$row->menu_type] ?? ucfirst(str_replace('_', ' ', $row->menu_type));
+
+                    return $types[$row->file_type] ?? ucfirst(str_replace('_', ' ', $row->file_type));
+                })
+                // ->addColumn('category', function ($row) {
+                //     return $row->category ?? ucfirst($row->category->category_name);
+                // })
+
+                ->addColumn('category', function ($row) {
+                    return $row->category ? ucfirst($row->category->category_name) : '#N/A';
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
-                        <a href="' . url('cms/embeds-edit/' . $row->id) . '">
+                        <a href="' . url('curriculums/unit-edit/' . $row->id) . '">
                                         <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
                                         </lord-icon>
                                     </a>
@@ -48,11 +57,11 @@ class EmbedController extends Controller
                      </div>';
                     return $btn;
                 })
-                ->rawColumns(['embed_link', 'action'])
+                ->rawColumns(['embed_link', 'category', 'action'])
                 ->make(true);
         }
 
-        return view('admin.content_management.embeds.list');
+        return view('admin.curriculums.list');
     }
 
     /**
@@ -60,7 +69,8 @@ class EmbedController extends Controller
      */
     public function create()
     {
-        return view('admin.content_management.embeds.add');
+        $data['categoryData'] = Category::all();
+        return view('admin.curriculums.add', $data);
     }
 
     /**
@@ -69,23 +79,25 @@ class EmbedController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'category_id' => 'required|numeric',
             'title' => 'required|string|max:150',
             'type' => 'required|in:doc,slide',
-            'menu_type' => 'required|in:lexicon,weight_classes,tools_of_trades',
+            'file_type' => 'required|in:slide_decks,student_pages,instructions,samples',
             'embed_link' => 'required|url',
         ]);
 
-        $isInserted = Embed::insert([
+        $isInserted = Curriculum::insert([
             'title' => $request->title,
+            'category_id' => $request->category_id,
             'type' => $request->type,
-            'menu_type' => $request->menu_type,
+            'file_type' => $request->file_type,
             'embed_link' => $request->embed_link,
         ]);
 
         if ($isInserted) {
-            return redirect('cms/embeds-list')->with('success_msg', 'Data added successfully!');
+            return redirect('curriculums/unit-list')->with('success_msg', 'Data added successfully!');
         } else {
-            return redirect('cms/embeds-list')->with('error_msg', 'Something went wrong!');
+            return redirect('curriculums/unit-list')->with('error_msg', 'Something went wrong!');
         }
     }
 
@@ -102,8 +114,9 @@ class EmbedController extends Controller
      */
     public function edit(string $id)
     {
-        $data['embedsData'] = Embed::where('id', $id)->first();
-        return view('admin.content_management.embeds.edit', $data);
+        $data['categoryData'] = Category::get();
+        $data['curriculumsData'] = Curriculum::where('id', $id)->first();
+        return view('admin.curriculums.edit', $data);
     }
 
     /**
@@ -113,35 +126,37 @@ class EmbedController extends Controller
     {
         $request->validate([
             'id' => 'required', // Ensure an id is provided for updating
+            'category_id' => 'required|numeric',
             'title' => 'required|string|max:150',
             'type' => 'required|in:doc,slide',
-            'menu_type' => 'required|in:lexicon,weight_classes,tools_of_trades',
+            'file_type' => 'required|in:slide_decks,student_pages,instructions,samples',
             'embed_link' => 'required|url',
         ]);
 
         $id = $request->id;
 
         // Check if the provided id exists
-        $existingData = Embed::where('id', $id)->first();
+        $existingData = Curriculum::where('id', $id)->first();
         if (!$existingData) {
-            return redirect('cms/embeds-list')->with('error_msg', 'Data not found.');
+            return redirect('curriculums/unit-list')->with('error_msg', 'Data not found.');
         }
 
         // Update fields
         $updateData = [
             'title' => $request->title,
+            'category_id' => $request->category_id,
             'type' => $request->type,
-            'menu_type' => $request->menu_type,
+            'file_type' => $request->file_type,
             'embed_link' => $request->embed_link,
         ];
 
         // Perform the update
-        $isUpdated = Embed::where('id', $id)->update($updateData);
+        $isUpdated = Curriculum::where('id', $id)->update($updateData);
 
         if ($isUpdated) {
-            return redirect('cms/embeds-list')->with('success_msg', 'Data updated successfully!');
+            return redirect('curriculums/unit-list')->with('success_msg', 'Data updated successfully!');
         } else {
-            return redirect('cms/embeds-list')->with('error_msg', 'Failed to update data.');
+            return redirect('curriculums/unit-list')->with('error_msg', 'Failed to update data.');
         }
     }
 
@@ -150,10 +165,10 @@ class EmbedController extends Controller
      */
     public function destroy(Request $request)
     {
-        $result = Embed::where('id', $request->id)->first();
+        $result = Curriculum::where('id', $request->id)->first();
 
         if ($result) {
-            Embed::where('id', $request->id)->delete();
+            Curriculum::where('id', $request->id)->delete();
             return response()->json(['success' => true, 'message' => 'Data deleted successfully.'], 200);
         } else {
             return response()->json(['success' => false, 'message' => 'Data not found.'], 404);

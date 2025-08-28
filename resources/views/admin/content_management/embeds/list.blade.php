@@ -16,9 +16,9 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Embeded Docs/Slides</h6>
+                                    <h6 class="mb-0">All Knowledgebase Articles</h6>
                                     <a href="{{ url('cms/embeds-add') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Embeded Docs/Slides</button>
+                                        <button class="ct_custom_btn1 mx-auto">Add New Knowledgebase Article</button>
                                     </a>
                                 </div>
 

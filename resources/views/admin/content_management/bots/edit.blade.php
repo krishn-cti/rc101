@@ -21,9 +21,9 @@
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
                                     <h3 class="mb-0 ct_fs_22">Edit Bot's Detail</h3>
-                                    <a href="{{url('cms/bot-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <a href="{{url('bot-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('cms/bot-update')}}" method="POST" id="editBot" enctype="multipart/form-data">
+                                <form action="{{url('bot-update')}}" method="POST" id="editBot" enctype="multipart/form-data">
                                     <input type="hidden" name="id" value="{{$botData->id}}">
                                     @csrf
                                     <div class="row">

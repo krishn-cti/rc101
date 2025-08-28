@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Carbon;
 use App\Models\Product;
 use App\Models\Order;
+use App\Models\Subscription;
 use App\Models\User;
+use App\Models\UserSubscription;
 
 class AdminController extends Controller
 {
@@ -54,42 +56,117 @@ class AdminController extends Controller
         $today = Carbon::today();
         $currentDate = Carbon::now();
 
-        $data['totalProduct'] = Product::count();
+        $data['totalSubscription'] = Subscription::count();
         $data['totalUser'] = User::whereNotNull('google_id')->count();
-        $data['totalOrder'] = Order::count();
-        $data['totalTodaySales'] = str_replace('.00', '', number_format(
-            Order::whereDate('created_at', $today)
-                ->where('status', 1)
-                ->sum('total_price'),
-            2,
-            '.',
-            ''
-        ));
+        $data['totalSubscriber'] = UserSubscription::count();
+        $total = UserSubscription::with('subscription')
+            ->whereDate('created_at', $today)
+            // ->where('status', 1)
+            ->get()
+            ->sum(function ($item) {
+                if (!$item->subscription) return 0;
 
+                return $item->type === 'monthly'
+                    ? $item->subscription->monthly_price
+                    : $item->subscription->yearly_price;
+            });
+
+        $data['totalTodaySales'] = str_replace('.00', '', number_format($total, 2, '.', ''));
+
+        // This month's total sales
         $data['totalThisMonthSales'] = str_replace('.00', '', number_format(
-            Order::whereYear('created_at', $currentDate->year)
+            UserSubscription::with('subscription')
+                ->whereYear('created_at', $currentDate->year)
                 ->whereMonth('created_at', $currentDate->month)
-                ->where('status', 1)->sum('total_price'),
+                // ->where('status', 1)
+                ->get()
+                ->sum(function ($item) {
+                    if (!$item->subscription) return 0;
+                    return $item->type === 'monthly'
+                        ? $item->subscription->monthly_price
+                        : $item->subscription->yearly_price;
+                }),
             2,
             '.',
             ''
         ));
-        $data['totalOverAllSales'] = str_replace('.00', '', number_format(Order::where('status', 1)->sum('total_price'), 2, '.', ''));
 
+        // Overall total sales
+        $data['totalOverAllSales'] = str_replace('.00', '', number_format(
+            UserSubscription::with('subscription')
+                // ->where('status', 1)
+                ->get()
+                ->sum(function ($item) {
+                    if (!$item->subscription) return 0;
+                    return $item->type === 'monthly'
+                        ? $item->subscription->monthly_price
+                        : $item->subscription->yearly_price;
+                }),
+            2,
+            '.',
+            ''
+        ));
+
+        // Sales for the last 12 months
         $totalSalesLastOneYear = [];
         $currentDate->startOfMonth();
 
         for ($i = 0; $i <= 11; $i++) {
             $date = $currentDate->copy()->subMonths($i);
-            $totalSales = Order::whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
-                ->where('status', 1)->sum('total_price');
 
-            $formattedTotalSales = str_replace('.00', '', number_format($totalSales, 2, '.', ''));
-            $totalSalesLastOneYear[$date->format('M-y')] = $formattedTotalSales;
+            $monthlyTotal = UserSubscription::with('subscription')
+                ->whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                // ->where('status', 1)
+                ->get()
+                ->sum(function ($item) {
+                    if (!$item->subscription) return 0;
+                    return $item->type === 'monthly'
+                        ? $item->subscription->monthly_price
+                        : $item->subscription->yearly_price;
+                });
+
+            $formattedMonthly = str_replace('.00', '', number_format($monthlyTotal, 2, '.', ''));
+            $totalSalesLastOneYear[$date->format('M-y')] = $formattedMonthly;
         }
 
         $data['totalSalesLastOneYear'] = array_reverse($totalSalesLastOneYear);
+
+
+
+        // $data['totalTodaySales'] = str_replace('.00', '', number_format(
+        //     Order::whereDate('created_at', $today)
+        //         ->where('status', 1)
+        //         ->sum('total_price'),
+        //     2,
+        //     '.',
+        //     ''
+        // ));
+
+        // $data['totalThisMonthSales'] = str_replace('.00', '', number_format(
+        //     Order::whereYear('created_at', $currentDate->year)
+        //         ->whereMonth('created_at', $currentDate->month)
+        //         ->where('status', 1)->sum('total_price'),
+        //     2,
+        //     '.',
+        //     ''
+        // ));
+        // $data['totalOverAllSales'] = str_replace('.00', '', number_format(Order::where('status', 1)->sum('total_price'), 2, '.', ''));
+
+        // $totalSalesLastOneYear = [];
+        // $currentDate->startOfMonth();
+
+        // for ($i = 0; $i <= 11; $i++) {
+        //     $date = $currentDate->copy()->subMonths($i);
+        //     $totalSales = Order::whereYear('created_at', $date->year)
+        //         ->whereMonth('created_at', $date->month)
+        //         ->where('status', 1)->sum('total_price');
+
+        //     $formattedTotalSales = str_replace('.00', '', number_format($totalSales, 2, '.', ''));
+        //     $totalSalesLastOneYear[$date->format('M-y')] = $formattedTotalSales;
+        // }
+
+        // $data['totalSalesLastOneYear'] = array_reverse($totalSalesLastOneYear);
 
         return view('admin.dashboard', $data);
     }

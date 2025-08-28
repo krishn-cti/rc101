@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\CMS;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
+use App\Models\UserSubscription;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -29,10 +30,10 @@ class SubscriptionController extends Controller
                         : $plainText;
                 })
                 ->addColumn('monthly_price', function ($row) {
-                    return "$ ".$row->monthly_price;
+                    return "$ " . $row->monthly_price;
                 })
                 ->addColumn('yearly_price', function ($row) {
-                    return "$ ".$row->yearly_price;
+                    return "$ " . $row->yearly_price;
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
@@ -162,5 +163,50 @@ class SubscriptionController extends Controller
         } else {
             return response()->json(['success' => false, 'message' => 'Data not found.'], 404);
         }
+    }
+
+    /**
+     * Get the list of all subscribers from storage.
+     */
+    public function listSubscriber(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = UserSubscription::with(['subscription', 'user'])->orderBy('id', 'DESC')->get();
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('serial_number', function ($row) {
+                    static $index = 0;
+                    return ++$index;
+                })
+                ->addColumn('user_name', function ($row) {
+                    return $row->user->name;
+                })
+                ->addColumn('subscription_name', function ($row) {
+                    return $row->subscription->name;
+                })
+                ->addColumn('type', function ($row) {
+                    return $row->type;
+                })
+                ->addColumn('start_date', function ($row) {
+                    return $row->start_date;
+                })
+                ->addColumn('end_date', function ($row) {
+                    return $row->end_date;
+                })
+                ->addColumn('amount', function ($row) {
+                    return "$ " . ($row->type == "monthly" ? $row->subscription->monthly_price : $row->subscription->yearly_price);
+                })
+                ->addColumn('status', function ($row) {
+                    if ($row->end_date > date('Y-m-d')) {
+                        return '<span style="color:green; font-weight:bold;">Active</span>';
+                    } else {
+                        return '<span style="color:red; font-weight:bold;">Expired</span>';
+                    }
+                })
+                ->rawColumns(['user_name', 'subscription_name', 'amount', 'status'])
+                ->make(true);
+        }
+
+        return view('admin.content_management.subscribers.list');
     }
 }

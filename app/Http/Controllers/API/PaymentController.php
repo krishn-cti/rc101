@@ -12,7 +12,24 @@ use App\Models\UserSubscription;
 
 class PaymentController extends Controller
 {
-    // API to get subscription plans
+    // API to get subscription plans without login
+    public function getAllSubscription(Request $request)
+    {
+        $subscriptions = Subscription::all();
+
+        if ($subscriptions->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No subscriptions available.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'subscriptions' => $subscriptions
+        ]);
+    }
+
     public function getSubscriptions(Request $request)
     {
         $accessToken = $request->bearerToken();

@@ -16,24 +16,23 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Bots</h6>
-                                    <a href="{{ url('bot-add') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Bot</button>
-                                    </a>
+                                    <h6 class="mb-0">All Subscribers</h6>
+                                    <!-- <a href="{{ url('subscription-add') }}">
+                                        <button class="ct_custom_btn1 mx-auto">Add New Plan</button>
+                                    </a> -->
                                 </div>
 
-                                <table class="table bot-data-table table-responsive table-bordered table-hover mb-0" id="botTable">
+                                <table class="table subscriber-data-table table-responsive table-bordered table-hover mb-0" id="nhrlTable">
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
+                                            <th>Subscriber</th>
+                                            <th>Plan</th>
                                             <th>Type</th>
-                                            <th>Design Type</th>
-                                            <th>Weight Class</th>
+                                            <th>Amount</th>
                                             <th>Start Date</th>
-                                            <th>Created By</th>
-                                            <th width="100px">Action</th>
+                                            <th>End Date</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -51,53 +50,47 @@
 
 <script type="text/javascript">
     $(function() {
-        var table = $('.bot-data-table').DataTable({
+        var table = $('.subscriber-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('bot-list') }}",
+            ajax: "{{ url('list-subscriber') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
                 }, // Change 'id' to 'serial_number'
                 {
-                    data: 'image',
-                    name: 'image'
+                    data: 'user_name',
+                    name: 'user_name'
                 },
                 {
-                    data: 'name',
-                    name: 'name'
+                    data: 'subscription_name',
+                    name: 'subscription_name'
                 },
                 {
-                    data: 'bot_type',
-                    name: 'bot_type'
+                    data: 'type',
+                    name: 'type'
                 },
                 {
-                    data: 'design_type',
-                    name: 'design_type'
-                },
-                {
-                    data: 'weight_class',
-                    name: 'weight_class'
+                    data: 'amount',
+                    name: 'amount',
                 },
                 {
                     data: 'start_date',
                     name: 'start_date'
                 },
                 {
-                    data: 'created_by',
-                    name: 'created_by'
+                    data: 'end_date',
+                    name: 'end_date'
                 },
                 {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
+                    data: 'status',
+                    name: 'status'
                 },
             ]
         });
     });
 </script>
-<script>
+<!-- <script>
     function deleteConfirm(id) {
         bootbox.confirm({
             closeButton: false,
@@ -115,7 +108,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('bot-delete') }}",
+                        url: "{{ url('subscription-delete') }}",
                         type: "POST",
                         cache: false,
                         data: {
@@ -127,7 +120,7 @@
                                 toastr.error(response.error);
                             } else {
                                 toastr.success(response.message);
-                                $('#botTable').DataTable().ajax.reload(null, false);
+                                $('#nhrlTable').DataTable().ajax.reload(null, false);
                             }
                         },
                         error: function(xhr, textStatus, errorThrown) {
@@ -145,5 +138,5 @@
             }
         });
     }
-</script>
+</script> -->
 @endsection

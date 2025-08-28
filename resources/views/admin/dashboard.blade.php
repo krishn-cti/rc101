@@ -42,8 +42,8 @@
                                             </lord-icon>
                                         </div>
                                         <div class="widget-desc">
-                                            <h3 class="text-center">{{ $totalProduct }}</h3>
-                                            <h5><a href="{{url('list-product');}}">Total Products</a></h5>
+                                            <h3 class="text-center">{{ $totalSubscription }}</h3>
+                                            <h5><a href="{{url('subscription-list');}}">Total Plans</a></h5>
                                         </div>
                                     </div>
 
@@ -92,8 +92,8 @@
 
                                         </div>
                                         <div class="widget-desc">
-                                            <h3 class="text-center">{{ $totalOrder }}</h3>
-                                            <h5><a href="{{url('list-order');}}">All Orders</a></h5>
+                                            <h3 class="text-center">{{ $totalSubscriber }}</h3>
+                                            <h5><a href="{{url('list-subscriber');}}">All Subscribers</a></h5>
                                         </div>
                                     </div>
 
@@ -117,7 +117,7 @@
                                         </div>
                                         <div class="widget-desc">
                                             <h3 class="text-center">${{ $totalOverAllSales }}</h3>
-                                            <h5><a href="{{url('list-order');}}">Total Sales</a></h5>
+                                            <h5><a href="{{url('list-subscriber');}}">Total Sales</a></h5>
 
                                         </div>
                                     </div>

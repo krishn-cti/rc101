@@ -20,10 +20,10 @@
                                 @endif
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-0 ct_fs_22">Edit Categories</h3>
-                                    <a href="{{url('list-category')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <h3 class="mb-0 ct_fs_22">Edit Unit Categories</h3>
+                                    <a href="{{url('curriculums/category-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('update-category')}}" method="POST" id="editCategory" enctype="multipart/form-data">
+                                <form action="{{url('curriculums/category-update')}}" method="POST" id="editCategory" enctype="multipart/form-data">
                                     <input type="hidden" name="id" value="{{$category->id}}">
                                     @csrf
                                     <div class="row">

@@ -48,10 +48,17 @@ Route::prefix('google-classroom')->group(function () {
         Route::get('list-courses', [GoogleClassroomController::class, 'listCourses']);
         Route::post('create-course', [GoogleClassroomController::class, 'createCourse']);
         Route::get('list-students', [GoogleClassroomController::class, 'listStudents']);
+        Route::get('list-new-students', [GoogleClassroomController::class, 'listNewStudents']);
         Route::post('add-student', [GoogleClassroomController::class, 'addStudent']);
-        Route::post('list-assignments', [GoogleClassroomController::class, 'listAssignments']);
+        Route::get('list-assignments', [GoogleClassroomController::class, 'listAssignments']);
         Route::post('create-assignment', [GoogleClassroomController::class, 'createAssignment']);
         Route::get('teacher-dashboard', [GoogleClassroomController::class, 'teacherDashboard']);
+
+        // route for import data from Google Classroom
+        // Route::get('import-classroom', [GoogleClassroomController::class, 'importClassroom']);
+        Route::get('get-all-courses', [GoogleClassroomController::class, 'getAllCourses']);
+        Route::post('import-selected-courses', [GoogleClassroomController::class, 'importSelectedCourses']);
+        Route::get('get-all-assignments', [GoogleClassroomController::class, 'getAllAssignments']);
     });
 
     // Routes for Students
@@ -132,11 +139,21 @@ Route::middleware(['google.auth:teacher'])->group(function () {
             Route::post('payment-success', 'success');
             Route::post('cancel-subscription', 'cancelSubscription');
         });
+
+        Route::controller(ContentManagementController::class)->group(function () {
+            Route::get('get-unit-categories', 'getUnitCategories');
+            Route::get('get-all-curriculums', 'getAllCurriculums');
+        });
     });
+});
+
+Route::controller(PaymentController::class)->group(function () {
+    Route::get('get-all-subscription', 'getAllSubscription');
 });
 
 // public route for CMS Pages
 Route::controller(ContentManagementController::class)->group(function () {
+    Route::get('get-all-media', 'getAllmedia');
     Route::get('get-all-embeds', 'getAllEmbeds');
     Route::get('get-all-service', 'getAllService');
     Route::get('get-service-details', 'getServiceDetails');

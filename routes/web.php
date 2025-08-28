@@ -67,6 +67,8 @@ use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ContentManagementController;
+use App\Http\Controllers\Admin\CurriculumController;
+use App\Http\Controllers\Admin\MediaContentController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeamMemberController;
 
@@ -110,36 +112,37 @@ Route::group(['middleware' => ['admin']], function () {
         Route::post('/update-password', 'updatePassword')->name('update-password');
     });
 
-    // route for products
-    Route::controller(ProductController::class)->group(function () {
-        Route::get('/list-product', 'index');
-        Route::get('/add-product', 'create');
-        Route::get('/edit-product/{id}', 'edit');
-        Route::post('/save-product', 'store');
-        Route::post('/update-product', 'update');
-        Route::post('/delete-product', 'destroy');
-        Route::get('/subcategories', 'getSubCategory');
-    });
+    // // route for products
+    // Route::controller(ProductController::class)->group(function () {
+    //     Route::get('/list-product', 'index');
+    //     Route::get('/add-product', 'create');
+    //     Route::get('/edit-product/{id}', 'edit');
+    //     Route::post('/save-product', 'store');
+    //     Route::post('/update-product', 'update');
+    //     Route::post('/delete-product', 'destroy');
+    //     Route::get('/subcategories', 'getSubCategory');
+    // });
 
-    // route for product category
-    Route::controller(CategoryController::class)->group(function () {
-        Route::get('/list-category', 'index');
-        Route::get('/add-category', 'create');
-        Route::get('/edit-category/{id}', 'edit');
-        Route::post('/save-category', 'store');
-        Route::post('/update-category', 'update');
-        Route::post('/delete-category', 'destroy');
-    });
+    // // route for product category
+    // Route::controller(CategoryController::class)->group(function () {
+    //     Route::get('/category-list', 'index');
+    //     Route::get('/category-add', 'create');
+    //     Route::get('/category-edit/{id}', 'edit');
+    //     Route::post('/category-save', 'store');
+    //     Route::post('/category-update', 'update');
+    //     Route::post('/category-delete', 'destroy');
+    // });
 
-    // route for product sub category
-    Route::controller(SubCategoryController::class)->group(function () {
-        Route::get('/list-sub-category', 'index');
-        Route::get('/add-sub-category', 'create');
-        Route::get('/edit-sub-category/{id}', 'edit');
-        Route::post('/save-sub-category', 'store');
-        Route::post('/update-sub-category', 'update');
-        Route::post('/delete-sub-category', 'destroy');
-    });
+    // // route for product sub category
+    // Route::controller(SubCategoryController::class)->group(function () {
+    //     Route::get('/list-sub-category', 'index');
+    //     Route::get('/add-sub-category', 'create');
+    //     Route::get('/edit-sub-category/{id}', 'edit');
+    //     Route::post('/save-sub-category', 'store');
+    //     Route::post('/update-sub-category', 'update');
+    //     Route::post('/delete-sub-category', 'destroy');
+    // });
+
     // route for All users
     Route::prefix('users')->group(function () {
 
@@ -172,6 +175,40 @@ Route::group(['middleware' => ['admin']], function () {
             Route::post('/update-member', 'update');
             Route::post('/delete-member', 'destroy');
         });
+    });
+
+    // route for All curriculums
+    Route::prefix('curriculums')->group(function () {
+
+        // route for unit categories
+        Route::controller(CategoryController::class)->group(function () {
+            Route::get('/category-list', 'index');
+            Route::get('/category-add', 'create');
+            Route::get('/category-edit/{id}', 'edit');
+            Route::post('/category-save', 'store');
+            Route::post('/category-update', 'update');
+            Route::post('/category-delete', 'destroy');
+        });
+
+        // route for curriculum units
+        Route::controller(CurriculumController::class)->group(function () {
+            Route::get('/unit-list', 'index');
+            Route::get('/unit-add', 'create');
+            Route::post('/unit-save', 'store');
+            Route::get('/unit-edit/{id}', 'edit');
+            Route::post('/unit-update', 'update');
+            Route::post('/unit-delete', 'destroy');
+        });
+    });
+
+    // route for bots
+    Route::controller(BotController::class)->group(function () {
+        Route::get('/bot-list', 'index');
+        Route::get('/bot-add', 'create');
+        Route::post('/bot-save', 'store');
+        Route::get('/bot-edit/{id}', 'edit');
+        Route::post('/bot-update', 'update');
+        Route::post('/bot-delete', 'destroy');
     });
 
     // route for partners(companies)
@@ -247,16 +284,6 @@ Route::group(['middleware' => ['admin']], function () {
             Route::post('/service-delete', 'destroy');
         });
 
-        // route for bots
-        Route::controller(BotController::class)->group(function () {
-            Route::get('/bot-list', 'index');
-            Route::get('/bot-add', 'create');
-            Route::post('/bot-save', 'store');
-            Route::get('/bot-edit/{id}', 'edit');
-            Route::post('/bot-update', 'update');
-            Route::post('/bot-delete', 'destroy');
-        });
-
         // route for League Rules
         Route::controller(LeagueRuleController::class)->group(function () {
             Route::get('/league-rule-list', 'index');
@@ -275,6 +302,16 @@ Route::group(['middleware' => ['admin']], function () {
             Route::get('/event-coverage-edit/{id}', 'edit');
             Route::post('/event-coverage-update', 'update');
             Route::post('/event-coverage-delete', 'destroy');
+        });
+
+        // route for Media Contents
+        Route::controller(MediaContentController::class)->group(function () {
+            Route::get('/media-content-list', 'index');
+            Route::get('/media-content-add', 'create');
+            Route::post('/media-content-save', 'store');
+            Route::get('/media-content-edit/{id}', 'edit');
+            Route::post('/media-content-update', 'update');
+            Route::post('/media-content-delete', 'destroy');
         });
 
         // route for Tools of the Trade
@@ -773,4 +810,5 @@ Route::group(['middleware' => ['admin']], function () {
     });
 
     Route::get('list-order', [OrderController::class, 'listOrder']);
+    Route::get('list-subscriber', [SubscriptionController::class, 'listSubscriber']);
 });

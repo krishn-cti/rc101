@@ -16,9 +16,9 @@
                                 <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
                                 @endif
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Categories</h6>
-                                    <a href="{{ url('add-category') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Category</button>
+                                    <h6 class="mb-0">All Unit Categories</h6>
+                                    <a href="{{ url('curriculums/category-add') }}">
+                                        <button class="ct_custom_btn1 mx-auto">Add New Unit Category</button>
                                     </a>
                                 </div>
 
@@ -26,7 +26,7 @@
                                     <thead>
                                         <tr>
                                             <th>No</th>
-                                            <th>Product Category</th>
+                                            <th>Unit Category</th>
                                             <th>Description</th>
                                             <th width="100px">Action</th>
                                         </tr>
@@ -49,7 +49,7 @@
         var table = $('.category-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('list-category') }}",
+            ajax: "{{ url('curriculums/category-list') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
@@ -90,7 +90,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('delete-category') }}",
+                        url: "{{ url('curriculums/category-delete') }}",
                         type: "POST",
                         cache: false,
                         data: {

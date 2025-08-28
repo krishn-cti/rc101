@@ -21,9 +21,9 @@
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
                                     <h3 class="mb-0 ct_fs_22">Add Bots</h3>
-                                    <a href="{{url('cms/bot-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <a href="{{url('bot-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('cms/bot-save')}}" method="POST" id="addBot" enctype="multipart/form-data">
+                                <form action="{{url('bot-save')}}" method="POST" id="addBot" enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-6">

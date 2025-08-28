@@ -20,48 +20,50 @@
                                 @endif
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-0 ct_fs_22">Edit Sub Categories</h3>
-                                    <a href="{{url('category-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <h3 class="mb-0 ct_fs_22">Add Media Contents</h3>
+                                    <a href="{{url('cms/media-content-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('update-sub-category')}}" method="POST" id="editCategory" enctype="multipart/form-data">
-                                    <input type="hidden" name="id" value="{{$sub_category->id}}">
+                                <form action="{{url('cms/media-content-save')}}" method="POST" id="addMediaContent" enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
-                                                <label for="" class="mb-2">Sub Category Name</label>
-                                                <input type="text" class="form-control ct_input" name="sub_category_name" placeholder="Sub Category Name" value="{{ old('sub_category_name', $sub_category->sub_category_name) }}">
-                                                @error('sub_category_name')
+                                                <label for="title" class="mb-2">Title</label>
+                                                <input type="text" class="form-control ct_input" name="title" placeholder="Title" value="{{ old('title')}}">
+                                                @error('title')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
-                                                <label for="" class="mb-2">Category Name</label>
-                                                <select class="form-control ct_input" name="category_id">
-                                                    <option value="">Select Category</option>
-                                                    @foreach($categoryData as $key=>$val)
-                                                    <option value="{{$val->id}}" {{$val->id==$sub_category->category_id?'selected':''}}>{{$val->category_name}}</option>
-                                                    @endforeach
+                                                <label for="type" class="mb-2">Type</label>
+                                                <select class="form-control ct_input" name="type">
+                                                    <option value="">Select Video URL Type</option>
+                                                    <option value="youtube" {{ old('type') == 'youtube' ? 'selected' : '' }}>YouTube</option>
+                                                    <option value="twitch" {{ old('type') == 'twitch' ? 'selected' : '' }}>Twitch</option>
+                                                    <option value="vimeo" {{ old('type') == 'vimeo' ? 'selected' : '' }}>Vimeo</option>
+                                                    <option value="drive" {{ old('type') == 'drive' ? 'selected' : '' }}>Drive</option>
+                                                    <option value="local" {{ old('type') == 'local' ? 'selected' : '' }}>Local</option>
                                                 </select>
-                                                @error('category_name')
+                                                @error('type')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
-                                                <label for="" class="mb-2">Description</label>
-                                                <textarea rows="4" class="form-control ct_input" name="description" placeholder="Description">{{ old('description', $sub_category->description) }}</textarea>
-                                                @error('description')
+                                                <label for="link" class="mb-2">Link</label>
+                                                <input type="text" class="form-control ct_input" name="link" placeholder="Video URL Link" value="{{ old('$row->link')}}">
+                                                @error('$row->link')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
                                             </div>
                                         </div>
+
                                     </div>
                                     <div class="text-center mt-4">
-                                        <button type="submit" class="ct_custom_btn1 mx-auto">Update</button>
+                                        <button type="submit" class="ct_custom_btn1 mx-auto">Save</button>
                                     </div>
                                 </form>
                             </div>
@@ -76,30 +78,31 @@
 @section('script')
 <script>
     $(document).ready(function() {
-        $('#editCategory').validate({
+        $('#addMediaContent').validate({
+            ignore: [],
             rules: {
-                sub_category_name: {
+                title: {
                     required: true,
-                    maxlength: 100,
+                    maxlength: 150,
                 },
-                category_id: {
+                type: {
                     required: true,
                 },
-                description: {
+                link: {
                     required: true,
-                    maxlength: 255,
-                },
+                    url: true
+                }
             },
             messages: {
-                sub_category_name: {
-                    required: 'Please enter sub category name.',
-                    maxlength: 'Sub category name cannot exceed 100 characters.',
+                title: {
+                    required: "Please enter title.",
+                    maxlength: "The title must not exceed 150 characters.",
                 },
-                category_id: 'Please select category name.',
-                description: {
-                    required: 'Please enter short description.',
-                    maxlength: 'Description cannot exceed 255 characters.',
-                },
+                type: 'Please select video URL type.',
+                link: {
+                    required: "The link field is required.",
+                    url: "Please enter a valid video URL"
+                }
             },
             submitHandler: function(form) {
                 form.submit();

@@ -20,17 +20,17 @@
                             <div class="card-body">
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-0 ct_fs_22">Edit Knowledgebase Article</h3>
-                                    <a href="{{url('cms/embeds-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                                    <h3 class="mb-0 ct_fs_22">Edit Curriculum</h3>
+                                    <a href="{{url('curriculums/unit-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('cms/embeds-update')}}" method="POST" id="editEmbeds" enctype="multipart/form-data">
-                                    <input type="hidden" name="id" value="{{$embedsData->id}}">
+                                <form action="{{url('curriculums/unit-update')}}" method="POST" id="editCurriculums" enctype="multipart/form-data">
+                                    <input type="hidden" name="id" value="{{$curriculumsData->id}}">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
                                                 <label for="title" class="mb-2">Title</label>
-                                                <input type="text" class="form-control ct_input" name="title" placeholder="Title" value="{{ old('title', $embedsData->title) }}">
+                                                <input type="text" class="form-control ct_input" name="title" placeholder="Title" value="{{ old('title', $curriculumsData->title) }}">
                                                 @error('title')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -38,11 +38,11 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
-                                                <label for="type" class="mb-2">Select Type</label>
+                                                <label for="type" class="mb-2">Type</label>
                                                 <select name="type" class="form-control ct_input">
                                                     <option value="" disabled>Select Doc/Slide</option>
-                                                    <option value="doc" {{ (old('type', $embedsData->type ?? '') == 'doc') ? 'selected' : '' }}>Doc</option>
-                                                    <option value="slide" {{ (old('type', $embedsData->type ?? '') == 'slide') ? 'selected' : '' }}>Slide</option>
+                                                    <option value="doc" {{ (old('type', $curriculumsData->type ?? '') == 'doc') ? 'selected' : '' }}>Doc</option>
+                                                    <option value="slide" {{ (old('type', $curriculumsData->type ?? '') == 'slide') ? 'selected' : '' }}>Slide</option>
                                                 </select>
                                                 @error('type')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
@@ -51,14 +51,32 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
-                                                <label for="menu_type" class="mb-2">Select Menu Type</label>
-                                                <select name="menu_type" class="form-control ct_input">
-                                                    <option value="" disabled>Select Menu Type</option>
-                                                    <option value="lexicon" {{ (old('menu_type', $embedsData->menu_type ?? '') == 'lexicon') ? 'selected' : '' }}>Lexicon</option>
-                                                    <option value="weight_classes" {{ (old('menu_type', $embedsData->menu_type ?? '') == 'weight_classes') ? 'selected' : '' }}>Weight Classes</option>
-                                                    <option value="tools_of_trades" {{ (old('menu_type', $embedsData->menu_type ?? '') == 'tools_of_trades') ? 'selected' : '' }}>Tools of the Trade</option>
+                                                <label for="category_id" class="mb-2">Unit Category</label>
+                                                <select name="category_id" class="form-control ct_input">
+                                                    <option value="" disabled>Select Unit Category</option>
+                                                    @foreach($categoryData as $category)
+                                                    <option value="{{ $category->id }}"
+                                                        {{ (old('category_id', $curriculumsData->category_id) == $category->id) ? 'selected' : '' }}>
+                                                        {{ $category->category_name }}
+                                                    </option>
+                                                    @endforeach
                                                 </select>
-                                                @error('menu_type')
+                                                @error('category_id')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
+                                                <label for="file_type" class="mb-2">File Type</label>
+                                                <select name="file_type" class="form-control ct_input">
+                                                    <option value="" disabled>Select File Type</option>
+                                                    <option value="slide_decks" {{ (old('file_type', $curriculumsData->file_type ?? '') == 'slide_decks') ? 'selected' : '' }}>Slide Decks</option>
+                                                    <option value="student_pages" {{ (old('file_type', $curriculumsData->file_type ?? '') == 'student_pages') ? 'selected' : '' }}>Student Pages</option>
+                                                    <option value="instructions" {{ (old('file_type', $curriculumsData->file_type ?? '') == 'instructions') ? 'selected' : '' }}>Instructions</option>
+                                                    <option value="samples" {{ (old('file_type', $curriculumsData->file_type ?? '') == 'samples') ? 'selected' : '' }}>Samples</option>
+                                                </select>
+                                                @error('file_type')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
                                             </div>
@@ -66,7 +84,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
                                                 <label for="embed_link" class="mb-2">Embed Link</label>
-                                                <input type="text" class="form-control ct_input" name="embed_link" placeholder="Embed Link" value="{{ old('title', $embedsData->embed_link) }}">
+                                                <input type="text" class="form-control ct_input" name="embed_link" placeholder="Embed Link" value="{{ old('title', $curriculumsData->embed_link) }}">
                                                 @error('embed_link')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -89,7 +107,7 @@
 @section('script')
 <script>
     $(document).ready(function() {
-        $('#editEmbeds').validate({
+        $('#editCurriculums').validate({
             ignore: [],
             rules: {
                 title: {

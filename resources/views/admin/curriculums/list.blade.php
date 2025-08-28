@@ -16,30 +16,30 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Bots</h6>
-                                    <a href="{{ url('bot-add') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Bot</button>
+                                    <h6 class="mb-0">All Curriculums</h6>
+                                    <a href="{{ url('curriculums/unit-add') }}">
+                                        <button class="ct_custom_btn1 mx-auto">Add New Curriculum</button>
                                     </a>
                                 </div>
 
-                                <table class="table bot-data-table table-responsive table-bordered table-hover mb-0" id="botTable">
-                                    <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
-                                            <th>Type</th>
-                                            <th>Design Type</th>
-                                            <th>Weight Class</th>
-                                            <th>Start Date</th>
-                                            <th>Created By</th>
-                                            <th width="100px">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <!-- geting this result from dataTable -->
-                                    </tbody>
-                                </table>
+                                <div class="">
+                                    <table class="table curriculum-data-table table-responsive table-bordered table-hover mb-0" id="curriculumTable">
+                                        <thead>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Title</th>
+                                                <th>Category</th>
+                                                <th>Type(Doc/Slide)</th>
+                                                <th>File Type</th>
+                                                <th>Embed Link</th>
+                                                <th width="100px">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- geting this result from dataTable -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -51,41 +51,33 @@
 
 <script type="text/javascript">
     $(function() {
-        var table = $('.bot-data-table').DataTable({
+        var table = $('.curriculum-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ url('bot-list') }}",
+            ajax: "{{ url('curriculums/unit-list') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
                 }, // Change 'id' to 'serial_number'
                 {
-                    data: 'image',
-                    name: 'image'
+                    data: 'title',
+                    name: 'title'
                 },
                 {
-                    data: 'name',
-                    name: 'name'
+                    data: 'category',
+                    name: 'category'
                 },
                 {
-                    data: 'bot_type',
-                    name: 'bot_type'
+                    data: 'type',
+                    name: 'type'
                 },
                 {
-                    data: 'design_type',
-                    name: 'design_type'
+                    data: 'file_type',
+                    name: 'file_type'
                 },
                 {
-                    data: 'weight_class',
-                    name: 'weight_class'
-                },
-                {
-                    data: 'start_date',
-                    name: 'start_date'
-                },
-                {
-                    data: 'created_by',
-                    name: 'created_by'
+                    data: 'embed_link',
+                    name: 'embed_link'
                 },
                 {
                     data: 'action',
@@ -115,7 +107,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('bot-delete') }}",
+                        url: "{{ url('curriculums/unit-delete') }}",
                         type: "POST",
                         cache: false,
                         data: {
@@ -127,7 +119,7 @@
                                 toastr.error(response.error);
                             } else {
                                 toastr.success(response.message);
-                                $('#botTable').DataTable().ajax.reload(null, false);
+                                $('#curriculumTable').DataTable().ajax.reload(null, false);
                             }
                         },
                         error: function(xhr, textStatus, errorThrown) {

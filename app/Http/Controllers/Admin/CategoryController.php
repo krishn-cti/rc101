@@ -21,16 +21,16 @@ class CategoryController extends Controller
             $data = Category::where('status', 1)
                 ->latest()
                 ->get();
-            
+
             return Datatables::of($data)
-                    ->addIndexColumn()
-                    ->addColumn('serial_number', function($row) {
-                        static $index = 0;
-                        return ++$index;
-                    })
-                    ->addColumn('action', function($row) {
-                        $btn = '<div class="d-flex align-items-center gap-3">
-                                    <a href="' . url('edit-category/' . $row->id) . '">
+                ->addIndexColumn()
+                ->addColumn('serial_number', function ($row) {
+                    static $index = 0;
+                    return ++$index;
+                })
+                ->addColumn('action', function ($row) {
+                    $btn = '<div class="d-flex align-items-center gap-3">
+                                    <a href="' . url('curriculums/category-edit/' . $row->id) . '">
                                         <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
                                         </lord-icon>
                                     </a>
@@ -39,12 +39,12 @@ class CategoryController extends Controller
                                         </lord-icon>
                                     </a>
                                 </div>';
-                        return $btn;
-                    })                    
-                    ->rawColumns(['action'])
-                    ->make(true);
+                    return $btn;
+                })
+                ->rawColumns(['action'])
+                ->make(true);
         }
-        
+
         return view('admin/category/list');
     }
 
@@ -70,11 +70,11 @@ class CategoryController extends Controller
         $category->category_name = $request->category_name;
         $category->description = $request->description;
         $category->save();
-        
+
         if ($category) {
-            return redirect('list-category')->with( 'success_msg' , 'Category added successfully!!' );
+            return redirect('curriculums/category-list')->with('success_msg', 'Category added successfully!!');
         } else {
-            return redirect('list-category')->with( 'error_msg' , 'Something went wrong!!' );
+            return redirect('curriculums/category-list')->with('error_msg', 'Something went wrong!!');
         }
     }
 
@@ -108,17 +108,17 @@ class CategoryController extends Controller
         $id = $request->id;
         $category = Category::find($id);
         if (!$category) {
-            return redirect('list-category')->with('error_msg', 'Category not found.');
+            return redirect('category-list')->with('error_msg', 'Category not found.');
         }
-    
+
         $category->category_name = $request->category_name;
         $category->description = $request->description;
         $category->save();
-    
+
         if ($category) {
-            return redirect('list-category')->with('success_msg', 'Category updated successfully!');
+            return redirect('curriculums/category-list')->with('success_msg', 'Category updated successfully!');
         } else {
-            return redirect('list-category')->with('error_msg', 'Something went wrong while updating category.');
+            return redirect('curriculums/category-list')->with('error_msg', 'Something went wrong while updating category.');
         }
     }
 
@@ -144,5 +144,4 @@ class CategoryController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Category deleted successfully.'], 200);
     }
-
 }

@@ -7,7 +7,9 @@ use App\Models\BattleBot;
 use App\Models\EventCoverage;
 use App\Models\Bot;
 use App\Models\BotType;
+use App\Models\Category;
 use App\Models\ControlBot;
+use App\Models\Curriculum;
 use App\Models\DriveSystem;
 use App\Models\DrumSpinner;
 use App\Models\Embed;
@@ -36,6 +38,7 @@ use App\Models\Partner;
 use App\Models\Presentation;
 use App\Models\Service;
 use App\Models\LeagueRule;
+use App\Models\MediaContent;
 use App\Models\ModesOfTransferringMotion;
 use App\Models\Nhrl;
 use App\Models\OverheadSaw;
@@ -353,7 +356,7 @@ class ContentManagementController extends Controller
                 'message' => 'No bot details found!',
             ], 200);
         }
-        
+
         $response = [
             'success' => true,
             'message' => 'Bots retrieved successfully.',
@@ -1802,7 +1805,7 @@ class ContentManagementController extends Controller
 
     public function getAllEmbeds()
     {
-        $data = Embed::orderBy('id', 'DESC')->get();
+        $data = Embed::orderBy('title', 'ASC')->get();
 
         if ($data->isNotEmpty()) {
             return response()->json([
@@ -1817,4 +1820,78 @@ class ContentManagementController extends Controller
             ], 200);
         }
     }
+
+    public function getAllmedia()
+    {
+        $data = MediaContent::orderBy('title', 'ASC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Media Content retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getUnitCategories()
+    {
+        $data = Category::orderBy('category_name', 'ASC')->get();
+
+        if ($data->isNotEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Unit Category data retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
+
+    public function getAllCurriculums()
+    {
+        $curriculums = Curriculum::with('category') // eager-load category
+            ->orderBy('category_id', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        if ($curriculums->isNotEmpty()) {
+            // Transform data to include category_name
+            $formattedData = $curriculums->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'embed_link' => $item->embed_link,
+                    'file_type' => $item->file_type,
+                    'category_id' => $item->category_id,
+                    'category_name' => $item->category->category_name ?? '#N/A',
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                    // Add other fields as needed
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Curriculum data retrieved successfully.',
+                'data' => $formattedData,
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No data found!',
+        ], 200);
+    }
+
+
 }

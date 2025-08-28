@@ -43,7 +43,7 @@ class BotController extends Controller
                 })                
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
-                        <a href="' . url('cms/bot-edit/' . $row->id) . '">
+                        <a href="' . url('bot-edit/' . $row->id) . '">
                                         <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
                                         </lord-icon>
                                     </a>
@@ -103,9 +103,9 @@ class BotController extends Controller
         ]);
 
         if ($isInserted) {
-            return redirect('cms/bot-list')->with('success_msg', 'Data added successfully!');
+            return redirect('bot-list')->with('success_msg', 'Data added successfully!');
         } else {
-            return redirect('cms/bot-list')->with('error_msg', 'Something went wrong!');
+            return redirect('bot-list')->with('error_msg', 'Something went wrong!');
         }
     }
 
@@ -133,7 +133,7 @@ class BotController extends Controller
         // Check if the bot with the provided id exists
         $existingBot = Bot::where('id', $id)->first();
         if (!$existingBot) {
-            return redirect('cms/bot-list')->with('error_msg', 'Bots not found.');
+            return redirect('bot-list')->with('error_msg', 'Bots not found.');
         }
 
         // Update bot fields
@@ -167,9 +167,9 @@ class BotController extends Controller
         $isUpdated = Bot::where('id', $id)->update($updateData);
 
         if ($isUpdated) {
-            return redirect('cms/bot-list')->with('success_msg', 'Data details updated successfully!');
+            return redirect('bot-list')->with('success_msg', 'Data details updated successfully!');
         } else {
-            return redirect('cms/bot-list')->with('error_msg', 'Failed to update data.');
+            return redirect('bot-list')->with('error_msg', 'Failed to update data.');
         }
     }
 

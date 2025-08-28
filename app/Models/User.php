@@ -43,6 +43,7 @@ class User extends Authenticatable
         'password',
         'designation',
         'about',
+        'redirected_from',
         'remember_token',
         'status',
         'created_at'

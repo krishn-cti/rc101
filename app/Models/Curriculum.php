@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ClassroomStudent extends Model
+class Curriculum extends Model
 {
     use HasFactory;
-
+        
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'classroom_students';
+    protected $table = 'cms_curriculums';
 
     /**
      * The attributes that are mass assignable.
@@ -22,17 +22,16 @@ class ClassroomStudent extends Model
      * @var array
      */
     protected $fillable = [
-        'teacher_id',
-        'course_id',
-        'student_id',
-        'name',
-        'email',
-        'status',
+        'category_id',
+        'title',
+        'embed_link',
+        'type',
+        'file_type',
         'created_at'
     ];
 
-    public function teacher()
+    public function category()
     {
-        return $this->belongsTo(User::class, 'teacher_id');
+        return $this->belongsTo(Category::class, 'category_id', 'id')->select(['id', 'category_name']);
     }
 }
