@@ -53,6 +53,8 @@ Route::prefix('google-classroom')->group(function () {
         Route::get('list-assignments', [GoogleClassroomController::class, 'listAssignments']);
         Route::post('create-assignment', [GoogleClassroomController::class, 'createAssignment']);
         Route::get('teacher-dashboard', [GoogleClassroomController::class, 'teacherDashboard']);
+        Route::delete('/delete-course/{course_id}', [GoogleClassroomController::class, 'deleteCourse']);
+        Route::delete('/delete-assignment/{assignment_id}', [GoogleClassroomController::class, 'deleteAssignment']);
 
         // route for import data from Google Classroom
         // Route::get('import-classroom', [GoogleClassroomController::class, 'importClassroom']);

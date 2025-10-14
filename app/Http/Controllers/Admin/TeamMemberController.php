@@ -155,49 +155,18 @@ class TeamMemberController extends Controller
     }
 
 
-    // public function destroy(Request $request)
-    // {
-    //     $member = User::where('role_id', 4)->where('id', $request->id)->first();
-    //     if (!empty($member->profile_image)) {
-    //         $imagePath = public_path('profile_images/' . $member->profile_image);
-    //         if (file_exists($imagePath)) {
-    //             unlink($imagePath);
-    //         }
-    //         User::where('id', $request->id)->delete();
-    //         return response()->json(['success' => true, 'message' => 'Member deleted successfully.'], 200);
-    //     }else {
-    //         return response()->json(['success' => false, 'message' => 'Data not found.'], 404);
-    //     }
-    // }
     public function destroy(Request $request)
     {
-        $request->validate([
-            'id' => 'required|exists:users,id',
-        ]);
-
-        $member = User::where('role_id', 4)->where('id', $request->id)->first();
-
-        if (!$member) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Member not found.',
-            ], 404);
-        }
-
-        // Check and delete profile image if it exists
-        if (!empty($member->profile_image_path)) { // Using accessor
-            $imagePath = public_path($member->profile_image_path);
+        $member = User::where('id', $request->id)->first();
+        if (!empty($member->profile_image)) {
+            $imagePath = public_path('profile_images/' . $member->profile_image);
             if (file_exists($imagePath)) {
                 unlink($imagePath);
             }
+            User::where('id', $request->id)->delete();
+            return response()->json(['success' => true, 'message' => 'Member deleted successfully.'], 200);
+        }else {
+            return response()->json(['success' => false, 'message' => 'Data not found.'], 404);
         }
-
-        // Delete the user
-        $member->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Member deleted successfully.',
-        ], 200);
     }
 }

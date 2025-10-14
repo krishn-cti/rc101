@@ -38,42 +38,7 @@ class GoogleClassroomController extends Controller
         // $this->client->setPrompt('consent');
     }
 
-    // // get the list of courses
-    // public function listCourses(Request $request)
-    // {
-    //     try {
-    //         $accessToken = $request->bearerToken();
-
-    //         if (!$accessToken) {
-    //             return response()->json(['message' => 'Google token not found'], 400);
-    //         }
-
-    //         if ($this->client->isAccessTokenExpired()) {
-    //             $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token'); // Assuming it's stored in the user's record
-
-    //             if ($refreshToken) {
-    //                 $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-    //             } else {
-    //                 return response()->json(['message' => 'Refresh token not found'], 401);
-    //             }
-    //         }
-
-    //         // Initialize Google Classroom service
-    //         $service = new Classroom($this->client);
-    //         $courses = $service->courses->listCourses();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'courses' => $courses->getCourses(),
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $e->getMessage(),
-    //         ], 500);
-    //     }
-    // }
-
+    // get the list of courses
     public function listCourses(Request $request)
     {
         try {
@@ -96,7 +61,7 @@ class GoogleClassroomController extends Controller
                     ->get()
                     ->map(function ($student) {
                         return [
-                            'name' => $student->name,
+                            'name' => ucwords($student->name),
                             'email' => $student->email,
                         ];
                     })->toArray();
@@ -121,182 +86,7 @@ class GoogleClassroomController extends Controller
         }
     }
 
-
-    public function listCourses_010525(Request $request)
-    {
-        try {
-            $accessToken = $request->bearerToken();
-
-            if (!$accessToken) {
-                return response()->json(['message' => 'Google token not found'], 400);
-            }
-
-            // Set the access token for the Google client
-            $this->client->setAccessToken($accessToken);
-
-            // Check if the access token is expired
-            // if ($this->client->isAccessTokenExpired()) {
-            //     $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token'); // Assuming it's stored in the user's record
-
-            //     if ($refreshToken) {
-            //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            //     } else {
-            //         return response()->json(['message' => 'Refresh token not found'], 401);
-            //     }
-            // }
-
-            // Initialize the Google Classroom service
-            $service = new \Google\Service\Classroom($this->client);
-            $courses = $service->courses->listCourses()->getCourses();
-
-            if (empty($courses)) {
-                return response()->json(['success' => true, 'courses' => []], 200);
-            }
-
-            // Fetch detailed course and student data
-            $courseData = [];
-            foreach ($courses as $course) {
-                $students = null; // Default to null if no students are found
-                try {
-                    $studentList = $service->courses_students->listCoursesStudents($course->getId());
-                    $students = [];
-
-                    // Extract student names and email addresses
-                    foreach ($studentList->getStudents() as $student) {
-                        $students[] = [
-                            'name' => $student->getProfile()->getName()->getFullName(),
-                            'email' => $student->getProfile()->getEmailAddress(),
-                        ];
-                    }
-                } catch (\Google\Service\Exception $e) {
-                    if ($e->getCode() == 404) {
-                        $students = null;
-                    } else {
-                        throw $e; // Rethrow other exceptions
-                    }
-                }
-
-                // Include detailed course data
-                $courseData[] = [
-                    'id' => $course->getId(),
-                    'name' => $course->getName(),
-                    'section' => $course->getSection(),
-                    'description' => $course->getDescription(),
-                    'descriptionHeading' => $course->getDescriptionHeading(),
-                    'room' => $course->getRoom(),
-                    'ownerId' => $course->getOwnerId(),
-                    'alternateLink' => $course->getAlternateLink(),
-                    'calendarId' => $course->getCalendarId(),
-                    'courseGroupEmail' => $course->getCourseGroupEmail(),
-                    'teacherGroupEmail' => $course->getTeacherGroupEmail(),
-                    'courseState' => $course->getCourseState(),
-                    'creationTime' => $course->getCreationTime(),
-                    'updateTime' => $course->getUpdateTime(),
-                    'enrollmentCode' => $course->getEnrollmentCode(),
-                    'guardiansEnabled' => $course->getGuardiansEnabled(),
-                    'teacherFolder' => $course->getTeacherFolder()
-                        ? [
-                            'alternateLink' => $course->getTeacherFolder()->getAlternateLink(),
-                            'id' => $course->getTeacherFolder()->getId(),
-                            'title' => $course->getTeacherFolder()->getTitle(),
-                        ]
-                        : null,
-                    'gradebookSettings' => $course->getGradebookSettings()
-                        ? [
-                            'calculationType' => $course->getGradebookSettings()->getCalculationType(),
-                            'displaySetting' => $course->getGradebookSettings()->getDisplaySetting(),
-                        ]
-                        : null,
-                    'students' => $students,
-                ];
-            }
-
-            return response()->json(['success' => true, 'courses' => $courseData], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'message' => "An unexpected error occurred",
-            ], 401);
-        }
-    }
-
-
-    // // Create a course
-    // public function createCourse(Request $request)
-    // {
-    //     $accessToken = $request->bearerToken();
-
-    //     if (!$accessToken) {
-    //         return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
-    //     }
-
-    //     // Check if the access token is expired and refresh if necessary
-    //     if ($this->client->isAccessTokenExpired()) {
-    //         $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token');
-    //         // dd($refreshToken);
-    //         if ($refreshToken) {
-    //             $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-    //         } else {
-    //             return response()->json(['message' => 'Refresh token not found'], 401);
-    //         }
-    //     }
-
-    //     $validated = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'section' => 'required|string|max:255',
-    //         'room' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //         'owner_id' => 'required|exists:users,id',
-    //     ]);
-
-    //     $teacher = User::find($validated['owner_id']);
-
-    //     if (!$teacher || $teacher->role_id !== 3) {
-    //         return response()->json(['success' => false, 'message' => 'Invalid teacher role'], 403);
-    //     }
-
-    //     // $client = new \Google_Client();
-    //     $this->client->setAccessToken($teacher->google_token);
-
-    //     // $classroom = new \Google\Service\Classroom($client);
-    //     $this->classroomService = new Classroom($this->client);
-
-    //     $course = new \Google\Service\Classroom\Course([
-    //         'name' => $validated['name'],
-    //         'section' => $validated['section'],
-    //         'room' => $validated['room'],
-    //         'descriptionHeading' => $validated['name'],
-    //         'description' => $validated['description'],
-    //     ]);
-
-    //     // try {
-    //         // $createdCourse = $classroom->courses->create($course);
-    //         $createdCourse = $this->classroomService->courses->create($course);
-
-    //         GoogleCourse::create([
-    //             'course_id' => $createdCourse->id,
-    //             'name' => $validated['name'],
-    //             'section' => $validated['section'],
-    //             'room' => $validated['room'],
-    //             'description' => $validated['description'],
-    //             'owner_id' => $teacher->id,
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Course created successfully',
-    //             'course' => $createdCourse
-    //         ], 201);
-    //     // } catch (\Google\Service\Exception $e) {
-    //     //     return response()->json([
-    //     //         'success' => false,
-    //     //         'message' => 'Google Classroom error',
-    //     //         'error' => json_decode($e->getMessage(), true)
-    //     //     ], 500);
-    //     // }
-    // }
-
+    // Create a course
     public function createCourse(Request $request)
     {
         $accessToken = $request->bearerToken();
@@ -346,327 +136,7 @@ class GoogleClassroomController extends Controller
         return response()->json(['success' => true, 'message' => 'Course added successfully', 'course' => $createdCourse], 201);
     }
 
-    // public function createCourse(Request $request)
-    // {
-    //     $accessToken = $request->bearerToken();
-
-    //     if (!$accessToken) {
-    //         return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
-    //     }
-
-    //     // if ($this->client->isAccessTokenExpired()) {
-    //     //     $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token');
-    //     //     if ($refreshToken) {
-    //     //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-    //     //     } else {
-    //     //         return response()->json(['message' => 'Refresh token not found'], 401);
-    //     //     }
-    //     // }
-
-    //     $validated = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'section' => 'required|string|max:255',
-    //         'room' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //         'owner_id' => 'required|exists:users,id',
-    //     ]);
-
-    //     $teacher = User::find($validated['owner_id']);
-
-    //     if (!$teacher || $teacher->role_id !== 3) {
-    //         return response()->json(['success' => false, 'message' => 'Invalid teacher role'], 403);
-    //     }
-
-    //     $this->client->setAccessToken($teacher->google_token);
-    //     $this->classroomService = new \Google\Service\Classroom($this->client);
-
-    //     $course = new \Google\Service\Classroom\Course([
-    //         'name' => $validated['name'],
-    //         'section' => $validated['section'],
-    //         'room' => $validated['room'],
-    //         'descriptionHeading' => $validated['name'],
-    //         'description' => $validated['description'],
-    //         'ownerId' => $teacher->email,
-    //         'courseState' => 'ACTIVE'
-    //     ]);
-
-    //     try {
-    //         $createdCourse = $this->classroomService->courses->create($course);
-
-    //         // Save to DB
-    //         GoogleCourse::create([
-    //             'course_id' => $createdCourse->id,
-    //             'name' => $validated['name'],
-    //             'section' => $validated['section'],
-    //             'room' => $validated['room'],
-    //             'description' => $validated['description'],
-    //             'owner_id' => $teacher->id,
-    //         ]);
-
-    //         //Call Admin to change course state to ACTIVE
-    //         $this->activateCourseAsAdmin($createdCourse->id);
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Course created and activated successfully',
-    //             'course' => $createdCourse
-    //         ], 201);
-    //     } catch (\Google\Service\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Google Classroom error',
-    //             'error' => json_decode($e->getMessage(), true)
-    //         ], 500);
-    //     }
-    // }
-
-
-    // private function activateCourseAsAdmin($courseId)
-    // {
-    //     $adminClient = new \Google_Client();
-    //     $adminClient->setAuthConfig(storage_path('app/google/service-account.json'));
-    //     $adminClient->addScope('https://www.googleapis.com/auth/classroom.courses');
-
-    //     $adminClient->setSubject('admin@robotcombat101.com'); // Replace with your Workspace Admin email
-
-    //     $adminClassroomService = new \Google\Service\Classroom($adminClient);
-
-    //     $patch = new \Google\Service\Classroom\Course([
-    //         'courseState' => 'ACTIVE',
-    //     ]);
-
-    //     try {
-    //         $adminClassroomService->courses->patch($courseId, $patch, [
-    //             'updateMask' => 'courseState',
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         \Log::error("Failed to activate course [$courseId]: " . $e->getMessage());
-    //     }
-    // }
-
-
-    // public function createCourse(Request $request)
-    // {
-    //     $accessToken = $request->bearerToken();
-    //     $validated = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'section' => 'required|string|max:255',
-    //         'room' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //         'owner_id' => 'required|exists:users,id',
-    //     ]);
-
-    //     $teacher = User::find($validated['owner_id']);
-
-    //     if ($teacher->role_id !== 3) {
-    //         return response()->json(['success' => false, 'message' => 'Invalid teacher role'], 403);
-    //     }
-
-    //     // ⛔️ OAuth token must be stored when teacher logs in (or fetched via frontend)
-    //     // $accessToken = $teacher->google_access_token;
-
-    //     if (!$accessToken) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Google access token missing. Please log in via Google.'
-    //         ], 401);
-    //     }
-
-    //     // ✅ Use OAuth for authenticating as the Gmail teacher
-    //     $client = new \Google_Client();
-    //     $client->setAuthConfig(storage_path('app/google/google_credentials.json')); // <-- Your OAuth client
-    //     $client->addScope([
-    //         'https://www.googleapis.com/auth/classroom.courses',
-    //         'https://www.googleapis.com/auth/classroom.rosters'
-    //     ]);
-    //     $client->setAccessToken($accessToken);
-
-    //     // // Refresh token if needed
-    //     // if ($client->isAccessTokenExpired()) {
-    //     //     if ($client->getRefreshToken()) {
-    //     //         $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-    //     //         // Optional: update the token in DB
-    //     //         $teacher->google_access_token = $client->getAccessToken();
-    //     //         $teacher->save();
-    //     //     } else {
-    //     //         return response()->json([
-    //     //             'success' => false,
-    //     //             'message' => 'Google access token expired. Please re-login.'
-    //     //         ], 401);
-    //     //     }
-    //     // }
-
-    //     $classroomService = new \Google\Service\Classroom($client);
-
-    //     try {
-    //         // Create course — owner will be the authenticated Gmail teacher
-    //         $course = new \Google\Service\Classroom\Course([
-    //             'name' => $validated['name'],
-    //             'section' => $validated['section'],
-    //             'room' => $validated['room'],
-    //             'descriptionHeading' => $validated['name'],
-    //             'description' => $validated['description'],
-    //             'courseState' => 'ACTIVE',
-    //         ]);
-
-    //         $createdCourse = $classroomService->courses->create($course);
-
-    //         // Save to DB
-    //         GoogleCourse::create([
-    //             'course_id' => $createdCourse->id,
-    //             'name' => $validated['name'],
-    //             'section' => $validated['section'],
-    //             'room' => $validated['room'],
-    //             'description' => $validated['description'],
-    //             'owner_id' => $teacher->id,
-    //         ]);
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Course created successfully in ACTIVE state',
-    //             'course' => $createdCourse,
-    //         ], 201);
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Failed to create course',
-    //             'error' => $e->getMessage()
-    //         ], 500);
-    //     }
-    // }
-
-
-
-    // public function createCourse(Request $request)
-    // {
-    //     $accessToken = $request->bearerToken();
-
-    //     if (!$accessToken) {
-    //         return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
-    //     }
-
-    //     $validated = $request->validate([
-    //         'name' => 'required|string|max:255',
-    //         'section' => 'required|string|max:255',
-    //         'room' => 'required|string|max:255',
-    //         'description' => 'nullable|string',
-    //         'owner_id' => 'required|exists:users,id',
-    //     ]);
-
-    //     $teacher = User::find($validated['owner_id']);
-
-    //     if ($teacher->role_id !== 3) { // Ensure the user is a Teacher
-    //         return response()->json(['success' => false, 'message' => 'Invalid teacher role'], 403);
-    //     }
-
-    //     $this->client->setAccessToken($teacher->google_token);
-
-    //     $this->classroomService = new Classroom($this->client);
-
-    //     $course = new \Google\Service\Classroom\Course([
-    //         'name' => $validated['name'],
-    //         'section' => $validated['section'],
-    //         'room' => $validated['room'],
-    //         'descriptionHeading' => $validated['name'],
-    //         'description' => $validated['description'],
-    //         'ownerId' => 'me',
-    //     ]);
-
-    //     $createdCourse = $this->classroomService->courses->create($course);
-
-    //     GoogleCourse::create([
-    //         'course_id' => $createdCourse->id,
-    //         'name' => $validated['name'],
-    //         'section' => $validated['section'],
-    //         'room' => $validated['room'],
-    //         'description' => $validated['description'],
-    //         'owner_id' => $teacher->id,
-    //     ]);
-
-    //     return response()->json(['success' => true, 'message' => 'Course added successfully', 'course' => $createdCourse], 201);
-    // }
-
     // get the list of students
-    public function listStudents_050525(Request $request)
-    {
-        $accessToken = $request->bearerToken();
-
-        if (!$accessToken) {
-            return response()->json(['message' => 'Google token not found'], 400);
-        }
-
-        try {
-            // Set up the Google Client
-            $this->client = new \Google\Client();
-            $this->client->setAccessToken($accessToken);
-
-            // Check if the access token is expired and refresh if necessary
-            // if ($this->client->isAccessTokenExpired()) {
-            //     $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token');
-            //     dd($refreshToken);
-            //     if ($refreshToken) {
-            //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-            //     } else {
-            //         return response()->json(['message' => 'Refresh token not found'], 401);
-            //     }
-            // }
-
-            // Initialize Classroom Service
-            // $this->classroomService = new \Google\Service\Classroom($this->client);
-
-            // Fetch all courses for the authenticated user
-            // $courses = $this->classroomService->courses->listCourses()->getCourses();
-            $teacher = User::where('google_token', $accessToken)->first();
-            $students = ClassroomStudent::where('teacher_id', $teacher->id)
-                ->orderBy('id', 'DESC')
-                ->get();
-            // $students = User::where('google_classroom_role', 'student')
-            //     ->whereNotNull('google_id')
-            //     ->orderBy('id', 'DESC')
-            //     ->get();
-            // if ($courses) {
-            //     foreach ($courses as $course) {
-            //         // Fetch students for each course
-            //         $studentsResponse = $this->classroomService->courses_students->listCoursesStudents($course->getId());
-
-            //         if ($studentsResponse->getStudents()) {
-            //             foreach ($studentsResponse->getStudents() as $student) {
-            //                 $profile = $student->getProfile();
-            //                 $students[] = [
-            //                     'id' => $student->getUserId(),
-            //                     'name' => $profile->getName()->getFullName(),
-            //                     'email' => $profile->getEmailAddress() ?: 'Email not available', // Handle missing emails
-            //                     'course_id' => $course->getId(),
-            //                     'course_name' => $course->getName(),
-            //                 ];
-            //             }
-            //         }
-            //     }
-            // }
-
-            // Remove duplicates based on 'id'
-            // $uniqueStudents = array_values(array_reduce($students, function ($carry, $student) {
-            //     $carry[$student['id']] = $student; // Use student ID as the key
-            //     return $carry;
-            // }, []));
-
-            return response()->json([
-                'success' => true,
-                'students' => $students,
-            ], 200);
-        } catch (\Google\Service\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 401);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
     public function listStudents(Request $request)
     {
         $accessToken = $request->bearerToken();
@@ -713,7 +183,7 @@ class GoogleClassroomController extends Controller
 
                 $students[] = [
                     'student_id' => $student->student_id,
-                    'name' => $student->name,
+                    'name' => ucwords($student->name),
                     'email' => $student->email,
                     'course_names' => implode(', ', $courseNames),
                     'created_at' => $student->created_at, // Include here
@@ -760,6 +230,7 @@ class GoogleClassroomController extends Controller
                 // Get course IDs where this student is enrolled under the current teacher
                 $courseIds = ClassroomStudent::where('teacher_id', $teacher->id)
                     ->where('student_id', $student->google_id)
+                    ->where('status', 'enrolled') // exclude invited
                     ->pluck('course_id')
                     ->unique()
                     ->toArray();
@@ -771,7 +242,7 @@ class GoogleClassroomController extends Controller
 
                 $students[] = [
                     'student_id' => $student->google_id,
-                    'name' => $student->name,
+                    'name' => ucwords($student->name),
                     'email' => $student->email,
                     'course_names' => implode(', ', $courseNames),
                     'created_at' => $student->created_at,
@@ -817,11 +288,6 @@ class GoogleClassroomController extends Controller
         ]);
 
         // Check the teacher's subscription
-        // $subscription = UserSubscription::where('user_id', $teacher->id)
-        //     ->where('status', 1) // Active subscription
-        //     ->with('subscription') // Get subscription details
-        //     ->first();
-
         $subscription = UserSubscription::where('user_id', $teacher->id)
             ->where('status', 1)
             ->with('subscription')
@@ -870,7 +336,8 @@ class GoogleClassroomController extends Controller
                 'course_id' => $validated['course_id'],
                 'student_id' => $validated['user_id'],
                 'name' => $userDetails->name,
-                'email' => $userDetails->email
+                'email' => $userDetails->email,
+                'status' => 'invited'
             ]);
 
             $responses[] = [
@@ -898,134 +365,7 @@ class GoogleClassroomController extends Controller
         ], 200);
     }
 
-    // // Add a student to a course with multiple userIds
-    // public function addStudents(Request $request)
-    // {
-    //     $accessToken = $request->bearerToken();
-
-    //     if (!$accessToken) {
-    //         return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
-    //     }
-
-    //     $validated = $request->validate([
-    //         'course_id' => 'required|string',
-    //         'user_ids' => 'required|array',
-    //         'user_ids.*' => 'string',
-    //     ]);
-
-
-    //     // Debugging check
-    //     if (!is_array($validated['user_ids'])) {
-    //         return response()->json(['success' => false, 'message' => 'user_ids must be an array'], 400);
-    //     }
-
-    //     $this->client->setAccessToken($accessToken);
-
-    //     // Check if token is expired
-    //     if ($this->client->isAccessTokenExpired()) {
-    //         $refreshToken = User::where('google_token', $accessToken)->value('google_refresh_token');
-
-    //         if ($refreshToken) {
-    //             $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-    //         } else {
-    //             return response()->json(['message' => 'Refresh token not found'], 401);
-    //         }
-    //     }
-
-    //     $this->classroomService = new \Google\Service\Classroom($this->client);
-
-    //     $responses = [];
-    //     $errors = [];
-
-    //     foreach ($validated['user_ids'] as $studentGoogleId) {
-    //         try {
-    //             $invitation = new \Google\Service\Classroom\Invitation([
-    //                 'courseId' => $validated['course_id'],
-    //                 'role' => 'STUDENT',
-    //                 'userId' => $studentGoogleId,
-    //             ]);
-
-    //             $result = $this->classroomService->invitations->create($invitation);
-
-    //             $responses[] = [
-    //                 'user_google_id' => $studentGoogleId,
-    //                 'message' => 'Invitation sent successfully',
-    //                 'invitation' => $result,
-    //             ];
-    //         } catch (\Google\Service\Exception $e) {
-    //             $errors[] = [
-    //                 'user_google_id' => $studentGoogleId,
-    //                 'message' => 'Requested entity already exists',
-    //                 // 'message' => $e->getMessage(),
-    //             ];
-    //         } catch (\Exception $e) {
-    //             $errors[] = [
-    //                 'user_google_id' => $studentGoogleId,
-    //                 'message' => 'The invited user already has the course role of a student',
-    //                 // 'message' => $e->getMessage(),
-    //             ];
-    //         }
-    //     }
-
-    //     return response()->json([
-    //         'success' => empty($errors),
-    //         'responses' => $responses,
-    //         'errors' => $errors,
-    //     ], 200);
-    // }
-
     // get the list of assignments
-    public function listAssignments_050525(Request $request)
-    {
-        $accessToken = $request->bearerToken();
-
-        if (!$accessToken) {
-            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
-        }
-
-        $validated = $request->validate([
-            'course_id' => 'required|exists:google_courses,course_id',
-        ]);
-
-        $course = GoogleCourse::where('course_id', $validated['course_id'])->first();
-        $teacher = User::find($course->owner_id);
-
-        $this->client->setAccessToken($teacher->google_token);
-
-        $this->classroomService = new \Google\Service\Classroom($this->client);
-
-        try {
-            // Get the list of assignments (CourseWork) for the course
-            $courseWorkList = $this->classroomService->courses_courseWork->listCoursesCourseWork($validated['course_id']);
-
-            $assignments = [];
-            if ($courseWorkList->getCourseWork()) {
-                foreach ($courseWorkList->getCourseWork() as $courseWork) {
-                    $assignments[] = [
-                        'id' => $courseWork->getId(),
-                        'title' => $courseWork->getTitle(),
-                        'description' => $courseWork->getDescription(),
-                        'workType' => $courseWork->getWorkType(),
-                        'state' => $courseWork->getState(),
-                        'dueDate' => $courseWork->getDueDate(),
-                        'dueTime' => $courseWork->getDueTime(),
-                        'creationTime' => $courseWork->getCreationTime(),
-                        'updateTime' => $courseWork->getUpdateTime(),
-                    ];
-                }
-            }
-
-            return response()->json([
-                'success' => true,
-                'assignments' => $assignments,
-            ], 200);
-        } catch (\Google\Service\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
-    }
-
     public function listAssignments(Request $request)
     {
         $accessToken = $request->bearerToken();
@@ -1063,11 +403,14 @@ class GoogleClassroomController extends Controller
                 'course_id' => $assignment->course_id,
                 'course_name' => optional($assignment->course)->name,
                 'title' => $assignment->title,
+                'max_points' => $assignment->max_points,
                 'description' => $assignment->description,
                 'due_date' => $assignment->due_date ? date('Y-m-d', strtotime($assignment->due_date)) : null,
                 'due_time' => $assignment->due_time,
                 'submitted_at' => $assignment->submitted_at,
-                'attachment_link' => $assignment->attachment_link,
+                'attachment_link' => $assignment->attachment_link
+                    ? json_decode($assignment->attachment_link, true)
+                    : [],
                 'status' => $assignment->status,
                 'created_at' => $assignment->created_at,
                 'updated_at' => $assignment->updated_at,
@@ -1080,103 +423,7 @@ class GoogleClassroomController extends Controller
         ], 200);
     }
 
-
     // Create an assignment on 13-05-25
-    public function createAssignment(Request $request)
-    {
-        $accessToken = $request->bearerToken();
-
-        if (!$accessToken) {
-            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
-        }
-
-        $validated = $request->validate([
-            'course_id' => 'required|exists:google_courses,course_id',
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'due_date' => 'nullable|date', // 'Y-m-d'
-            'due_time' => 'nullable|date_format:H:i', // 'H:i' format
-            'attachment_link' => 'nullable|url', // attachment link validation
-        ]);
-
-        $this->client->setAccessToken($accessToken);
-
-        $teacher = User::where('google_token', $accessToken)->first();
-        if (!$teacher) {
-            return response()->json(['success' => false, 'message' => 'Teacher not found'], 404);
-        }
-
-        $this->classroomService = new \Google\Service\Classroom($this->client);
-
-        $courseworkData = [
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? '',
-            'workType' => 'ASSIGNMENT',
-            'state' => 'PUBLISHED',
-        ];
-
-        // Add due date
-        if (!empty($validated['due_date'])) {
-            $dueDate = explode('-', $validated['due_date']);
-            $courseworkData['dueDate'] = [
-                'year' => (int) $dueDate[0],
-                'month' => (int) $dueDate[1],
-                'day' => (int) $dueDate[2],
-            ];
-        }
-
-        // Add due time
-        if (!empty($validated['due_time'])) {
-            $dueTime = explode(':', $validated['due_time']);
-            $courseworkData['dueTime'] = [
-                'hours' => (int) $dueTime[0],
-                'minutes' => (int) $dueTime[1],
-            ];
-        }
-
-        //Add attachment link as material if provided
-        if (!empty($validated['attachment_link'])) {
-            $link = new \Google\Service\Classroom\Link([
-                'url' => $validated['attachment_link']
-            ]);
-
-            $material = new \Google\Service\Classroom\Material([
-                'link' => $link
-            ]);
-
-            $courseworkData['materials'] = [$material];
-        }
-
-        $coursework = new \Google\Service\Classroom\CourseWork($courseworkData);
-
-        try {
-            $createdAssignment = $this->classroomService->courses_courseWork->create($validated['course_id'], $coursework);
-
-            // Store in your DB
-            GoogleAssignment::create([
-                'assignment_id' => $createdAssignment->id,
-                'course_id' => $validated['course_id'],
-                'title' => $validated['title'],
-                'description' => $validated['description'] ?? '',
-                'due_date' => !empty($validated['due_date']) ? date('Y-m-d', strtotime($validated['due_date'])) : null,
-                'due_time' => !empty($validated['due_time']) ? date('H:i', strtotime($validated['due_time'])) : null,
-                'owner_id' => $teacher->id,
-                'attachment_link' => $validated['attachment_link'] ?? null,
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Assignment created successfully',
-                'assignment' => $createdAssignment
-            ], 201);
-        } catch (\Google\Service\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
-    }
-
-    // Create an assignment
     // public function createAssignment(Request $request)
     // {
     //     $accessToken = $request->bearerToken();
@@ -1189,64 +436,210 @@ class GoogleClassroomController extends Controller
     //         'course_id' => 'required|exists:google_courses,course_id',
     //         'title' => 'required|string|max:255',
     //         'description' => 'nullable|string',
-    //         'due_date' => 'nullable|date', // Date in 'Y-m-d' format
-    //         'due_time' => 'nullable|date_format:H:i', // Time in 'HH:mm' format (24-hour clock)
+    //         'due_date' => 'nullable|date', // 'Y-m-d'
+    //         'due_time' => 'nullable|date_format:H:i', // 'H:i'
+    //         'attachment_link' => 'nullable|array',
+    //         'attachment_link.*' => 'nullable|url',
+    //         'is_pushed_on_google' => 'required|boolean', // 👈 new flag
     //     ]);
 
-    //     $this->client->setAccessToken($accessToken);
-    //     // $course = GoogleCourse::where('course_id', $validated['course_id'])->first();
-
     //     $teacher = User::where('google_token', $accessToken)->first();
+    //     if (!$teacher) {
+    //         return response()->json(['success' => false, 'message' => 'Teacher not found'], 404);
+    //     }
 
-    //     $this->classroomService = new Classroom($this->client);
-
-    //     $courseworkData = [
+    //     $assignmentData = [
+    //         'course_id' => $validated['course_id'],
     //         'title' => $validated['title'],
-    //         'description' => $validated['description'],
-    //         'workType' => 'ASSIGNMENT', // Required field for Google Classroom
-    //         'state' => 'PUBLISHED', // Optional: 'PUBLISHED' or 'DRAFT'
+    //         'description' => $validated['description'] ?? '',
+    //         'due_date' => !empty($validated['due_date']) ? date('Y-m-d', strtotime($validated['due_date'])) : null,
+    //         'due_time' => !empty($validated['due_time']) ? date('H:i', strtotime($validated['due_time'])) : null,
+    //         'owner_id' => $teacher->id,
+    //         'attachment_link' => !empty($validated['attachment_link']) ? json_encode($validated['attachment_link']) : null,
     //     ];
 
-    //     // Add dueDate and dueTime if provided
-    //     if (!empty($validated['due_date'])) {
-    //         $dueDate = explode('-', $validated['due_date']);
-    //         $courseworkData['dueDate'] = [
-    //             'year' => (int) $dueDate[0],
-    //             'month' => (int) $dueDate[1],
-    //             'day' => (int) $dueDate[2],
-    //         ];
-    //     }
-
-    //     if (!empty($validated['due_time'])) {
-    //         $dueTime = explode(':', $validated['due_time']);
-    //         $courseworkData['dueTime'] = [
-    //             'hours' => (int) $dueTime[0],
-    //             'minutes' => (int) $dueTime[1],
-    //         ];
-    //     }
-
-    //     $coursework = new \Google\Service\Classroom\CourseWork($courseworkData);
-
     //     try {
-    //         $createdAssignment = $this->classroomService->courses_courseWork->create($validated['course_id'], $coursework);
+    //         // CASE 1: Push to Google Classroom + DB
+    //         if ($validated['is_pushed_on_google'] == 1) {
+    //             $this->client->setAccessToken($accessToken);
+    //             $this->classroomService = new \Google\Service\Classroom($this->client);
 
-    //         GoogleAssignment::create([
-    //             'assignment_id' => $createdAssignment->id,
-    //             'course_id' => $validated['course_id'],
-    //             'title' => $validated['title'],
-    //             'description' => $validated['description'],
-    //             'due_date' => !empty($validated['due_date']) ? date('Y-m-d', strtotime($validated['due_date'])) : null,
-    //             'due_time' => !empty($validated['due_time']) ? date('H:i', strtotime($validated['due_time'])) : null,
-    //             'owner_id' => $teacher->id,
-    //         ]);
+    //             $courseworkData = [
+    //                 'title' => $validated['title'],
+    //                 'description' => $validated['description'] ?? '',
+    //                 'workType' => 'ASSIGNMENT',
+    //                 'state' => 'PUBLISHED',
+    //             ];
 
-    //         return response()->json(['success' => true, 'message' => 'Assignment created successfully', 'assignment' => $createdAssignment], 201);
+    //             // Add due date
+    //             if (!empty($validated['due_date'])) {
+    //                 $dueDate = explode('-', $validated['due_date']);
+    //                 $courseworkData['dueDate'] = [
+    //                     'year' => (int) $dueDate[0],
+    //                     'month' => (int) $dueDate[1],
+    //                     'day' => (int) $dueDate[2],
+    //                 ];
+    //             }
+
+    //             // Add due time
+    //             if (!empty($validated['due_time'])) {
+    //                 $dueTime = explode(':', $validated['due_time']);
+    //                 $courseworkData['dueTime'] = [
+    //                     'hours' => (int) $dueTime[0],
+    //                     'minutes' => (int) $dueTime[1],
+    //                 ];
+    //             }
+
+    //             // Add multiple attachment links
+    //             if (!empty($validated['attachment_link'])) {
+    //                 $materials = [];
+    //                 foreach ($validated['attachment_link'] as $link) {
+    //                     $materials[] = new \Google\Service\Classroom\Material([
+    //                         'link' => new \Google\Service\Classroom\Link([
+    //                             'url' => $link
+    //                         ])
+    //                     ]);
+    //                 }
+    //                 $courseworkData['materials'] = $materials;
+    //             }
+
+    //             $coursework = new \Google\Service\Classroom\CourseWork($courseworkData);
+
+    //             $createdAssignment = $this->classroomService
+    //                 ->courses_courseWork
+    //                 ->create($validated['course_id'], $coursework);
+
+    //             // Save in DB with assignment_id
+    //             $assignmentData['assignment_id'] = $createdAssignment->id;
+    //             $assignment = GoogleAssignment::create($assignmentData);
+
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => 'Assignment created and pushed to Google Classroom successfully',
+    //                 'assignment' => $createdAssignment
+    //             ], 201);
+    //         }
+
+    //         // CASE 2: Save only in DB
+    //         $assignment = GoogleAssignment::create($assignmentData);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Assignment saved locally (not pushed to Google Classroom)',
+    //             'assignment' => $assignment
+    //         ], 201);
     //     } catch (\Google\Service\Exception $e) {
-    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
     //     } catch (\Exception $e) {
-    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
     //     }
     // }
+
+    public function createAssignment(Request $request)
+    {
+        $accessToken = $request->bearerToken();
+
+        if (!$accessToken) {
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
+        }
+
+        $validated = $request->validate([
+            'course_id' => 'required|exists:google_courses,course_id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'nullable|date',
+            'due_time' => 'nullable|date_format:H:i',
+            'attachment_link' => 'nullable|array',
+            'attachment_link.*' => 'nullable|url',
+            'is_pushed_on_google' => 'required|boolean',
+            'max_points' => 'nullable|integer|min:0',
+        ]);
+
+        $teacher = User::where('google_token', $accessToken)->first();
+        if (!$teacher) {
+            return response()->json(['success' => false, 'message' => 'Teacher not found'], 404);
+        }
+
+        $assignmentData = [
+            'course_id' => $validated['course_id'],
+            'title' => $validated['title'],
+            'description' => $validated['description'] ?? '',
+            'due_date' => !empty($validated['due_date']) ? date('Y-m-d', strtotime($validated['due_date'])) : null,
+            'due_time' => !empty($validated['due_time']) ? date('H:i', strtotime($validated['due_time'])) : null,
+            'owner_id' => $teacher->id,
+            'attachment_link' => !empty($validated['attachment_link']) ? json_encode($validated['attachment_link']) : null,
+            'max_points' => $validated['max_points'] ?? null,
+        ];
+
+        try {
+            if ($validated['is_pushed_on_google'] == 1) {
+                $this->client->setAccessToken($accessToken);
+                $this->classroomService = new \Google\Service\Classroom($this->client);
+
+                $courseworkData = [
+                    'title' => $validated['title'],
+                    'description' => $validated['description'] ?? '',
+                    'workType' => 'ASSIGNMENT',
+                    'state' => 'PUBLISHED',
+                    'maxPoints' => $validated['max_points'] ?? null,
+                ];
+
+                if (!empty($validated['due_date'])) {
+                    $dueDate = explode('-', $validated['due_date']);
+                    $courseworkData['dueDate'] = [
+                        'year' => (int) $dueDate[0],
+                        'month' => (int) $dueDate[1],
+                        'day' => (int) $dueDate[2],
+                    ];
+                }
+
+                if (!empty($validated['due_time'])) {
+                    $dueTime = explode(':', $validated['due_time']);
+                    $courseworkData['dueTime'] = [
+                        'hours' => (int) $dueTime[0],
+                        'minutes' => (int) $dueTime[1],
+                    ];
+                }
+
+                if (!empty($validated['attachment_link'])) {
+                    $materials = [];
+                    foreach ($validated['attachment_link'] as $link) {
+                        $materials[] = new \Google\Service\Classroom\Material([
+                            'link' => new \Google\Service\Classroom\Link(['url' => $link])
+                        ]);
+                    }
+                    $courseworkData['materials'] = $materials;
+                }
+
+                $coursework = new \Google\Service\Classroom\CourseWork($courseworkData);
+
+                $createdAssignment = $this->classroomService
+                    ->courses_courseWork
+                    ->create($validated['course_id'], $coursework);
+
+                $assignmentData['assignment_id'] = $createdAssignment->id;
+                $assignment = GoogleAssignment::create($assignmentData);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Assignment created and pushed to Google Classroom successfully',
+                    'assignment' => $createdAssignment
+                ], 201);
+            }
+
+            $assignment = GoogleAssignment::create($assignmentData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Assignment saved locally (not pushed to Google Classroom)',
+                'assignment' => $assignment
+            ], 201);
+        } catch (\Google\Service\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
+        }
+    }
 
     // this method is used for teacher dashboard
     public function teacherDashboard(Request $request)
@@ -1268,7 +661,7 @@ class GoogleClassroomController extends Controller
 
             // Fetch all courses owned by the teacher
             $courses = GoogleCourse::where('owner_id', $teacher->id)->get();
-            // $totalCourses = $courses->count();
+            $totalCourses = $courses->count();
             // dd(count($courses));
 
             $totalAssignments = $courses->map(function ($course) {
@@ -1287,8 +680,8 @@ class GoogleClassroomController extends Controller
                 return $course->assignments->where('due_date', '>', now())->count();
             })->sum();
 
-            $service = new Classroom($this->client);
-            $totalCourses = count($service->courses->listCourses());
+            // $service = new Classroom($this->client);
+            // $totalCourses = count($service->courses->listCourses());
 
             return response()->json([
                 'success' => true,
@@ -1407,21 +800,11 @@ class GoogleClassroomController extends Controller
         // Validate if the Google token is valid for a student
         $student = User::where('google_token', $accessToken)->first();
 
-        if (!$student) {
+        if (!$student || $student->google_classroom_role !== 'student') {
             return response()->json(['success' => false, 'message' => 'Student not found or invalid token'], 404);
         }
+
         $this->client->setAccessToken($accessToken);
-
-        // Check if the token has expired
-        // if ($this->client->isAccessTokenExpired()) {
-        //     $refreshToken = $student->google_refresh_token;
-
-        //     if ($refreshToken) {
-        //         $this->client->fetchAccessTokenWithRefreshToken($refreshToken);
-        //     } else {
-        //         return response()->json(['success' => false, 'message' => 'Refresh token not found'], 401);
-        //     }
-        // }
 
         // Initialize Google Classroom Service
         $this->classroomService = new \Google\Service\Classroom($this->client);
@@ -1432,8 +815,16 @@ class GoogleClassroomController extends Controller
         ]);
 
         try {
-            // Accept the invitation
+            // Accept the invitation in Google Classroom
             $this->classroomService->invitations->accept($validated['invitation_id']);
+
+            // Fetch invitation details (to know courseId + teacherId)
+            $invitation = $this->classroomService->invitations->get($validated['invitation_id']);
+
+            // Update student status in your DB
+            ClassroomStudent::where('student_id', $student->google_id)
+                ->where('course_id', $invitation->courseId)
+                ->update(['status' => 'enrolled']);
 
             return response()->json([
                 'success' => true,
@@ -1442,8 +833,7 @@ class GoogleClassroomController extends Controller
         } catch (\Google\Service\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error accepting invitation',
-                // 'message' => 'Error accepting invitation: ' . $e->getMessage(),
+                'message' => 'Error accepting invitation: ' . $e->getMessage(),
             ], 500);
         } catch (\Exception $e) {
             return response()->json([
@@ -1579,8 +969,6 @@ class GoogleClassroomController extends Controller
         }
     }
 
-    // fetch data from the Google Classroom on 29-Apr-25
-
     // Sync all Google Classroom data
     private function getCourseAssignments($courseId, $token)
     {
@@ -1613,8 +1001,6 @@ class GoogleClassroomController extends Controller
         $time = $assignment['dueTime'];
         return sprintf('%02d:%02d', $time['hours'] ?? 0, $time['minutes'] ?? 0);
     }
-
-
 
     // get all courses
     public function getAllCourses(Request $request)
@@ -1774,5 +1160,45 @@ class GoogleClassroomController extends Controller
             'assignments' => $allAssignments,
             'count' => count($allAssignments),
         ]);
+    }
+
+    // delete course by teacher
+    public function deleteCourse($course_id)
+    {
+        $course = GoogleCourse::where('course_id', $course_id)->first();
+
+        if (!$course) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Course not found.'
+            ], 404);
+        }
+
+        $course->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course deleted successfully.'
+        ], 200);
+    }
+
+    // delete assignment by teacher
+    public function deleteAssignment($assignment_id)
+    {
+        $assignment = GoogleAssignment::where('assignment_id', $assignment_id)->first();
+
+        if (!$assignment) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Assignment not found.'
+            ], 404);
+        }
+
+        $assignment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Assignment deleted successfully.'
+        ], 200);
     }
 }

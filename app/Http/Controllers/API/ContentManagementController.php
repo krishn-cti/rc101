@@ -16,6 +16,7 @@ use App\Models\Embed;
 use App\Models\FireBot;
 use App\Models\FlipperBot;
 use App\Models\Gearbox;
+use App\Models\GoogleAssignment;
 use App\Models\HammerBot;
 use App\Models\HandTool;
 use App\Models\HorizontalSpinner;
@@ -1857,16 +1858,108 @@ class ContentManagementController extends Controller
         }
     }
 
+    // public function getAllCurriculums()
+    // {
+    //     $curriculums = Curriculum::with('category') // eager-load category
+    //         ->orderBy('category_id', 'ASC')
+    //         ->orderBy('id', 'DESC')
+    //         ->get();
+
+    //     if ($curriculums->isNotEmpty()) {
+    //         // Transform data to include category_name
+    //         $formattedData = $curriculums->map(function ($item) {
+    //             return [
+    //                 'id' => $item->id,
+    //                 'title' => $item->title,
+    //                 'embed_link' => $item->embed_link,
+    //                 'file_type' => $item->file_type,
+    //                 'category_id' => $item->category_id,
+    //                 'category_name' => $item->category->category_name ?? '#N/A',
+    //                 'created_at' => $item->created_at,
+    //                 'updated_at' => $item->updated_at,
+    //                 // Add other fields as needed
+    //             ];
+    //         });
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Curriculum data retrieved successfully.',
+    //             'data' => $formattedData,
+    //         ], 200);
+    //     }
+
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'No data found!',
+    //     ], 200);
+    // }
+
+    // public function getAllCurriculums()
+    // {
+    //     $curriculums = Curriculum::with('category')
+    //         ->orderBy('category_id', 'ASC')
+    //         ->orderBy('id', 'DESC')
+    //         ->get();
+
+    //     if ($curriculums->isNotEmpty()) {
+    //         $formattedData = $curriculums->map(function ($item) {
+    //             // Find assignment where embed_link exists inside JSON array attachment_link
+    //             $assignment = null;
+    //             if (!empty($item->embed_link)) {
+    //                 $assignment = GoogleAssignment::whereJsonContains('attachment_link', $item->embed_link)->first();
+    //             }
+
+
+    //             return [
+    //                 'id' => $item->id,
+    //                 'title' => $item->title,
+    //                 'embed_link' => $item->embed_link,
+    //                 'file_type' => $item->file_type,
+    //                 'category_id' => $item->category_id,
+    //                 'category_name' => $item->category->category_name ?? '#N/A',
+    //                 'created_at' => $item->created_at,
+    //                 'updated_at' => $item->updated_at,
+
+    //                 // Add assignment details if found
+    //                 'assignment' => $assignment ? [
+    //                     'id' => $assignment->id,
+    //                     'assignment_id' => $assignment->assignment_id,
+    //                     'title' => $assignment->title,
+    //                     'course_id' => $assignment->course_id,
+    //                     'due_date' => $assignment->due_date,
+    //                     'due_time' => $assignment->due_time,
+    //                 ] : null,
+    //             ];
+    //         });
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Curriculum data retrieved successfully.',
+    //             'data' => $formattedData,
+    //         ], 200);
+    //     }
+
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'No data found!',
+    //     ], 200);
+    // }
     public function getAllCurriculums()
     {
-        $curriculums = Curriculum::with('category') // eager-load category
+        $curriculums = Curriculum::with('category')
             ->orderBy('category_id', 'ASC')
             ->orderBy('id', 'DESC')
             ->get();
 
         if ($curriculums->isNotEmpty()) {
-            // Transform data to include category_name
             $formattedData = $curriculums->map(function ($item) {
+                // Find assignment manually
+                $assignment = GoogleAssignment::all()->first(function ($a) use ($item) {
+                    if (empty($a->attachment_link)) return false;
+                    $links = json_decode($a->attachment_link, true);
+                    return is_array($links) && in_array($item->embed_link, $links);
+                });
+
                 return [
                     'id' => $item->id,
                     'title' => $item->title,
@@ -1874,9 +1967,20 @@ class ContentManagementController extends Controller
                     'file_type' => $item->file_type,
                     'category_id' => $item->category_id,
                     'category_name' => $item->category->category_name ?? '#N/A',
+                    'assignment' => $assignment ? [
+                        'id' => $assignment->id,
+                        'assignment_id' => $assignment->assignment_id,
+                        'title' => $assignment->title,
+                        'max_points' => $assignment->max_points,
+                        'attachment_link' => $assignment->attachment_link
+                            ? json_decode($assignment->attachment_link, true)
+                            : [],
+                        'course_id' => $assignment->course_id,
+                        'due_date' => $assignment->due_date,
+                        'due_time' => $assignment->due_time,
+                    ] : null,
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at,
-                    // Add other fields as needed
                 ];
             });
 
@@ -1892,6 +1996,4 @@ class ContentManagementController extends Controller
             'message' => 'No data found!',
         ], 200);
     }
-
-
 }

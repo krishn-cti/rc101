@@ -151,7 +151,7 @@ class GoogleController extends Controller
             ])
             ->with([
                 'access_type' => 'offline',
-                'prompt' => 'select_account',
+                'prompt' => 'consent select_account',
             ])
             ->redirect();
     }
