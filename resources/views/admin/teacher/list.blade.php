@@ -28,9 +28,9 @@
                                             <th>Profile</th>
                                             <th>Name</th>
                                             <th>Email</th>
+                                            <th>Number</th>
                                             <th>Registered On</th>
-                                            <!-- <th>Number</th> -->
-                                            <!-- <th width="100px">Action</th> -->
+                                            <th width="100px">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -68,12 +68,12 @@
                     data: 'email',
                     name: 'email'
                 },
+                {data: 'number', name: 'number'},
                 {
                     data: 'created_at',
                     name: 'created_at'
                 },
-                // {data: 'number', name: 'number'},
-                // {data: 'action', name: 'action', orderable: false, searchable: false},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });
     });
@@ -96,7 +96,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('delete-teacher') }}",
+                        url: "{{ url('users/delete-teacher') }}",
                         type: "POST",
                         cache: false,
                         data: {

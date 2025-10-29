@@ -53,7 +53,7 @@
                                     <a href="{{ url('users/list-teacher') }}"><i class='bx bx-user'></i> Teachers</a>
                                 </li>
                                 <li class="menu-header-title {{ request()->is('users/list-member', 'users/member-add', 'users/member-edit/*') ? 'active' : '' }} ps-0">
-                                    <a href="{{ url('users/list-member') }}"><i class='bx bx-user'></i> Team Members</a>
+                                    <a href="{{ url('users/list-member') }}"><i class='bx bx-user'></i> Robot Combat Teams</a>
                                 </li>
 
                             </ul>

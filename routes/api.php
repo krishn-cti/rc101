@@ -59,6 +59,8 @@ Route::prefix('google-classroom')->group(function () {
         // route for import data from Google Classroom
         // Route::get('import-classroom', [GoogleClassroomController::class, 'importClassroom']);
         Route::get('get-all-courses', [GoogleClassroomController::class, 'getAllCourses']);
+        Route::post('get-students-by-course', [GoogleClassroomController::class, 'listStudentsByCourse']);
+        Route::post('get-assignment-list-by-course', [GoogleClassroomController::class, 'getAssignmentListByCourse']);
         Route::post('import-selected-courses', [GoogleClassroomController::class, 'importSelectedCourses']);
         Route::get('get-all-assignments', [GoogleClassroomController::class, 'getAllAssignments']);
     });

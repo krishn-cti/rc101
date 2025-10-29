@@ -40,12 +40,13 @@ class TeacherController extends Controller
                     return $row->created_at;
                 })
                 // for edit action button
-                // <a href="' . url('edit-teacher/' . $row->id) . '">
-                //             <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
-                //             </lord-icon>
-                //         </a>
+
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
+                        <a href="' . url('users/edit-teacher/' . $row->id) . '">
+                            <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
+                            </lord-icon>
+                        </a>
                         <a href="javascript:;"  title="Delete" onclick="deleteConfirm(' . $row->id . ')">
                             <lord-icon src="https://cdn.lordicon.com/drxwpfop.json" trigger="hover" colors="primary:#ff0000,secondary:#ff0000" style="width:20px;height:20px">
                             </lord-icon>
@@ -58,5 +59,73 @@ class TeacherController extends Controller
         }
 
         return view('admin.teacher.list');
+    }
+
+    public function edit($id)
+    {
+        $data['user'] = User::where('id', $id)->first();
+        return view('admin.teacher.edit', $data);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request)
+    {
+        $request->validate([
+            'name'   => 'required|string|max:100',
+            'email'  => 'required|email|unique:users,email,' . $request->id,
+            'number' => ['required', 'regex:/^[0-9]{7,15}$/'],
+        ], [
+            'number.regex' => 'Please enter a valid phone number with 7 to 15 digits.',
+        ]);
+
+        $id = $request->id;
+        $teacher = User::find($id);
+
+        if (!$teacher) {
+            return redirect('users/list-teacher')->with('error_msg', 'User not found.');
+        }
+
+        $teacher->name = $request->name;
+        $teacher->email = $request->email;
+        $teacher->number = $request->number;
+
+        if ($request->hasFile('profile_image')) {
+            // Check if there's an existing image and delete it
+            $existingImage = $teacher->getRawOriginal('profile_image');
+            $existingImagePath = public_path('profile_images/' . $existingImage);
+
+            if ($existingImage && file_exists($existingImagePath)) {
+                unlink($existingImagePath);
+            }
+
+            // Save the new image
+            $profile_image = $request->file('profile_image');
+            $fileName = uniqid() . '.' . $profile_image->getClientOriginalExtension();
+            $profile_image->move(public_path('profile_images'), $fileName);
+            $teacher->profile_image = $fileName;
+        }
+
+        if ($teacher->save()) {
+            return redirect('users/list-teacher')->with('success_msg', 'User updated successfully!');
+        } else {
+            return redirect('users/list-teacher')->with('error_msg', 'Something went wrong while updating teacher.');
+        }
+    }
+
+    public function destroy(Request $request)
+    {
+        $teacher = User::where('id', $request->id)->first();
+        if (!empty($teacher->profile_image)) {
+            $imagePath = public_path('profile_images/' . $teacher->profile_image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            User::where('id', $request->id)->delete();
+            return response()->json(['success' => true, 'message' => 'Teacher deleted successfully.'], 200);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Data not found.'], 404);
+        }
     }
 }

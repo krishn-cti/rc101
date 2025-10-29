@@ -172,29 +172,51 @@ class SubscriptionController extends Controller
     {
         if ($request->ajax()) {
             $data = UserSubscription::with(['subscription', 'user'])->orderBy('id', 'DESC')->get();
+
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('serial_number', function ($row) {
                     static $index = 0;
                     return ++$index;
                 })
-                ->addColumn('user_name', function ($row) {
-                    return $row->user->name;
-                })
-                ->addColumn('subscription_name', function ($row) {
-                    return $row->subscription->name;
-                })
-                ->addColumn('type', function ($row) {
-                    return $row->type;
-                })
-                ->addColumn('start_date', function ($row) {
-                    return $row->start_date;
-                })
+                ->addColumn('user_name', fn($row) => $row->user->name)
+                ->addColumn('subscription_name', fn($row) => $row->subscription->name)
+                ->addColumn('type', fn($row) => $row->type)
+                ->addColumn('start_date', fn($row) => $row->start_date)
                 ->addColumn('end_date', function ($row) {
-                    return $row->end_date;
+                    if ($row->type === 'free') {
+                        return '
+                            <div class="editable-end-date" data-id="' . $row->id . '" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="date-text">' . e($row->end_date) . '</span>
+                                <a href="javascript:void(0)" class="edit-end-date">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/wuvorxbv.json"
+                                        trigger="hover"
+                                        colors="primary:#333333,secondary:#333333"
+                                        style="width:20px;height:20px">
+                                    </lord-icon>
+                                </a>
+                            </div>
+                        ';
+                    } else {
+                        return '
+                            <div class="editable-end-date" data-id="' . $row->id . '" style="display: flex; align-items: center; gap: 8px;">
+                                <span class="date-text">' . e($row->end_date) . '</span>
+                            </div>
+                        ';
+                    }
                 })
+
                 ->addColumn('amount', function ($row) {
-                    return "$ " . ($row->type == "monthly" ? $row->subscription->monthly_price : $row->subscription->yearly_price);
+                    $amount = 0;
+
+                    if ($row->type === "monthly") {
+                        $amount = $row->subscription->monthly_price ?? 0;
+                    } elseif ($row->type === "yearly") {
+                        $amount = $row->subscription->yearly_price ?? 0;
+                    }
+
+                    return "$ " . $amount;
                 })
                 ->addColumn('status', function ($row) {
                     if ($row->end_date > date('Y-m-d')) {
@@ -203,10 +225,89 @@ class SubscriptionController extends Controller
                         return '<span style="color:red; font-weight:bold;">Expired</span>';
                     }
                 })
-                ->rawColumns(['user_name', 'subscription_name', 'amount', 'status'])
+                ->rawColumns(['user_name', 'subscription_name', 'amount', 'end_date', 'status', 'actions'])
                 ->make(true);
         }
 
         return view('admin.content_management.subscribers.list');
+    }
+
+    // public function listSubscriber(Request $request)
+    // {
+    //     if ($request->ajax()) {
+    //         $data = UserSubscription::with(['subscription', 'user'])->orderBy('id', 'DESC')->get();
+
+    //         return DataTables::of($data)
+    //             ->addIndexColumn()
+    //             ->addColumn('serial_number', function ($row) {
+    //                 static $index = 0;
+    //                 return ++$index;
+    //             })
+    //             ->addColumn('user_name', fn($row) => $row->user->name)
+    //             ->addColumn('subscription_name', fn($row) => $row->subscription->name)
+    //             ->addColumn('type', fn($row) => $row->type)
+    //             ->addColumn('start_date', fn($row) => $row->start_date)
+    //             ->addColumn('end_date', fn($row) => $row->end_date)
+    //             ->addColumn('amount', function ($row) {
+    //                 $amount = 0;
+
+    //                 if ($row->type === "monthly") {
+    //                     $amount = $row->subscription->monthly_price ?? 0;
+    //                 } elseif ($row->type === "yearly") {
+    //                     $amount = $row->subscription->yearly_price ?? 0;
+    //                 }
+
+    //                 return "$ " . $amount;
+    //             })
+    //             ->addColumn('status', function ($row) {
+    //                 if ($row->end_date > date('Y-m-d')) {
+    //                     return '<span style="color:green; font-weight:bold;">Active</span>';
+    //                 } else {
+    //                     return '<span style="color:red; font-weight:bold;">Expired</span>';
+    //                 }
+    //             })
+    //             ->addColumn('actions', function ($row) {
+    //                 if ($row->type === 'free') {
+    //                     return '<div class="d-flex align-items-center gap-3"><a href="javascript:void(0)" class="edit-end-date" data-id="' . $row->id . '" data-end-date="' . $row->end_date . '"><lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
+    //                     </lord-icon></a></div>';
+    //                 }
+    //                 return '-';
+    //             })
+    //             ->rawColumns(['user_name', 'subscription_name', 'amount', 'status', 'actions'])
+    //             ->make(true);
+    //     }
+
+    //     return view('admin.content_management.subscribers.list');
+    // }
+
+    // public function updateEndDate(Request $request)
+    // {
+    //     $request->validate([
+    //         'id' => 'required|integer|exists:user_subscriptions,id',
+    //         'end_date' => 'required|date|after_or_equal:start_date',
+    //     ]);
+
+    //     $subscription = UserSubscription::find($request->id);
+    //     $subscription->end_date = $request->end_date;
+    //     $subscription->save();
+
+    //     return response()->json(['success' => true, 'message' => 'End date updated successfully!']);
+    // }
+    public function updateEndDate(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'end_date' => 'required|date|after_or_equal:today',
+        ]);
+
+        $subscription = UserSubscription::find($request->id);
+        if (!$subscription) {
+            return response()->json(['success' => false, 'message' => 'Subscription not found']);
+        }
+
+        $subscription->end_date = $request->end_date;
+        $subscription->save();
+
+        return response()->json(['success' => true, 'message' => 'End date updated successfully']);
     }
 }

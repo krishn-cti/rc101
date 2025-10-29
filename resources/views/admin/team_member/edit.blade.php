@@ -20,7 +20,7 @@
                                 @endif
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-0 ct_fs_22">Edit Team Member</h3>
+                                    <h3 class="mb-0 ct_fs_22">Edit Robot Combat Team</h3>
                                     <a href="{{url('users/list-member')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
                                 <form action="{{url('users/update-member')}}" method="POST" id="addUser" enctype="multipart/form-data">

@@ -67,6 +67,76 @@ class PaymentController extends Controller
 
 
     // API to initiate checkout session
+    // public function checkout(Request $request)
+    // {
+    //     $accessToken = $request->bearerToken();
+
+    //     if (!$accessToken) {
+    //         return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
+    //     }
+
+    //     $teacher = User::where('google_token', $accessToken)->first();
+
+    //     if (!$teacher || $teacher->google_classroom_role !== "teacher") {
+    //         return response()->json(['success' => false, 'message' => 'Access denied. Please log in with a teacher account.'], 400);
+    //     }
+
+    //     // Check if the user already has an active subscription
+    //     $existingSubscription = UserSubscription::where('user_id', $teacher->id)
+    //         ->where('subscription_id', $request->subscription_id)
+    //         ->where('status', 1)
+    //         ->first();
+
+    //     if ($existingSubscription) {
+    //         return response()->json(['success' => false, 'message' => 'User already has an active subscription'], 400);
+    //     }
+
+    //     $request->validate([
+    //         'subscription_id' => 'required|exists:subscriptions,id',
+    //         'type' => 'required|in:monthly,yearly',
+    //     ]);
+
+    //     $subscription = Subscription::findOrFail($request->subscription_id);
+    //     $price = $request->type === 'monthly' ? $subscription->monthly_price : $subscription->yearly_price;
+
+    //     if (!$price || $price <= 0) {
+    //         return response()->json(['success' => false, 'message' => 'Invalid price'], 400);
+    //     }
+
+    //     try {
+    //         Stripe::setApiKey(env('STRIPE_SECRET'));
+
+    //         $session = Session::create([
+    //             'payment_method_types' => ['card'],
+    //             'customer_email' => $teacher->email,
+    //             'line_items' => [[
+    //                 'price_data' => [
+    //                     'currency' => 'usd',
+    //                     'product_data' => [
+    //                         'name' => $subscription->name . ' (' . ucfirst($request->type) . ')',
+    //                     ],
+    //                     'unit_amount' => $price * 100,
+    //                     'recurring' => ['interval' => $request->type === 'monthly' ? 'month' : 'year'],
+    //                 ],
+    //                 'quantity' => 1,
+    //             ]],
+    //             'mode' => 'subscription',
+    //             'success_url' => env('FRONT_URL') . '/teacher/payment-success?session_id={CHECKOUT_SESSION_ID}',
+    //             'cancel_url' => env('FRONT_URL') . '/teacher/payment-failed',
+    //             'metadata' => [
+    //                 'subscription_name' => $subscription->name,
+    //                 'type' => $request->type,
+    //             ],
+    //         ]);
+
+    //         return response()->json(['success' => true, 'session_url' => $session->url]);
+    //     } catch (\Stripe\Exception\ApiErrorException $e) {
+    //         return response()->json(['success' => false, 'message' => 'Stripe error: ' . $e->getMessage()], 500);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['success' => false, 'message' => 'Something went wrong: ' . $e->getMessage()], 500);
+    //     }
+    // }
+
     public function checkout(Request $request)
     {
         $accessToken = $request->bearerToken();
@@ -81,9 +151,13 @@ class PaymentController extends Controller
             return response()->json(['success' => false, 'message' => 'Access denied. Please log in with a teacher account.'], 400);
         }
 
-        // Check if the user already has an active subscription
+        $request->validate([
+            'subscription_id' => 'required|exists:subscriptions,id',
+            'type' => 'required|in:monthly,yearly,free',
+        ]);
+
+        // Prevent multiple active subscriptions
         $existingSubscription = UserSubscription::where('user_id', $teacher->id)
-            ->where('subscription_id', $request->subscription_id)
             ->where('status', 1)
             ->first();
 
@@ -91,12 +165,41 @@ class PaymentController extends Controller
             return response()->json(['success' => false, 'message' => 'User already has an active subscription'], 400);
         }
 
-        $request->validate([
-            'subscription_id' => 'required|exists:subscriptions,id',
-            'type' => 'required|in:monthly,yearly',
-        ]);
-
         $subscription = Subscription::findOrFail($request->subscription_id);
+
+        // Handle Free Plan (No Stripe checkout)
+        if ($request->type === 'free') {
+            // Check if user already used free trial before
+            $usedFreeTrial = UserSubscription::where('user_id', $teacher->id)
+                ->where('type', 'free')
+                ->exists();
+
+            if ($usedFreeTrial) {
+                return response()->json(['success' => false, 'message' => 'Free trial already used. Please choose a paid plan.'], 400);
+            }
+
+            // Create 3-day free trial
+            UserSubscription::create([
+                'user_id' => $teacher->id,
+                'subscription_id' => $subscription->id,
+                'type' => 'free',
+                'start_date' => now(),
+                'end_date' => now()->addDays(3),
+                'stripe_subscription_id' => null,
+                'status' => 1,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Free 3-day trial activated successfully',
+                'data' => [
+                    'start_date' => now()->toDateTimeString(),
+                    'end_date' => now()->addDays(3)->toDateTimeString(),
+                ],
+            ]);
+        }
+
+        // For Paid Plans (Monthly/Yearly)
         $price = $request->type === 'monthly' ? $subscription->monthly_price : $subscription->yearly_price;
 
         if (!$price || $price <= 0) {

@@ -43,12 +43,13 @@ class UserController extends Controller
                     return $row->created_at;
                 })
                 // for edit action button
-                // <a href="' . url('edit-student/' . $row->id) . '">
-                //             <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
-                //             </lord-icon>
-                //         </a>
+
                 ->addColumn('action', function ($row) {
                     $btn = '<div class="d-flex align-items-center gap-3">
+                        <a href="' . url('users/edit-student/' . $row->id) . '">
+                            <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
+                            </lord-icon>
+                        </a>
                         <a href="javascript:;"  title="Delete" onclick="deleteConfirm(' . $row->id . ')">
                             <lord-icon src="https://cdn.lordicon.com/drxwpfop.json" trigger="hover" colors="primary:#ff0000,secondary:#ff0000" style="width:20px;height:20px">
                             </lord-icon>
@@ -115,26 +116,27 @@ class UserController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email,' . $request->id,
-            'number' => 'required',
-            // Add more validation rules for other fields if needed
+            'name'   => 'required|string|max:100',
+            'email'  => 'required|email|unique:users,email,' . $request->id,
+            'number' => ['required', 'regex:/^[0-9]{7,15}$/'],
+        ], [
+            'number.regex' => 'Please enter a valid phone number with 7 to 15 digits.',
         ]);
 
         $id = $request->id;
-        $user = User::find($id);
+        $student = User::find($id);
 
-        if (!$user) {
+        if (!$student) {
             return redirect('users/list-student')->with('error_msg', 'User not found.');
         }
 
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->number = $request->number;
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->number = $request->number;
 
         if ($request->hasFile('profile_image')) {
             // Check if there's an existing image and delete it
-            $existingImage = $user->getRawOriginal('profile_image');
+            $existingImage = $student->getRawOriginal('profile_image');
             $existingImagePath = public_path('profile_images/' . $existingImage);
 
             if ($existingImage && file_exists($existingImagePath)) {
@@ -145,22 +147,37 @@ class UserController extends Controller
             $profile_image = $request->file('profile_image');
             $fileName = uniqid() . '.' . $profile_image->getClientOriginalExtension();
             $profile_image->move(public_path('profile_images'), $fileName);
-            $user->profile_image = $fileName;
+            $student->profile_image = $fileName;
         }
 
-        if ($user->save()) {
+        if ($student->save()) {
             return redirect('users/list-student')->with('success_msg', 'User updated successfully!');
         } else {
-            return redirect('users/list-student')->with('error_msg', 'Something went wrong while updating user.');
+            return redirect('users/list-student')->with('error_msg', 'Something went wrong while updating student.');
         }
     }
 
 
+    // public function destroy(Request $request)
+    // {
+    //     $user = User::where('id', $request->id)->first();
+    //     $user->delete();
+
+    //     return response()->json(['success' => true, 'message' => 'User deleted successfully.'], 200);
+    // }
+
     public function destroy(Request $request)
     {
-        $user = User::where('id', $request->id)->first();
-        $user->delete();
-
-        return response()->json(['success' => true, 'message' => 'User deleted successfully.'], 200);
+        $student = User::where('id', $request->id)->first();
+        if (!empty($student->profile_image)) {
+            $imagePath = public_path('profile_images/' . $student->profile_image);
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+            User::where('id', $request->id)->delete();
+            return response()->json(['success' => true, 'message' => 'Student deleted successfully.'], 200);
+        } else {
+            return response()->json(['success' => false, 'message' => 'Data not found.'], 404);
+        }
     }
 }

@@ -16,7 +16,7 @@
                                 <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
                                 @endif
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Users</h6>
+                                    <h6 class="mb-0">All Students</h6>
                                     <!-- <a href="{{ url('add-user') }}">
                                         <button class="ct_custom_btn1 mx-auto">Add New User</button>
                                     </a> -->
@@ -28,9 +28,9 @@
                                             <th>Profile</th>
                                             <th>Name</th>
                                             <th>Email</th>
+                                            <th>Number</th>
                                             <th>Registered On</th>
-                                            <!-- <th>Number</th> -->
-                                            <!-- <th width="100px">Action</th> -->
+                                            <th width="100px">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -68,12 +68,12 @@
                     data: 'email',
                     name: 'email'
                 },
+                {data: 'number', name: 'number'},
                 {
                     data: 'created_at',
                     name: 'created_at'
                 },
-                // {data: 'number', name: 'number'},
-                // {data: 'action', name: 'action', orderable: false, searchable: false},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
             ]
         });
     });
@@ -96,7 +96,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('delete-user') }}",
+                        url: "{{ url('users/delete-student') }}",
                         type: "POST",
                         cache: false,
                         data: {

@@ -794,6 +794,7 @@ Route::group(['middleware' => ['admin']], function () {
             // route for about page
             Route::get('/about', 'editAbout');
             Route::post('/update-about', 'updateAbout');
+            Route::post('/ckeditor/upload', 'uploadCkEditorImageForAboutUs')->name('ckeditor.upload');
 
             // route for league page
             Route::get('/league', 'editLeague');
@@ -811,4 +812,5 @@ Route::group(['middleware' => ['admin']], function () {
 
     Route::get('list-order', [OrderController::class, 'listOrder']);
     Route::get('list-subscriber', [SubscriptionController::class, 'listSubscriber']);
+    Route::post('update-end-date', [SubscriptionController::class, 'updateEndDate']);
 });

@@ -16,9 +16,9 @@
                                 <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
                                 @endif
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Team Members</h6>
+                                    <h6 class="mb-0">All Robot Combat Teams</h6>
                                     <a href="{{ url('users/add-member') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Team Member</button>
+                                        <button class="ct_custom_btn1 mx-auto">Add New Robot Combat Team</button>
                                     </a>
                                 </div>
                                 <table class="table member-data-table table-responsive table-bordered table-hover mb-0" id="userTable">

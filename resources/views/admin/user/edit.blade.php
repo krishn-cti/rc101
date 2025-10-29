@@ -20,10 +20,10 @@
                                 @endif
                                 <div
                                     class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-0 ct_fs_22">Edit User</h3>
+                                    <h3 class="mb-0 ct_fs_22">Edit Student</h3>
                                     <a href="{{url('users/list-student')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
                                 </div>
-                                <form action="{{url('update-user')}}" method="POST" id="addUser" enctype="multipart/form-data">
+                                <form action="{{url('users/update-student')}}" method="POST" id="editStudent" enctype="multipart/form-data">
                                     @csrf
                                     <input type="hidden" name="id" value="{{$user->id}}">
                                     <div class="row">
@@ -39,7 +39,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
                                                 <label for="" class="mb-2">Email</label>
-                                                <input type="email" class="form-control ct_input" name="email" placeholder="Email" value="{{ $user->email}}">
+                                                <input type="email" class="form-control ct_input" name="email" placeholder="Email" value="{{ $user->email}}" readonly>
                                                 @error('email')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -59,9 +59,23 @@
                                                 <label for="profile_image" class="mb-2"><strong>Profile Image</strong></label>
                                                 <input name="profile_image" id="profile_image" type="file" class="form-control ct_input" onchange="loadProfileImage(event)" accept="image/*">
 
-                                                <!-- Display Current or Default Profile Image -->
+                                                <!-- Display Current or Google or Default Profile Image -->
                                                 <div id="imagePreviewWrapper" class="mt-2" style="display: block;">
-                                                    <img id="imagePreview" src="{{ old('profile_image', $user->profile_image) }}" alt="Current Image" style="width: 100px; height: 100px; border-radius: 8px;">
+                                                    @php
+                                                    $profileImage = $user->profile_image ?? '';
+                                                    $googleImage = $user->google_profile_image ?? '';
+                                                    $defaultImage = asset('images/no-user.webp');
+
+                                                    if (basename($profileImage) === 'no-user.webp' && !empty($googleImage)) {
+                                                    $imageToShow = $googleImage;
+                                                    } elseif (!empty($profileImage) && $profileImage !== 'no-user.webp') {
+                                                    $imageToShow = $profileImage;
+                                                    } else {
+                                                    $imageToShow = $defaultImage;
+                                                    }
+                                                    @endphp
+
+                                                    <img id="imagePreview" src="{{ $imageToShow }}" alt="Profile Image" style="width: 100px; height: 100px; border-radius: 8px;">
                                                 </div>
 
                                                 @error('profile_image')
@@ -86,7 +100,11 @@
 @section('script')
 <script>
     $(document).ready(function() {
-        $('#addUser').validate({
+        $.validator.addMethod("ukNumber", function(value, element) {
+            return this.optional(element) || /^[1-9][0-9]{6,14}$/.test(value);
+        }, "Please enter a valid number (7-15 digits, cannot start with 0).");
+
+        $('#editStudent').validate({
             rules: {
                 name: {
                     required: true,
@@ -98,6 +116,8 @@
                 },
                 number: {
                     required: true,
+                    digits: true,
+                    ukNumber: true,
                 },
             },
             messages: {
@@ -109,7 +129,10 @@
                     required: "Please enter your email address.",
                     email: "Please enter a valid email address.",
                 },
-                number: 'Please enter user mobile number.',
+                number: {
+                    required: "Please enter mobile number.",
+                    digits: "Only numeric values are allowed.",
+                },
             },
 
             submitHandler: function(form) {

@@ -1162,6 +1162,164 @@ class GoogleClassroomController extends Controller
         ]);
     }
 
+    // get students by the course
+    public function listStudentsByCourse(Request $request)
+    {
+        $accessToken = $request->bearerToken();
+
+        if (!$accessToken) {
+            return response()->json(['message' => 'Google token not found'], 400);
+        }
+
+        $request->validate([
+            'course_id' => 'required|string'
+        ]);
+
+        try {
+            // Authenticate and find teacher
+            $this->client = new \Google\Client();
+            $this->client->setAccessToken($accessToken);
+
+            $teacher = User::where('google_token', $accessToken)->first();
+
+            if (!$teacher) {
+                return response()->json(['success' => false, 'message' => 'Teacher not found'], 404);
+            }
+
+            $courseId = $request->input('course_id');
+
+            // Fetch students only for this specific course
+            $studentsGrouped = ClassroomStudent::where('teacher_id', $teacher->id)
+                ->where('course_id', $courseId)
+                ->selectRaw('student_id, name, email, MAX(created_at) as created_at')
+                ->groupBy('student_id', 'name', 'email')
+                ->get();
+
+            if ($studentsGrouped->isEmpty()) {
+                return response()->json(['success' => false, 'message' => 'No students found for this course'], 404);
+            }
+
+            $students = [];
+
+            // Get course name once
+            $course = GoogleCourse::where('course_id', $courseId)->first();
+            $courseName = $course ? $course->name : 'Unknown Course';
+
+            foreach ($studentsGrouped as $student) {
+                $students[] = [
+                    'student_id' => $student->student_id,
+                    'name' => ucwords($student->name),
+                    'email' => $student->email,
+                    'course_name' => $courseName,
+                    'created_at' => $student->created_at,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'course_id' => $courseId,
+                'course_name' => $courseName,
+                'students' => $students
+            ], 200);
+        } catch (\Google\Service\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getAssignmentListByCourse(Request $request)
+    {
+        $accessToken = $request->bearerToken();
+
+        if (!$accessToken) {
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
+        }
+
+        // Validate request input
+        $validated = $request->validate([
+            'course_id' => 'required|string',
+        ]);
+
+        try {
+            // Find teacher using access token
+            $teacher = User::where('google_token', $accessToken)->first();
+
+            if (!$teacher) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Teacher not found or unauthorized.'
+                ], 401);
+            }
+
+            $this->client = new \Google\Client();
+            $this->client->setAccessToken($teacher->google_token);
+
+            // Fetch course
+            $course = GoogleCourse::where('course_id', $validated['course_id'])->first();
+
+            if (!$course) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Course not found.'
+                ], 404);
+            }
+
+            // Get all assignments for this teacher and course
+            $assignments = GoogleAssignment::where('owner_id', $teacher->id)
+                ->where('course_id', $validated['course_id'])
+                ->with('course')
+                ->get();
+
+            if ($assignments->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No assignments found for this course.',
+                    'course_id' => $course->course_id,
+                    'course_name' => $course->name,
+                    'assignments' => []
+                ], 404);
+            }
+
+            // Format assignments
+            $formatted = $assignments->map(function ($assignment) {
+                return [
+                    'id' => $assignment->id,
+                    'assignment_id' => $assignment->assignment_id,
+                    'course_id' => $assignment->course_id,
+                    'course_name' => optional($assignment->course)->name,
+                    'title' => $assignment->title,
+                    'max_points' => $assignment->max_points,
+                    'description' => $assignment->description,
+                    'due_date' => $assignment->due_date
+                        ? date('Y-m-d', strtotime($assignment->due_date))
+                        : null,
+                    'due_time' => $assignment->due_time,
+                    'submitted_at' => $assignment->submitted_at,
+                    'attachment_link' => $assignment->attachment_link
+                        ? json_decode($assignment->attachment_link, true)
+                        : [],
+                    'status' => $assignment->status,
+                    'created_at' => $assignment->created_at,
+                    'updated_at' => $assignment->updated_at,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'course_id' => $course->course_id,
+                'course_name' => $course->name,
+                'assignments' => $formatted
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     // delete course by teacher
     public function deleteCourse($course_id)
     {

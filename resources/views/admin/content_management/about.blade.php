@@ -69,11 +69,24 @@
 @endsection
 @section('script')
 <script>
+    // ClassicEditor
+    //     .create(document.querySelector('#about_content'), {
+    //         toolbar: [
+    //             'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'insertTable', '|', 'undo', 'redo', '|', 'imageUpload'
+    //             // Add other items as needed, but exclude 'blockQuote' and 'mediaEmbed'
+    //         ],
+    //     })
+    //     .catch(error => {
+    //         console.error(error);
+    //     });
     ClassicEditor
         .create(document.querySelector('#about_content'), {
+            ckfinder: {
+                uploadUrl: "{{ route('ckeditor.upload') }}?_token={{ csrf_token() }}"
+            },
             toolbar: [
-                'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', '|', 'undo', 'redo'
-                // Add other items as needed, but exclude 'imageUpload' and 'mediaEmbed'
+                'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList',
+                'insertTable', '|', 'undo', 'redo', '|', 'imageUpload'
             ],
         })
         .catch(error => {
