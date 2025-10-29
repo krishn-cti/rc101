@@ -32,6 +32,9 @@ class SubscriptionController extends Controller
                 ->addColumn('monthly_price', function ($row) {
                     return "$ " . $row->monthly_price;
                 })
+                ->addColumn('type', function ($row) {
+                    return $row->is_paid == 'Yes' ? 'Paid' : 'Free';
+                })
                 ->addColumn('yearly_price', function ($row) {
                     return "$ " . $row->yearly_price;
                 })
@@ -49,7 +52,7 @@ class SubscriptionController extends Controller
                      </div>';
                     return $btn;
                 })
-                ->rawColumns(['image', 'action'])
+                ->rawColumns(['image', 'type', 'action'])
                 ->make(true);
         }
 
@@ -71,25 +74,54 @@ class SubscriptionController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:150',
-            'description' => 'required',
-            'monthly_price' => 'required|numeric|min:0',
-            'yearly_price' => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'is_paid' => 'required|in:Yes,No',
+            'monthly_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->is_paid === 'Yes' && $value <= 0) {
+                        $fail('Monthly price must be greater than 0 for paid plans.');
+                    }
+                    if ($request->is_paid === 'No' && $value != 0) {
+                        $fail('Monthly price must be 0 for free plans.');
+                    }
+                },
+            ],
+            'yearly_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->is_paid === 'Yes' && $value <= 0) {
+                        $fail('Yearly price must be greater than 0 for paid plans.');
+                    }
+                    if ($request->is_paid === 'No' && $value != 0) {
+                        $fail('Yearly price must be 0 for free plans.');
+                    }
+                },
+            ],
             'user_access_count' => 'required|numeric|min:0',
         ]);
+
+        $monthlyPrice = $request->is_paid === 'No' ? 0 : $request->monthly_price;
+        $yearlyPrice  = $request->is_paid === 'No' ? 0 : $request->yearly_price;
 
         $isInserted = Subscription::insert([
             'name' => $request->name,
             'description' => $request->description,
-            'monthly_price' => $request->monthly_price,
-            'yearly_price' => $request->yearly_price,
+            'is_paid' => $request->is_paid,
+            'monthly_price' => $monthlyPrice,
+            'yearly_price' => $yearlyPrice,
             'user_access_count' => $request->user_access_count,
         ]);
 
         if ($isInserted) {
             return redirect('subscription-list')->with('success_msg', 'Data added successfully!');
-        } else {
-            return redirect('subscription-list')->with('error_msg', 'Something went wrong!');
         }
+
+        return redirect('subscription-list')->with('error_msg', 'Something went wrong!');
     }
 
     /**
@@ -115,39 +147,60 @@ class SubscriptionController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'id' => 'required', // Ensure an id is provided for updating
+            'id' => 'required|exists:subscriptions,id',
             'name' => 'required|string|max:150',
-            'description' => 'required',
-            'monthly_price' => 'required|numeric|min:0',
-            'yearly_price' => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'is_paid' => 'required|in:Yes,No',
+            'monthly_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->is_paid === 'Yes' && $value <= 0) {
+                        $fail('Monthly price must be greater than 0 for paid plans.');
+                    }
+                    if ($request->is_paid === 'No' && $value != 0) {
+                        $fail('Monthly price must be 0 for free plans.');
+                    }
+                },
+            ],
+            'yearly_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->is_paid === 'Yes' && $value <= 0) {
+                        $fail('Yearly price must be greater than 0 for paid plans.');
+                    }
+                    if ($request->is_paid === 'No' && $value != 0) {
+                        $fail('Yearly price must be 0 for free plans.');
+                    }
+                },
+            ],
             'user_access_count' => 'required|numeric|min:0',
         ]);
 
         $id = $request->id;
 
-        // Check if the provided id exists
-        $existingData = Subscription::where('id', $id)->first();
-        if (!$existingData) {
-            return redirect('subscription-list')->with('error_msg', 'Data not found.');
-        }
+        $monthlyPrice = $request->is_paid === 'No' ? 0 : $request->monthly_price;
+        $yearlyPrice  = $request->is_paid === 'No' ? 0 : $request->yearly_price;
 
-        // Update fields
         $updateData = [
             'name' => $request->name,
             'description' => $request->description,
-            'monthly_price' => $request->monthly_price,
-            'yearly_price' => $request->yearly_price,
+            'is_paid' => $request->is_paid,
+            'monthly_price' => $monthlyPrice,
+            'yearly_price' => $yearlyPrice,
             'user_access_count' => $request->user_access_count,
         ];
 
-        // Perform the update
         $isUpdated = Subscription::where('id', $id)->update($updateData);
 
         if ($isUpdated) {
             return redirect('subscription-list')->with('success_msg', 'Data updated successfully!');
-        } else {
-            return redirect('subscription-list')->with('error_msg', 'Failed to update data.');
         }
+
+        return redirect('subscription-list')->with('error_msg', 'Failed to update data.');
     }
 
     /**

@@ -37,8 +37,21 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
+                                                <label for="is_paid" class="mb-2">Type</label>
+                                                <select class="form-control ct_input" name="is_paid" id="is_paid" required>
+                                                    <option value="">Select Type</option>
+                                                    <option value="Yes" {{ old('is_paid') == 'Yes' ? 'selected' : '' }}>Paid</option>
+                                                    <option value="No" {{ old('is_paid') == 'No' ? 'selected' : '' }}>Free</option>
+                                                </select>
+                                                @error('is_paid')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
                                                 <label for="monthly_price" class="mb-2">Monthly Price (in dollar)</label>
-                                                <input type="text" class="form-control ct_input" name="monthly_price" placeholder="Monthly Price" value="{{ old('monthly_price')}}">
+                                                <input type="text" class="form-control ct_input" name="monthly_price" id="monthly_price" placeholder="Monthly Price" value="{{ old('monthly_price')}}">
                                                 @error('monthly_price')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -47,7 +60,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
                                                 <label for="yearly_price" class="mb-2">Yearly Price (in dollar)</label>
-                                                <input type="text" class="form-control ct_input" name="yearly_price" placeholder="Yearly Price" value="{{ old('yearly_price')}}">
+                                                <input type="text" class="form-control ct_input" name="yearly_price" id="yearly_price" placeholder="Yearly Price" value="{{ old('yearly_price')}}">
                                                 @error('yearly_price')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -100,22 +113,28 @@
 </script>
 <script>
     $(document).ready(function() {
+
+        // Initialize validation
         $('#addSubscription').validate({
             ignore: [],
             rules: {
                 name: {
                     required: true,
-                    maxlength: 150, // Ensure the length is within 150 characters
+                    maxlength: 150
                 },
                 monthly_price: {
-                    required: true,
+                    required: function() {
+                        return $('#is_paid').val() === 'Yes';
+                    },
                     number: true,
-                    min: 0
+                    min: 1 // must be > 0 for paid plans
                 },
                 yearly_price: {
-                    required: true,
+                    required: function() {
+                        return $('#is_paid').val() === 'Yes';
+                    },
                     number: true,
-                    min: 0
+                    min: 1
                 },
                 user_access_count: {
                     required: true,
@@ -123,23 +142,26 @@
                     min: 0
                 },
                 description: {
-                    required: true,
+                    required: true
+                },
+                is_paid: {
+                    required: true
                 }
             },
             messages: {
                 name: {
                     required: "The plan name is required.",
-                    maxlength: "The plan name must not exceed 150 characters.",
+                    maxlength: "The plan name must not exceed 150 characters."
                 },
                 monthly_price: {
-                    required: "Monthly price is required.",
+                    required: "Monthly price is required for paid plans.",
                     number: "Please enter a valid number.",
-                    min: "Price cannot be negative."
+                    min: "Monthly price must be greater than 0 for paid plans."
                 },
                 yearly_price: {
-                    required: "Yearly price is required.",
+                    required: "Yearly price is required for paid plans.",
                     number: "Please enter a valid number.",
-                    min: "Price cannot be negative."
+                    min: "Yearly price must be greater than 0 for paid plans."
                 },
                 user_access_count: {
                     required: "User access count is required.",
@@ -147,11 +169,14 @@
                     min: "Count cannot be negative."
                 },
                 description: {
-                    required: "The plan description is required.",
+                    required: "The plan description is required."
+                },
+                is_paid: {
+                    required: "Please select whether the plan is paid or free."
                 }
             },
             errorPlacement: function(error, element) {
-                if (element.attr("name") == "description") {
+                if (element.attr("name") === "description") {
                     error.appendTo(element.next());
                 } else {
                     error.insertAfter(element);
@@ -161,6 +186,37 @@
                 form.submit();
             }
         });
+
+        // Toggle fields based on plan type
+        $('#is_paid').on('change', function() {
+            const isPaid = $(this).val();
+
+            if (isPaid === 'No') {
+                // FREE PLAN → disable and set price = 0
+                $('#monthly_price, #yearly_price').each(function() {
+                    $(this)
+                        .val('0')
+                        .prop('disabled', true)
+                        .rules('remove', 'required number min');
+                });
+            } else {
+                // PAID PLAN → enable fields and apply validation
+                $('#monthly_price, #yearly_price').each(function() {
+                    $(this)
+                        .prop('disabled', false)
+                        .rules('add', {
+                            required: true,
+                            number: true,
+                            min: 1,
+                            messages: {
+                                required: "This field is required for paid plans.",
+                                number: "Please enter a valid number.",
+                                min: "Price must be greater than 0 for paid plans."
+                            }
+                        });
+                });
+            }
+        }).trigger('change'); // Trigger once on page load
     });
 </script>
 @endsection

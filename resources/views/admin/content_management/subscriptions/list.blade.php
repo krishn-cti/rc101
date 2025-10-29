@@ -27,6 +27,7 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Name</th>
+                                            <th>Type</th>
                                             <th>Monthly Price</th>
                                             <th>Yearly Price</th>
                                             <th>User Access Count</th>
@@ -60,6 +61,10 @@
                 {
                     data: 'name',
                     name: 'name'
+                },
+                {
+                    data: 'type',
+                    name: 'type'
                 },
                 {
                     data: 'monthly_price',
