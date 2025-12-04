@@ -19,11 +19,14 @@ class GoogleAssignment extends Model
         'owner_id',
         'title',
         'description',
+        'max_points',
         'due_date',
         'due_time',
         'attachment_link',
+        'curriculum_ids',
         'status',
         'submitted_at',
+        'is_pushed_on_google',
         'created_at'
     ];
 

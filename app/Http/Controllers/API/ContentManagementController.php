@@ -1944,7 +1944,7 @@ class ContentManagementController extends Controller
     //         'message' => 'No data found!',
     //     ], 200);
     // }
-    public function getAllCurriculums()
+    public function getAllCurriculumsOld()
     {
         $curriculums = Curriculum::with('category')
             ->orderBy('category_id', 'ASC')
@@ -1978,6 +1978,62 @@ class ContentManagementController extends Controller
                         'course_id' => $assignment->course_id,
                         'due_date' => $assignment->due_date,
                         'due_time' => $assignment->due_time,
+                    ] : $item->embed_link,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Curriculum data retrieved successfully.',
+                'data' => $formattedData,
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No data found!',
+        ], 200);
+    }
+
+    public function getAllCurriculums()
+    {
+        $assignments = GoogleAssignment::orderBy('id', 'DESC')->get(); // latest first
+
+        $curriculums = Curriculum::with('category')
+            ->orderBy('category_id', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        if ($curriculums->isNotEmpty()) {
+
+            $formattedData = $curriculums->map(function ($item) use ($assignments) {
+
+                // find assignment for this curriculum
+                $assignment = $assignments->first(function ($a) use ($item) {
+                    if (!$a->attachment_link) return false;
+
+                    $links = json_decode($a->attachment_link, true);
+                    return is_array($links) && in_array($item->embed_link, $links);
+                });
+
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'embed_link' => $item->embed_link,
+                    'file_type' => $item->file_type,
+                    'category_id' => $item->category_id,
+                    'category_name' => $item->category->category_name ?? '#N/A',
+                    'assignment' => $assignment ? [
+                        'id' => $assignment->id,
+                        'assignment_id' => $assignment->assignment_id,
+                        'title' => $assignment->title,
+                        'max_points' => $assignment->max_points,
+                        'attachment_link' => json_decode($assignment->attachment_link, true) ?? [],
+                        'course_id' => $assignment->course_id,
+                        'due_date' => $assignment->due_date,
+                        'due_time' => $assignment->due_time,
                     ] : null,
                     'created_at' => $item->created_at,
                     'updated_at' => $item->updated_at,
@@ -1994,6 +2050,72 @@ class ContentManagementController extends Controller
         return response()->json([
             'success' => false,
             'message' => 'No data found!',
+        ], 200);
+    }
+
+    public function getAllCurriculumAssignments()
+    {
+        // Get all assignments once
+        $assignments = GoogleAssignment::orderBy('id', 'DESC')->get();
+
+        // Get all categories
+        $categories = Category::orderBy('id', 'ASC')->get();
+
+        if ($categories->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+
+        $formatted = $categories->map(function ($category) use ($assignments) {
+
+            // Get curriculums for this category
+            $curriculums = Curriculum::where('category_id', $category->id)
+                ->orderBy('id', 'DESC')
+                ->get();
+
+            $curriculumList = $curriculums->map(function ($item) use ($assignments) {
+
+                // Find assignment mapped with this curriculum
+                $assignment = $assignments->first(function ($a) use ($item) {
+                    if (!$a->curriculum_ids) return false;
+                    $currIds = json_decode($a->curriculum_ids, true);
+                    return is_array($currIds) && in_array($item->id, $currIds);
+                });
+
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'embed_link' => $item->embed_link,
+                    'file_type' => $item->file_type,
+                    'assignment' => $assignment ? [
+                        'id' => $assignment->id,
+                        'assignment_id' => $assignment->assignment_id,
+                        'title' => $assignment->title,
+                        'max_points' => $assignment->max_points,
+                        'curriculum_ids' => json_decode($assignment->curriculum_ids, true) ?? [],
+                        'attachment_link' => json_decode($assignment->attachment_link, true) ?? [],
+                        'course_id' => $assignment->course_id,
+                        'due_date' => $assignment->due_date,
+                        'due_time' => $assignment->due_time,
+                    ] : null,
+                    'created_at' => $item->created_at,
+                    'updated_at' => $item->updated_at,
+                ];
+            });
+
+            return [
+                'category_id' => $category->id,
+                'category_name' => $category->category_name,
+                'curriculums' => $curriculumList,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Curriculum list grouped by category fetched successfully.',
+            'data' => $formatted,
         ], 200);
     }
 }

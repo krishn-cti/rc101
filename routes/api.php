@@ -147,6 +147,7 @@ Route::middleware(['google.auth:teacher'])->group(function () {
         Route::controller(ContentManagementController::class)->group(function () {
             Route::get('get-unit-categories', 'getUnitCategories');
             Route::get('get-all-curriculums', 'getAllCurriculums');
+            Route::get('get-all-curriculum-assignments', 'getAllCurriculumAssignments');
         });
     });
 });
