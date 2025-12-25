@@ -68,17 +68,7 @@
 
 @endsection
 @section('script')
-<script>
-    // ClassicEditor
-    //     .create(document.querySelector('#about_content'), {
-    //         toolbar: [
-    //             'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'insertTable', '|', 'undo', 'redo', '|', 'imageUpload'
-    //             // Add other items as needed, but exclude 'blockQuote' and 'mediaEmbed'
-    //         ],
-    //     })
-    //     .catch(error => {
-    //         console.error(error);
-    //     });
+<!-- <script>
     ClassicEditor
         .create(document.querySelector('#about_content'), {
             ckfinder: {
@@ -92,7 +82,102 @@
         .catch(error => {
             console.error(error);
         });
+</script> -->
+
+<script>
+    const {
+        ClassicEditor,
+        Essentials,
+        Bold,
+        Italic,
+        Underline,
+        Font,
+        Paragraph,
+        List,
+        Link,
+        Table,
+        TableToolbar,
+        Image,
+        ImageUpload,
+        ImageCaption,
+        ImageStyle,
+        Heading,
+        CKFinderUploadAdapter
+    } = CKEDITOR;
+
+    ClassicEditor.create(document.querySelector('#about_content'), {
+        plugins: [
+            Essentials,
+            Paragraph,
+            Heading,
+            Bold,
+            Italic,
+            Underline,
+            Font,
+            List,
+            Link,
+
+            // Table
+            Table,
+            TableToolbar,
+
+            // Image
+            Image,
+            ImageUpload,
+            ImageCaption,
+            ImageStyle,
+
+            // Upload Adapter
+            CKFinderUploadAdapter
+        ],
+
+        toolbar: [
+            'heading',
+            '|',
+            'undo', 'redo',
+            '|',
+            'bold', 'italic', 'underline',
+            '|',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor',
+            '|',
+            'link',
+            'insertTable',
+            'imageUpload',
+            '|',
+            'bulletedList', 'numberedList'
+        ],
+
+        // Image upload API
+        ckfinder: {
+            uploadUrl: "{{ route('ckeditor.upload') }}?_token={{ csrf_token() }}"
+        },
+
+        heading: {
+            options: [
+                { model: 'paragraph', title: 'Paragraph' },
+                { model: 'heading1', view: 'h1', title: 'Heading 1' },
+                { model: 'heading2', view: 'h2', title: 'Heading 2' },
+                { model: 'heading3', view: 'h3', title: 'Heading 3' },
+                { model: 'heading4', view: 'h4', title: 'Heading 4' },
+                { model: 'heading5', view: 'h5', title: 'Heading 5' },
+                { model: 'heading6', view: 'h6', title: 'Heading 6' }
+            ]
+        },
+
+        fontSize: {
+            options: [10, 12, 14, 'default', 18, 20, 24, 28]
+        },
+
+        table: {
+            contentToolbar: [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells'
+            ]
+        }
+    }).catch(console.error);
 </script>
+
 <script>
     $(document).ready(function() {
         $.validator.addMethod("filesize", function(value, element, param) {

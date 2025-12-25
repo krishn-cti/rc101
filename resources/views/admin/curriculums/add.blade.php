@@ -26,7 +26,7 @@
                                 <form action="{{url('curriculums/unit-save')}}" method="POST" id="addCurriculums" enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group mb-3">
                                                 <label for="title" class="mb-2">Title</label>
                                                 <input type="text" class="form-control ct_input" name="title" placeholder="Title" value="{{ old('title')}}">
@@ -35,7 +35,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group mb-3">
                                                 <label for="category_id" class="mb-2">Unit Category</label>
                                                 <select name="category_id" class="form-control ct_input">
@@ -52,20 +52,7 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group mb-3">
-                                                <label for="type" class="mb-2">Type</label>
-                                                <select name="type" class="form-control ct_input">
-                                                    <option value="" disabled selected>Select Doc/Slide</option>
-                                                    <option value="doc" {{ old('type') == 'doc' ? 'selected' : '' }}>Doc</option>
-                                                    <option value="slide" {{ old('type') == 'slide' ? 'selected' : '' }}>Slide</option>
-                                                </select>
-                                                @error('type')
-                                                <div class="text text-danger mt-2">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group mb-3">
                                                 <label for="file_type" class="mb-2">File Type</label>
                                                 <select name="file_type" class="form-control ct_input">
@@ -80,11 +67,65 @@
                                                 @enderror
                                             </div>
                                         </div>
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-3">
+                                                <label for="type" class="mb-2">Type</label>
+                                                 <select name="type" class="form-control ct_input" id="doc_type">
+                                                    <option value="" disabled selected>Select Doc/Slide/PDF</option>
+                                                    <option value="doc" {{ old('type') == 'doc' ? 'selected' : '' }}>Doc</option>
+                                                    <option value="slide" {{ old('type') == 'slide' ? 'selected' : '' }}>Slide</option>
+                                                    <option value="pdf" {{ old('type') == 'pdf' ? 'selected' : '' }}>PDF</option>
+                                                </select>
+                                                @error('type')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-6 mb-3">
+                                            <label for="embed_link" class="mb-2" id="embedLabel">Embed Link</label>
+
+                                            <!-- Text input (default) -->
+                                            <input type="text"
+                                                class="form-control ct_input"
+                                                name="embed_link"
+                                                id="embedText"
+                                                placeholder="Embed Link"
+                                                value="{{ old('embed_link') }}">
+
+                                            <!-- File input (hidden by default) -->
+                                            <input type="file"
+                                                class="form-control ct_input d-none"
+                                                name="embed_link"
+                                                id="embedFile"
+                                                accept="application/pdf">
+
+                                            @error('embed_link')
+                                            <div class="text text-danger mt-2">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <!-- <div class="col-md-6">
                                             <div class="form-group mb-3">
                                                 <label for="embed_link" class="mb-2">Embed Link</label>
                                                 <input type="text" class="form-control ct_input" name="embed_link" placeholder="Embed Link" value="{{ old('embed_link')}}">
                                                 @error('embed_link')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div> -->
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-3">
+                                                <label for="number_of_days" class="mb-2">Number of Days</label>
+                                                <input type="number" class="form-control ct_input" name="number_of_days" placeholder="Number of Days" min="1">
+                                                @error('number_of_days')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
+                                                <label for="description" class="mb-2">Description</label>
+                                                <textarea rows="4" class="form-control ct_input" name="description" id="description" placeholder="Description">{{ old('description') }}</textarea>
+                                                @error('description')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
                                             </div>
@@ -113,17 +154,45 @@
                     required: true,
                     maxlength: 150, // Ensure the length is within 150 characters
                 },
+                description: {
+                    required: true,
+                    maxlength: 255, // Ensure the length is within 255 characters
+                },
             },
             messages: {
                 title: {
                     required: "The title is required.",
                     maxlength: "The title must not exceed 150 characters.",
                 },
+                description: {
+                    required: "The description is required.",
+                    maxlength: "The description must not exceed 255 characters.",
+                },
             },
             submitHandler: function(form) {
                 form.submit();
             }
         });
+
+        function toggleEmbedField() {
+            let type = $('#doc_type').val();
+
+            if (type === 'pdf') {
+                $('#embedText').addClass('d-none');
+                $('#embedFile').removeClass('d-none');
+                $('#embedLabel').text('Upload PDF');
+            } else {
+                $('#embedFile').addClass('d-none');
+                $('#embedText').removeClass('d-none');
+                $('#embedLabel').text('Embed Link');
+            }
+        }
+
+        // On change
+        $('#doc_type').on('change', toggleEmbedField);
+
+        // On page load (for validation errors / old input)
+        toggleEmbedField();
     });
 </script>
 @endsection

@@ -136,20 +136,22 @@ Route::middleware('google.auth:student')->group(function () {
 
 // private route for teachers
 Route::middleware(['google.auth:teacher'])->group(function () {
-    Route::prefix('teacher')->group(function () {
-        Route::controller(PaymentController::class)->group(function () {
-            Route::get('subscriptions', 'getSubscriptions');
-            Route::post('checkout', 'checkout');
-            Route::post('payment-success', 'success');
-            Route::post('cancel-subscription', 'cancelSubscription');
-        });
-
-        Route::controller(ContentManagementController::class)->group(function () {
-            Route::get('get-unit-categories', 'getUnitCategories');
-            Route::get('get-all-curriculums', 'getAllCurriculums');
-            Route::get('get-all-curriculum-assignments', 'getAllCurriculumAssignments');
-        });
+Route::prefix('teacher')->group(function () {
+    Route::controller(PaymentController::class)->group(function () {
+        Route::get('subscriptions', 'getSubscriptions');
+        Route::post('checkout', 'checkout');
+        Route::post('payment-success', 'success');
+        Route::post('cancel-subscription', 'cancelSubscription');
     });
+
+    Route::controller(ContentManagementController::class)->group(function () {
+        Route::get('get-unit-categories', 'getUnitCategories');
+        Route::get('get-all-curriculums', 'getAllCurriculums');
+        Route::get('get-all-curriculum-assignments', 'getAllCurriculumAssignments');
+        Route::get('curriculum/pdf-download/{id}', 'downloadPdf')->name('curriculum.pdf.download');
+
+    });
+});
 });
 
 Route::controller(PaymentController::class)->group(function () {
@@ -169,6 +171,7 @@ Route::controller(ContentManagementController::class)->group(function () {
     Route::post('create-bot', 'createBot');
     Route::post('update-bot', 'updateBot');
     Route::get('get-about-section', 'getAboutSection');
+    Route::get('get-curriculum-overview', 'getCurriculumOverview');
     Route::get('get-home-section', 'getHomeSection');
     Route::get('get-league-page', 'getLeaguePage');
     Route::get('get-all-tournament', 'getAllTournament');

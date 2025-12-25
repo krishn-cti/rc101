@@ -164,7 +164,7 @@
 </div>
 @endsection
 @section('script')
-<script>
+<!-- <script>
     ClassicEditor
         .create(document.querySelector('#long_description'), {
             toolbar: [
@@ -175,6 +175,80 @@
         .catch(error => {
             console.error(error);
         });
+</script> -->
+
+<script>
+    const {
+        ClassicEditor,
+        Essentials,
+        Bold,
+        Italic,
+        Underline,
+        Font,
+        Paragraph,
+        List,
+        Link,
+        Table,
+        TableToolbar,
+        Heading
+    } = CKEDITOR;
+
+    ClassicEditor.create(document.querySelector('#long_description'), {
+        plugins: [
+            Essentials,
+            Paragraph,
+            Heading,
+            Bold,
+            Italic,
+            Underline,
+            Font,
+            List,
+            Link,
+
+            // Table
+            Table,
+            TableToolbar
+        ],
+
+        toolbar: [
+            'heading',
+            '|',
+            'undo', 'redo',
+            '|',
+            'bold', 'italic', 'underline',
+            '|',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor',
+            '|',
+            'link',
+            'insertTable',
+            '|',
+            'bulletedList', 'numberedList'
+        ],
+
+        heading: {
+            options: [
+                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                { model: 'heading1', view: 'h1', title: 'Heading 1' },
+                { model: 'heading2', view: 'h2', title: 'Heading 2' },
+                { model: 'heading3', view: 'h3', title: 'Heading 3' },
+                { model: 'heading4', view: 'h4', title: 'Heading 4' },
+                { model: 'heading5', view: 'h5', title: 'Heading 5' },
+                { model: 'heading6', view: 'h6', title: 'Heading 6' }
+            ]
+        },
+
+        fontSize: {
+            options: [10, 12, 14, 'default', 18, 20, 24, 28]
+        },
+
+        table: {
+            contentToolbar: [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells'
+            ]
+        }
+    }).catch(console.error);
 </script>
 <script>
     $(document).ready(function() {

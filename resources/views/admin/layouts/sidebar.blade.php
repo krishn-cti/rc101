@@ -82,6 +82,9 @@
                             @else
                             <ul class="treeview-menu" style="display: none;">
                                 @endif
+                                <li class="menu-header-title {{ request()->is('curriculums/overview') ? 'active' : '' }} ps-0">
+                                    <a href="{{ url('curriculums/overview') }}"><i class='bx bx-book-alt'></i> Curriculum Overview</a>
+                                </li>
                                 <li class="menu-header-title {{ request()->is('curriculums/unit-list', 'curriculums/unit-add', 'curriculums/unit-edit/*') ? 'active' : '' }} ps-0">
                                     <a href="{{ url('curriculums/unit-list') }}"><i class='bx bx-buildings'></i> Curriculum Lessons</a>
                                 </li>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Curriculum;
 use App\Models\SubCategory;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -133,11 +134,12 @@ class CategoryController extends Controller
             return response()->json(['error' => 'Category not found.'], 404);
         }
 
-        $products = Product::where('category_id', $category->id)->exists();
-        $subCategories = SubCategory::where('category_id', $category->id)->exists();
+        // $products = Product::where('category_id', $category->id)->exists();
+        // $subCategories = SubCategory::where('category_id', $category->id)->exists();
+        $curriculums = Curriculum::where('category_id', $category->id)->exists();
 
-        if ($products || $subCategories) {
-            return response()->json(['error' => 'You cannot remove this category as it is associated with products or subcategories.'], 422);
+        if ($curriculums) {
+            return response()->json(['error' => 'You cannot remove this category as it is associated with curriculums.'], 422);
         }
 
         $category->delete();

@@ -24,7 +24,11 @@ class CurriculumController extends Controller
                     return ++$index;
                 })
                 ->addColumn('embed_link', function ($row) {
-                    return '<span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span>';
+                    if ($row->type == 'pdf') {
+                        return '<a href="' . url('uploads/curriculum_pdfs/' . $row->embed_link) . '" target="_blank"><span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span></a>';
+                    } else {
+                        return '<a href="' .  $row->embed_link . '" target="_blank"><span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span></a>';
+                    }
                 })
                 ->addColumn('file_type', function ($row) {
                     $types = [
@@ -76,29 +80,87 @@ class CurriculumController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'category_id' => 'required|numeric',
+    //         'title' => 'required|string|max:150',
+    //         'type' => 'required|in:doc,slide',
+    //         'file_type' => 'required|in:slide_decks,student_pages,instructions,samples',
+    //         'embed_link' => 'required|url',
+    //         'number_of_days' => 'required|numeric',
+    //         'description' => 'required|string|max:255',
+    //     ]);
+
+    //     $isInserted = Curriculum::insert([
+    //         'title' => $request->title,
+    //         'category_id' => $request->category_id,
+    //         'type' => $request->type,
+    //         'file_type' => $request->file_type,
+    //         'embed_link' => $request->embed_link,
+    //         'number_of_days' => $request->number_of_days,
+    //         'description' => $request->description,
+    //     ]);
+
+    //     if ($isInserted) {
+    //         return redirect('curriculums/unit-list')->with('success_msg', 'Data added successfully!');
+    //     } else {
+    //         return redirect('curriculums/unit-list')->with('error_msg', 'Something went wrong!');
+    //     }
+    // }
+
     public function store(Request $request)
     {
-        $request->validate([
-            'category_id' => 'required|numeric',
-            'title' => 'required|string|max:150',
-            'type' => 'required|in:doc,slide',
-            'file_type' => 'required|in:slide_decks,student_pages,instructions,samples',
-            'embed_link' => 'required|url',
-        ]);
+        // Base validation
+        $rules = [
+            'category_id'    => 'required|numeric',
+            'title'          => 'required|string|max:150',
+            'type'           => 'required|in:doc,slide,pdf',
+            'file_type'      => 'required|in:slide_decks,student_pages,instructions,samples',
+            'number_of_days' => 'required|numeric',
+            'description'    => 'required|string|max:255',
+        ];
 
+        // Conditional validation for embed_link
+        if ($request->type === 'pdf') {
+            $rules['embed_link'] = 'required|file|mimes:pdf|max:10240'; // 10MB
+        } else {
+            $rules['embed_link'] = 'required|url';
+        }
+
+        $request->validate($rules);
+
+        // Handle embed_link value
+        $embedLink = null;
+
+        if ($request->type === 'pdf' && $request->hasFile('embed_link')) {
+            $file = $request->file('embed_link');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/curriculum_pdfs'), $fileName);
+
+            $embedLink =  $fileName;
+        } else {
+            $embedLink = $request->embed_link;
+        }
+
+        // Insert data
         $isInserted = Curriculum::insert([
-            'title' => $request->title,
-            'category_id' => $request->category_id,
-            'type' => $request->type,
-            'file_type' => $request->file_type,
-            'embed_link' => $request->embed_link,
+            'title'          => $request->title,
+            'category_id'    => $request->category_id,
+            'type'           => $request->type,
+            'file_type'      => $request->file_type,
+            'embed_link'     => $embedLink,
+            'number_of_days' => $request->number_of_days,
+            'description'    => $request->description,
         ]);
 
         if ($isInserted) {
-            return redirect('curriculums/unit-list')->with('success_msg', 'Data added successfully!');
-        } else {
-            return redirect('curriculums/unit-list')->with('error_msg', 'Something went wrong!');
+            return redirect('curriculums/unit-list')
+                ->with('success_msg', 'Data added successfully!');
         }
+
+        return redirect('curriculums/unit-list')
+            ->with('error_msg', 'Something went wrong!');
     }
 
     /**
@@ -122,42 +184,106 @@ class CurriculumController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    // public function update(Request $request)
+    // {
+    //     $request->validate([
+    //         'id' => 'required', // Ensure an id is provided for updating
+    //         'category_id' => 'required|numeric',
+    //         'title' => 'required|string|max:150',
+    //         'type' => 'required|in:doc,slide',
+    //         'file_type' => 'required|in:slide_decks,student_pages,instructions,samples',
+    //         'embed_link' => 'required|url',
+    //         'number_of_days' => 'required|numeric',
+    //         'description' => 'required|string|max:255',
+    //     ]);
+
+    //     $id = $request->id;
+
+    //     // Check if the provided id exists
+    //     $existingData = Curriculum::where('id', $id)->first();
+    //     if (!$existingData) {
+    //         return redirect('curriculums/unit-list')->with('error_msg', 'Data not found.');
+    //     }
+
+    //     // Update fields
+    //     $updateData = [
+    //         'title' => $request->title,
+    //         'category_id' => $request->category_id,
+    //         'type' => $request->type,
+    //         'file_type' => $request->file_type,
+    //         'embed_link' => $request->embed_link,
+    //         'number_of_days' => $request->number_of_days,
+    //         'description' => $request->description,
+    //     ];
+
+    //     // Perform the update
+    //     $isUpdated = Curriculum::where('id', $id)->update($updateData);
+
+    //     if ($isUpdated) {
+    //         return redirect('curriculums/unit-list')->with('success_msg', 'Data updated successfully!');
+    //     } else {
+    //         return redirect('curriculums/unit-list')->with('error_msg', 'Failed to update data.');
+    //     }
+    // }
+
     public function update(Request $request)
     {
-        $request->validate([
-            'id' => 'required', // Ensure an id is provided for updating
-            'category_id' => 'required|numeric',
-            'title' => 'required|string|max:150',
-            'type' => 'required|in:doc,slide',
-            'file_type' => 'required|in:slide_decks,student_pages,instructions,samples',
-            'embed_link' => 'required|url',
-        ]);
-
-        $id = $request->id;
-
-        // Check if the provided id exists
-        $existingData = Curriculum::where('id', $id)->first();
-        if (!$existingData) {
-            return redirect('curriculums/unit-list')->with('error_msg', 'Data not found.');
-        }
-
-        // Update fields
-        $updateData = [
-            'title' => $request->title,
-            'category_id' => $request->category_id,
-            'type' => $request->type,
-            'file_type' => $request->file_type,
-            'embed_link' => $request->embed_link,
+        $rules = [
+            'id'              => 'required|exists:cms_curriculums,id',
+            'category_id'     => 'required|numeric',
+            'title'           => 'required|string|max:150',
+            'type'            => 'required|in:doc,slide,pdf',
+            'file_type'       => 'required|in:slide_decks,student_pages,instructions,samples',
+            'number_of_days'  => 'required|numeric',
+            'description'     => 'required|string|max:255',
         ];
 
-        // Perform the update
-        $isUpdated = Curriculum::where('id', $id)->update($updateData);
-
-        if ($isUpdated) {
-            return redirect('curriculums/unit-list')->with('success_msg', 'Data updated successfully!');
+        if ($request->type === 'pdf') {
+            $rules['embed_link'] = 'nullable|file|mimes:pdf|max:10240';
         } else {
-            return redirect('curriculums/unit-list')->with('error_msg', 'Failed to update data.');
+            $rules['embed_link'] = 'required|url';
         }
+
+        $request->validate($rules);
+
+        $curriculum = Curriculum::findOrFail($request->id);
+
+        $embedLink = $curriculum->embed_link;
+
+        if ($request->type === 'pdf') {
+
+            if ($request->hasFile('embed_link')) {
+
+                // delete old pdf
+                if (
+                    $curriculum->embed_link &&
+                    file_exists(public_path('uploads/curriculum_pdfs/' . $curriculum->embed_link))
+                ) {
+                    @unlink(public_path('uploads/curriculum_pdfs/' . $curriculum->embed_link));
+                }
+
+                $file = $request->file('embed_link');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/curriculum_pdfs'), $fileName);
+
+                $embedLink = $fileName;
+            }
+        } else {
+            $embedLink = $request->embed_link;
+        }
+
+        Curriculum::where('id', $request->id)->update([
+            'title'          => $request->title,
+            'category_id'    => $request->category_id,
+            'type'           => $request->type,
+            'file_type'      => $request->file_type,
+            'embed_link'     => $embedLink,
+            'number_of_days' => $request->number_of_days,
+            'description'    => $request->description,
+        ]);
+
+        return redirect('curriculums/unit-list')
+            ->with('success_msg', 'Data updated successfully!');
     }
 
     /**

@@ -93,6 +93,29 @@ class ContentManagementController extends Controller
             ], 200);
         }
     }
+    /**
+     * Write code on this method for get curriculum overview
+     *
+     * @return response()
+     */
+    public function getCurriculumOverview()
+    {
+        $curriculumOverview = DB::table('cms_curriculum_contents')->orderBy('id', 'DESC')->first();
+
+        if ($curriculumOverview) {
+            $response = [
+                'success' => true,
+                'message' => 'Curriculum overview retrieved successfully.',
+                'data' => $curriculumOverview,
+            ];
+            return response()->json($response, 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No data found!',
+            ], 200);
+        }
+    }
 
     /**
      * Write code on this method for get home page detail
@@ -1997,7 +2020,7 @@ class ContentManagementController extends Controller
         ], 200);
     }
 
-    public function getAllCurriculums()
+    public function getAllCurriculums_151225()
     {
         $assignments = GoogleAssignment::orderBy('id', 'DESC')->get(); // latest first
 
@@ -2052,6 +2075,97 @@ class ContentManagementController extends Controller
             'message' => 'No data found!',
         ], 200);
     }
+
+    // public function getAllCurriculums()
+    // {
+    //     $curriculums = Curriculum::with('category')
+    //         ->orderBy('category_id', 'ASC')
+    //         ->orderBy('id', 'DESC')
+    //         ->get();
+
+    //     if ($curriculums->isNotEmpty()) {
+
+    //         $curriculums->transform(function ($row) {
+
+    //             if ($row->type === 'pdf') {
+    //                 $row->embed_link = url('uploads/curriculum_pdfs/' . $row->embed_link);
+    //             } else {
+    //                 $row->embed_link;
+    //             }
+
+    //             return $row;
+    //         });
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Curriculum data retrieved successfully.',
+    //             'data'    => $curriculums,
+    //         ], 200);
+    //     }
+
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => 'No data found!',
+    //     ], 200);
+    // }
+
+    public function getAllCurriculums()
+    {
+        $curriculums = Curriculum::with('category')
+            ->orderBy('category_id', 'ASC')
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        if ($curriculums->isNotEmpty()) {
+
+            $curriculums->transform(function ($row) {
+
+                if ($row->type === 'pdf') {
+                    $row->download_url = route('curriculum.pdf.download', $row->id);
+                } else {
+                    $row->embed_url = $row->embed_link;
+                }
+
+                unset($row->embed_link);
+
+                return $row;
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Curriculum data retrieved successfully.',
+                'data'    => $curriculums,
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No data found!',
+        ], 200);
+    }
+
+    public function downloadPdf($id)
+    {
+        $curriculum = Curriculum::findOrFail($id);
+
+        // Block non-PDF downloads
+        if ($curriculum->type !== 'pdf') {
+            abort(403, 'Download not allowed');
+        }
+
+        $filePath = public_path('uploads/curriculum_pdfs/' . $curriculum->embed_link);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download(
+            $filePath,
+            $curriculum->embed_link,
+            ['Content-Type' => 'application/pdf']
+        );
+    }
+
 
     public function getAllCurriculumAssignments()
     {

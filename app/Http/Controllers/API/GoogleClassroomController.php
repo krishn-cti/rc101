@@ -1489,7 +1489,10 @@ class GoogleClassroomController extends Controller
     // delete assignment by teacher
     public function deleteAssignment($assignment_id)
     {
-        $assignment = GoogleAssignment::where('assignment_id', $assignment_id)->first();
+        // Try to find by assignment_id OR id
+        $assignment = GoogleAssignment::where('assignment_id', $assignment_id)
+            ->orWhere('id', $assignment_id)
+            ->first();
 
         if (!$assignment) {
             return response()->json([

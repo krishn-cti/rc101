@@ -84,6 +84,49 @@ class ContentManagementController extends Controller
     }
 
     // this method is used to view for about section
+    public function editCurriculumContent()
+    {
+        $data['currriculumContent'] = DB::table('cms_curriculum_contents')->first();
+        return view('admin.content_management.curriculum_content', $data);
+    }
+
+    // this method is used to insert or update curriculum content
+    public function updateCurriculumContent(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:100',
+            'description' => 'required',
+        ]);
+
+        $cmsCurriculumContentData = [
+            'title' => $request->input('title', ''),
+            'description' => $request->input('description', ''),
+        ];
+
+        $id = $request->id;
+
+        $cmsCurriculumContent = null;
+        if ($id) {
+            $cmsCurriculumContent = DB::table('cms_curriculum_contents')->find($id);
+
+            if (!$cmsCurriculumContent) {
+                return redirect('curriculums/overview')->with('error_msg', 'No record found with the provided ID.');
+            }
+        }
+
+        // Insert or Update
+        if ($id) {
+            DB::table('cms_curriculum_contents')->where('id', $id)->update($cmsCurriculumContentData);
+            $message = 'Curriculum overview updated successfully!';
+        } else {
+            $id = DB::table('cms_curriculum_contents')->insertGetId($cmsCurriculumContentData);
+            $message = 'New curriculum overview added successfully!';
+        }
+
+        return redirect('curriculums/overview')->with('success_msg', $message);
+    }
+
+    // this method is used to view for about section
     public function editAbout()
     {
         $data['aboutSection'] = DB::table('cms_about_page')->first();
@@ -91,53 +134,6 @@ class ContentManagementController extends Controller
     }
 
     // this method is used to insert or update about page
-    // public function updateAbout(Request $request)
-    // {
-    //     $request->validate([
-    //         'about_title' => 'required|string|max:100',
-    //         'about_content' => 'required',
-    //         'about_banner' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-    //     ]);
-
-    //     $cmsAboutData = [
-    //         'about_title' => $request->input('about_title', ''),
-    //         'about_content' => $request->input('about_content', ''),
-    //     ];
-
-    //     $id = $request->id;
-
-    //     if ($id) {
-    //         $cmsAboutSection = DB::table('cms_about_page')->find($id);
-
-    //         if (!$cmsAboutSection) {
-    //             return redirect('cms/about')->with('error_msg', 'No record found with the provided ID.');
-    //         }
-    //     }
-
-    //     if ($request->hasFile('about_banner')) {
-    //         $about_banner = $request->file('about_banner');
-    //         $fileName = uniqid() . '.' . $about_banner->getClientOriginalExtension();
-    //         $about_banner->move(public_path('cms_images/'), $fileName);
-
-    //         // Delete previous image if it exists
-    //         if (isset($cmsAboutSection->about_banner) && file_exists(public_path('cms_images/' . $cmsAboutSection->about_banner))) {
-    //             unlink(public_path('cms_images/' . $cmsAboutSection->about_banner));
-    //         }
-
-    //         $cmsAboutData['about_banner'] = $fileName;
-    //     }
-
-    //     if ($id) {
-    //         DB::table('cms_about_page')->where('id', $id)->update($cmsAboutData);
-    //         $message = 'About section updated successfully!';
-    //     } else {
-    //         $id = DB::table('cms_about_page')->insertGetId($cmsAboutData);
-    //         $message = 'New about section added successfully!';
-    //     }
-
-    //     return redirect('cms/about')->with($id ? 'success_msg' : 'error_msg', $message);
-    // }
-
     public function updateAbout(Request $request)
     {
         $request->validate([

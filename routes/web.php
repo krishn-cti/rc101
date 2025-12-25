@@ -190,6 +190,12 @@ Route::group(['middleware' => ['admin']], function () {
             Route::post('/category-delete', 'destroy');
         });
 
+        Route::controller(ContentManagementController::class)->group(function () {
+            // route for curriculum content page
+            Route::get('/overview', 'editCurriculumContent');
+            Route::post('/update-overview', 'updateCurriculumContent');
+        });
+
         // route for curriculum units
         Route::controller(CurriculumController::class)->group(function () {
             Route::get('/unit-list', 'index');

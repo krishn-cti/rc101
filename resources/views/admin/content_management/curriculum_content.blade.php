@@ -8,47 +8,41 @@
             <div class="container-fluid">
                 <div class="row g-4">
 
-                    <div class="col-lg-12">
-                        <div class="card">
-                            <div class="card-body">
-                                @if(Session::has('error_msg'))
-                                <div class="alert alert-danger"> {{ Session::get('error_msg') }} </div>
-                                @endif
+                    <div class="col-12">
+                        @if(Session::has('error_msg'))
+                        <div class="alert alert-danger"> {{ Session::get('error_msg') }} </div>
+                        @endif
 
-                                @if (Session::has('success_msg'))
-                                <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
-                                @endif
-                                <div
-                                    class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h3 class="mb-0 ct_fs_22">Add Weight Class</h3>
-                                    <a href="{{url('cms/weight-class-list')}}"> <button class="ct_custom_btn1 mx-auto"> Back to List </button> </a>
+                        @if (Session::has('success_msg'))
+                        <div class="alert alert-success"> {{ Session::get('success_msg') }} </div>
+                        @endif
+                        <div class="card ">
+                            <div class="card-body card-breadcrumb">
+                                <div class="page-title-box mb-4">
+                                    <h3 class="mb-0 ct_fs_22">Curriculum Overview</h3>
                                 </div>
-                                <form action="{{url('cms/weight-class-save')}}" method="POST" id="addWeightClass" enctype="multipart/form-data">
+                                <form action="{{url('curriculums/update-overview')}}" method="POST" id="currriculumContentForm" enctype="multipart/form-data">
                                     @csrf
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group mb-3">
-                                                <label for="weight_class_title" class="mb-2">Weight Class Title</label>
-                                                <input type="text" class="form-control ct_input" name="weight_class_title" placeholder="Weight Class Title" value="{{ old('weight_class_title')}}">
-                                                @error('weight_class_title')
-                                                <div class="text text-danger mt-2">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group mb-3">
-                                                <label for="weight_class_description" class="mb-2">Weight Class Description</label>
-                                                <textarea rows="4" class="form-control ct_input" name="weight_class_description" id="weight_class_description" placeholder="Weight Class Description">{{ old('weight_class_description')}}</textarea>
-                                                @error('weight_class_description')
-                                                <div class="text text-danger mt-2">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
+                                    <input type="hidden" name="id" value="{{$currriculumContent->id ?? null}}">
+                                    <div class="mb-3">
+                                        <label for=""><strong>Title</strong></label>
+                                        <input name="title" type="text" class="form-control ct_input" placeholder="Title" value="{{ old('title', $currriculumContent->title ?? '') }}">
+                                        @error('title')
+                                        <div class="text text-danger mt-2">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    <div class="text-center mt-4">
+                                    <div class="mb-3">
+                                        <label for="description"><strong>Description</strong></label>
+                                        <textarea name="description" id="description" class="form-control" cols="30" rows="5" placeholder="Description">{{ old('description', $currriculumContent->description ?? '') }}</textarea>
+                                        @error('description')
+                                        <div class="text text-danger mt-2">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="text-center mt-5">
                                         <button type="submit" class="ct_custom_btn1 mx-auto">Save</button>
                                     </div>
                                 </form>
+
                             </div>
                         </div>
                     </div>
@@ -57,11 +51,12 @@
         </div>
     </div>
 </div>
+
 @endsection
 @section('script')
 <!-- <script>
     ClassicEditor
-        .create(document.querySelector('#weight_class_description'), {
+        .create(document.querySelector('#description'), {
             toolbar: [
                 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', '|', 'undo', 'redo'
                 // Add other items as needed, but exclude 'imageUpload' and 'mediaEmbed'
@@ -88,7 +83,7 @@
         Heading
     } = CKEDITOR;
 
-    ClassicEditor.create(document.querySelector('#weight_class_description'), {
+    ClassicEditor.create(document.querySelector('#description'), {
         plugins: [
             Essentials,
             Paragraph,
@@ -145,24 +140,30 @@
         }
     }).catch(console.error);
 </script>
+
+<!-- validation for curriculum content form -->
 <script>
     $(document).ready(function() {
-        $('#addWeightClass').validate({
+        $('#currriculumContentForm').validate({
             ignore: [],
             rules: {
-                weight_class_title: {
+                title: {
                     required: true,
+                    maxlength: 150,
                 },
-                weight_class_description: {
+                description: {
                     required: true,
-                },
+                }
             },
             messages: {
-                weight_class_title: 'Please enter weight class title.',
-                weight_class_description: 'Please enter weight class description.',
+                title: {
+                    required: "Please enter title.",
+                    maxlength: "The title must not exceed 150 characters.",
+                },
+                description: "Please enter descriprion.",
             },
             errorPlacement: function(error, element) {
-                if (element.attr("name") == "weight_class_description") {
+                if (element.attr("name") == "description") {
                     error.appendTo(element.next());
                 } else {
                     error.insertAfter(element);
