@@ -16,6 +16,10 @@ use App\Models\UserSubscription;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Client as GuzzleClient;
+use Carbon\Carbon;
+use Google\Service\Classroom\CourseWork;
+use Google\Service\Classroom\Material;
+use Google\Service\Classroom\Link;
 
 class GoogleClassroomController extends Controller
 {
@@ -643,12 +647,158 @@ class GoogleClassroomController extends Controller
     //     }
     // }
 
+    // public function createAssignment(Request $request)
+    // {
+    //     $accessToken = $request->bearerToken();
+
+    //     if (!$accessToken) {
+    //         return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
+    //     }
+
+    //     // --------------------
+    //     // VALIDATION
+    //     // --------------------
+    //     $validated = $request->validate([
+    //         'course_id' => 'required|exists:google_courses,course_id',
+    //         'title' => 'required|string|max:255',
+    //         'description' => 'nullable|string',
+    //         'due_date' => 'nullable|date',
+    //         'due_time' => 'nullable|date_format:H:i',
+    //         'attachment_link' => 'nullable|array',
+    //         'attachment_link.*' => 'nullable|url',
+    //         'curriculum_ids' => 'nullable|array',
+    //         'curriculum_ids.*' => 'integer|exists:cms_curriculums,id',
+    //         'is_pushed_on_google' => 'required|boolean',
+    //         'max_points' => 'nullable|numeric|min:0'
+    //     ]);
+
+    //     // ---------------------------------------------------------
+    //     // FIX: Convert max_points to integer always (REAL ISSUE)
+    //     // ---------------------------------------------------------
+    //     $validated['max_points'] = isset($validated['max_points'])
+    //         ? intval($validated['max_points'])
+    //         : null;
+
+    //     // --------------------
+    //     // GET TEACHER DETAILS
+    //     // --------------------
+    //     $teacher = User::where('google_token', $accessToken)->first();
+    //     if (!$teacher) {
+    //         return response()->json(['success' => false, 'message' => 'Teacher not found'], 404);
+    //     }
+
+    //     // --------------------
+    //     // PREPARE LOCAL ASSIGNMENT DATA
+    //     // --------------------
+    //     $assignmentData = [
+    //         'course_id' => $validated['course_id'],
+    //         'title' => $validated['title'],
+    //         'description' => $validated['description'] ?? '',
+    //         'due_date' => !empty($validated['due_date']) ? date('Y-m-d', strtotime($validated['due_date'])) : null,
+    //         'due_time' => !empty($validated['due_time']) ? date('H:i', strtotime($validated['due_time'])) : null,
+    //         'owner_id' => $teacher->id,
+    //         'attachment_link' => !empty($validated['attachment_link']) ? json_encode($validated['attachment_link']) : null,
+    //         'curriculum_ids' => !empty($validated['curriculum_ids']) ? json_encode($validated['curriculum_ids']) : null,
+    //         'max_points' => $validated['max_points'], // <-- FIXED
+    //         'is_pushed_on_google' => $validated['is_pushed_on_google'],
+    //     ];
+
+    //     try {
+
+    //         // --------------------
+    //         // PUSH TO GOOGLE CLASSROOM
+    //         // --------------------
+    //         if ($validated['is_pushed_on_google'] == 1) {
+
+    //             $this->client->setAccessToken($accessToken);
+    //             $this->classroomService = new \Google\Service\Classroom($this->client);
+
+    //             // ---------------------------------------------------------
+    //             // FIX: maxPoints must be INTEGER (Google rejects strings)
+    //             // ---------------------------------------------------------
+    //             $courseworkData = [
+    //                 'title' => $validated['title'],
+    //                 'description' => $validated['description'] ?? '',
+    //                 'workType' => 'ASSIGNMENT',
+    //                 'state' => 'PUBLISHED',
+    //                 'maxPoints' => $validated['max_points'], // <-- FIXED
+    //             ];
+
+    //             // Google classroom due date
+    //             if (!empty($validated['due_date'])) {
+    //                 [$year, $month, $day] = explode('-', $validated['due_date']);
+    //                 $courseworkData['dueDate'] = [
+    //                     'year' => (int)$year,
+    //                     'month' => (int)$month,
+    //                     'day' => (int)$day
+    //                 ];
+    //             }
+
+    //             // Google classroom due time
+    //             if (!empty($validated['due_time'])) {
+    //                 [$hours, $minutes] = explode(':', $validated['due_time']);
+    //                 $courseworkData['dueTime'] = [
+    //                     'hours' => (int)$hours,
+    //                     'minutes' => (int)$minutes
+    //                 ];
+    //             }
+
+    //             // Add attachment links
+    //             if (!empty($validated['attachment_link'])) {
+    //                 $materials = [];
+    //                 foreach ($validated['attachment_link'] as $link) {
+    //                     $materials[] = new \Google\Service\Classroom\Material([
+    //                         'link' => new \Google\Service\Classroom\Link(['url' => $link])
+    //                     ]);
+    //                 }
+    //                 $courseworkData['materials'] = $materials;
+    //             }
+
+    //             // Create assignment in Google
+    //             $coursework = new \Google\Service\Classroom\CourseWork($courseworkData);
+    //             $createdAssignment = $this->classroomService
+    //                 ->courses_courseWork
+    //                 ->create($validated['course_id'], $coursework);
+
+    //             // Save Google assignment ID
+    //             $assignmentData['assignment_id'] = $createdAssignment->id;
+
+    //             // Save to DB
+    //             $assignment = GoogleAssignment::create($assignmentData);
+
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => 'Assignment created and pushed to Google Classroom successfully',
+    //                 'assignment' => $assignment
+    //             ], 201);
+    //         }
+
+    //         // --------------------
+    //         // SAVE LOCALLY ONLY
+    //         // --------------------
+    //         $assignment = GoogleAssignment::create($assignmentData);
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Assignment saved locally (not pushed to Google)',
+    //             'assignment' => $assignment
+    //         ], 201);
+    //     } catch (\Google\Service\Exception $e) {
+    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
+    //     }
+    // }
+
     public function createAssignment(Request $request)
     {
         $accessToken = $request->bearerToken();
 
         if (!$accessToken) {
-            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'Google token not found'
+            ], 400);
         }
 
         // --------------------
@@ -668,34 +818,39 @@ class GoogleClassroomController extends Controller
             'max_points' => 'nullable|numeric|min:0'
         ]);
 
-        // ---------------------------------------------------------
-        // FIX: Convert max_points to integer always (REAL ISSUE)
-        // ---------------------------------------------------------
+        // max_points must be integer
         $validated['max_points'] = isset($validated['max_points'])
-            ? intval($validated['max_points'])
+            ? (int) $validated['max_points']
             : null;
 
         // --------------------
-        // GET TEACHER DETAILS
+        // GET TEACHER
         // --------------------
         $teacher = User::where('google_token', $accessToken)->first();
         if (!$teacher) {
-            return response()->json(['success' => false, 'message' => 'Teacher not found'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Teacher not found'
+            ], 404);
         }
 
         // --------------------
-        // PREPARE LOCAL ASSIGNMENT DATA
+        // PREPARE LOCAL DATA (UTC)
         // --------------------
         $assignmentData = [
             'course_id' => $validated['course_id'],
             'title' => $validated['title'],
             'description' => $validated['description'] ?? '',
-            'due_date' => !empty($validated['due_date']) ? date('Y-m-d', strtotime($validated['due_date'])) : null,
-            'due_time' => !empty($validated['due_time']) ? date('H:i', strtotime($validated['due_time'])) : null,
+            'due_date' => $validated['due_date'] ?? null,   // UTC
+            'due_time' => $validated['due_time'] ?? null,   // UTC
             'owner_id' => $teacher->id,
-            'attachment_link' => !empty($validated['attachment_link']) ? json_encode($validated['attachment_link']) : null,
-            'curriculum_ids' => !empty($validated['curriculum_ids']) ? json_encode($validated['curriculum_ids']) : null,
-            'max_points' => $validated['max_points'], // <-- FIXED
+            'attachment_link' => !empty($validated['attachment_link'])
+                ? json_encode($validated['attachment_link'])
+                : null,
+            'curriculum_ids' => !empty($validated['curriculum_ids'])
+                ? json_encode($validated['curriculum_ids'])
+                : null,
+            'max_points' => $validated['max_points'],
             'is_pushed_on_google' => $validated['is_pushed_on_google'],
         ];
 
@@ -704,85 +859,112 @@ class GoogleClassroomController extends Controller
             // --------------------
             // PUSH TO GOOGLE CLASSROOM
             // --------------------
-            if ($validated['is_pushed_on_google'] == 1) {
+            if ($validated['is_pushed_on_google']) {
 
                 $this->client->setAccessToken($accessToken);
                 $this->classroomService = new \Google\Service\Classroom($this->client);
 
-                // ---------------------------------------------------------
-                // FIX: maxPoints must be INTEGER (Google rejects strings)
-                // ---------------------------------------------------------
+                // --------------------
+                // GET COURSE TIMEZONE
+                // --------------------
+                $course = $this->classroomService
+                    ->courses
+                    ->get($validated['course_id']);
+
+                $courseTimeZone = $course->timeZone ?? 'UTC';
+
                 $courseworkData = [
                     'title' => $validated['title'],
                     'description' => $validated['description'] ?? '',
                     'workType' => 'ASSIGNMENT',
                     'state' => 'PUBLISHED',
-                    'maxPoints' => $validated['max_points'], // <-- FIXED
+                    'maxPoints' => $validated['max_points'],
                 ];
 
-                // Google classroom due date
-                if (!empty($validated['due_date'])) {
-                    [$year, $month, $day] = explode('-', $validated['due_date']);
+                // --------------------
+                // FORCE IST → UTC (-05:30) BEFORE GOOGLE
+                // --------------------
+                if (!empty($validated['due_date']) && !empty($validated['due_time'])) {
+
+                    // Combine date + time as IST
+                    $istDateTime = Carbon::createFromFormat(
+                        'Y-m-d H:i',
+                        $validated['due_date'] . ' ' . $validated['due_time'],
+                        'Asia/Kolkata'
+                    );
+
+                    // Subtract 5 hours 30 minutes (IST → UTC)
+                    $adjustedDateTime = $istDateTime->subHours(5)->subMinutes(30);
+
+                    // Send adjusted values to Google
                     $courseworkData['dueDate'] = [
-                        'year' => (int)$year,
-                        'month' => (int)$month,
-                        'day' => (int)$day
+                        'year'  => (int) $adjustedDateTime->year,
+                        'month' => (int) $adjustedDateTime->month,
+                        'day'   => (int) $adjustedDateTime->day,
                     ];
-                }
 
-                // Google classroom due time
-                if (!empty($validated['due_time'])) {
-                    [$hours, $minutes] = explode(':', $validated['due_time']);
                     $courseworkData['dueTime'] = [
-                        'hours' => (int)$hours,
-                        'minutes' => (int)$minutes
+                        'hours'   => (int) $adjustedDateTime->hour,
+                        'minutes' => (int) $adjustedDateTime->minute,
                     ];
                 }
 
-                // Add attachment links
+                // --------------------
+                // MATERIAL LINKS (SAFE)
+                // --------------------
                 if (!empty($validated['attachment_link'])) {
-                    $materials = [];
-                    foreach ($validated['attachment_link'] as $link) {
-                        $materials[] = new \Google\Service\Classroom\Material([
-                            'link' => new \Google\Service\Classroom\Link(['url' => $link])
-                        ]);
+
+                    $validLinks = array_filter(
+                        $validated['attachment_link'],
+                        fn($link) => !empty($link)
+                    );
+
+                    if (!empty($validLinks)) {
+                        $materials = [];
+
+                        foreach ($validLinks as $link) {
+                            $materials[] = new Material([
+                                'link' => new Link(['url' => $link])
+                            ]);
+                        }
+
+                        $courseworkData['materials'] = $materials;
                     }
-                    $courseworkData['materials'] = $materials;
                 }
 
-                // Create assignment in Google
-                $coursework = new \Google\Service\Classroom\CourseWork($courseworkData);
+                // --------------------
+                // CREATE ASSIGNMENT
+                // --------------------
+                $coursework = new CourseWork($courseworkData);
                 $createdAssignment = $this->classroomService
                     ->courses_courseWork
                     ->create($validated['course_id'], $coursework);
 
-                // Save Google assignment ID
                 $assignmentData['assignment_id'] = $createdAssignment->id;
-
-                // Save to DB
-                $assignment = GoogleAssignment::create($assignmentData);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Assignment created and pushed to Google Classroom successfully',
-                    'assignment' => $assignment
-                ], 201);
             }
 
             // --------------------
-            // SAVE LOCALLY ONLY
+            // SAVE LOCALLY
             // --------------------
             $assignment = GoogleAssignment::create($assignmentData);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Assignment saved locally (not pushed to Google)',
+                'message' => $validated['is_pushed_on_google']
+                    ? 'Assignment created and pushed to Google Classroom successfully'
+                    : 'Assignment saved locally (not pushed to Google)',
                 'assignment' => $assignment
             ], 201);
         } catch (\Google\Service\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 401);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 401);
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 401);
         }
     }
 
