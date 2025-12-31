@@ -27,6 +27,9 @@ class Curriculum extends Model
         'embed_link',
         'type',
         'file_type',
+        'sequence',
+        'number_of_days',
+        'description',
         'created_at'
     ];
 

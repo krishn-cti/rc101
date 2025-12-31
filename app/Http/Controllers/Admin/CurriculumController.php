@@ -130,21 +130,22 @@ class CurriculumController extends Controller
 
         $request->validate($rules);
 
-        // Handle embed_link value
-        $embedLink = null;
-
+        // Handle embed_link
         if ($request->type === 'pdf' && $request->hasFile('embed_link')) {
             $file = $request->file('embed_link');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/curriculum_pdfs'), $fileName);
-
-            $embedLink =  $fileName;
+            $embedLink = $fileName;
         } else {
             $embedLink = $request->embed_link;
         }
 
-        // Insert data
-        $isInserted = Curriculum::insert([
+        // Get next sequence number
+        $nextSequence = Curriculum::max('sequence') ?? 0;
+        $nextSequence++;
+
+        // Create curriculum
+        Curriculum::create([
             'title'          => $request->title,
             'category_id'    => $request->category_id,
             'type'           => $request->type,
@@ -152,15 +153,11 @@ class CurriculumController extends Controller
             'embed_link'     => $embedLink,
             'number_of_days' => $request->number_of_days,
             'description'    => $request->description,
+            'sequence'       => $nextSequence, // 🔥 Important
         ]);
 
-        if ($isInserted) {
-            return redirect('curriculums/unit-list')
-                ->with('success_msg', 'Data added successfully!');
-        }
-
         return redirect('curriculums/unit-list')
-            ->with('error_msg', 'Something went wrong!');
+            ->with('success_msg', 'Data added successfully!');
     }
 
     /**
@@ -228,6 +225,7 @@ class CurriculumController extends Controller
 
     public function update(Request $request)
     {
+        // Validation rules
         $rules = [
             'id'              => 'required|exists:cms_curriculums,id',
             'category_id'     => 'required|numeric',
@@ -238,6 +236,7 @@ class CurriculumController extends Controller
             'description'     => 'required|string|max:255',
         ];
 
+        // Conditional validation for embed_link
         if ($request->type === 'pdf') {
             $rules['embed_link'] = 'nullable|file|mimes:pdf|max:10240';
         } else {
@@ -246,15 +245,18 @@ class CurriculumController extends Controller
 
         $request->validate($rules);
 
+        // Fetch curriculum
         $curriculum = Curriculum::findOrFail($request->id);
 
+        // Preserve old embed_link by default
         $embedLink = $curriculum->embed_link;
 
+        // Handle PDF update
         if ($request->type === 'pdf') {
 
             if ($request->hasFile('embed_link')) {
 
-                // delete old pdf
+                // Delete old PDF if exists
                 if (
                     $curriculum->embed_link &&
                     file_exists(public_path('uploads/curriculum_pdfs/' . $curriculum->embed_link))
@@ -262,6 +264,7 @@ class CurriculumController extends Controller
                     @unlink(public_path('uploads/curriculum_pdfs/' . $curriculum->embed_link));
                 }
 
+                // Upload new PDF
                 $file = $request->file('embed_link');
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/curriculum_pdfs'), $fileName);
@@ -269,10 +272,12 @@ class CurriculumController extends Controller
                 $embedLink = $fileName;
             }
         } else {
+            // Non-PDF types use URL
             $embedLink = $request->embed_link;
         }
 
-        Curriculum::where('id', $request->id)->update([
+        // Update curriculum (sequence NOT touched)
+        $curriculum->update([
             'title'          => $request->title,
             'category_id'    => $request->category_id,
             'type'           => $request->type,
@@ -291,13 +296,27 @@ class CurriculumController extends Controller
      */
     public function destroy(Request $request)
     {
-        $result = Curriculum::where('id', $request->id)->first();
+        $curriculum = Curriculum::where('id', $request->id)->first();
 
-        if ($result) {
-            Curriculum::where('id', $request->id)->delete();
-            return response()->json(['success' => true, 'message' => 'Data deleted successfully.'], 200);
-        } else {
-            return response()->json(['success' => false, 'message' => 'Data not found.'], 404);
+        if (!$curriculum) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data not found.',
+            ], 404);
         }
+
+        $deletedSequence = $curriculum->sequence;
+
+        // Delete the curriculum
+        $curriculum->delete();
+
+        // Reorder remaining sequences
+        Curriculum::where('sequence', '>', $deletedSequence)
+            ->decrement('sequence');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data deleted successfully.',
+        ], 200);
     }
 }

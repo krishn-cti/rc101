@@ -147,8 +147,9 @@ Route::prefix('teacher')->group(function () {
     Route::controller(ContentManagementController::class)->group(function () {
         Route::get('get-unit-categories', 'getUnitCategories');
         Route::get('get-all-curriculums', 'getAllCurriculums');
-        Route::get('get-all-curriculum-assignments', 'getAllCurriculumAssignments');
+        // Route::get('get-all-curriculum-assignments', 'getAllCurriculumAssignments');
         Route::get('curriculum/pdf-download/{id}', 'downloadPdf')->name('curriculum.pdf.download');
+        Route::post('update-curriculum-sequence', 'updateCurriculumSequence');
 
     });
 });
