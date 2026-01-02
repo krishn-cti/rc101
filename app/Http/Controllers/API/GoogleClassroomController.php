@@ -34,7 +34,6 @@ class GoogleClassroomController extends Controller
         $this->client->addScope(Classroom::CLASSROOM_COURSES);
         $this->client->addScope(Classroom::CLASSROOM_ROSTERS);
         $this->client->addScope(Classroom::CLASSROOM_COURSEWORK_STUDENTS);
-        $this->client->addScope(Classroom::CLASSROOM_ROSTERS_READONLY);
         $this->client->addScope(Classroom::CLASSROOM_PROFILE_EMAILS);
         // $this->client->addScope(Classroom::CLASSROOM_INVITATIONS);
         // $this->client->addScope(Classroom::CLASSROOM_COURSEWORK_ME);

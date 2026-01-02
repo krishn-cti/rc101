@@ -28,12 +28,11 @@ class GoogleController extends Controller
             ->scopes([
                 'https://www.googleapis.com/auth/classroom.courses',
                 'https://www.googleapis.com/auth/classroom.rosters',
-                'https://www.googleapis.com/auth/classroom.rosters.readonly',
                 'https://www.googleapis.com/auth/classroom.coursework.students',
                 'https://www.googleapis.com/auth/classroom.profile.emails',
                 'https://www.googleapis.com/auth/userinfo.profile',
                 'https://www.googleapis.com/auth/userinfo.email',
-                'https://www.googleapis.com/auth/classroom.coursework.me'
+                'openid',
             ])
             ->with([
                 'access_type' => 'offline',
