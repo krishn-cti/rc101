@@ -22,16 +22,26 @@ class EmbedController extends Controller
                     static $index = 0;
                     return ++$index;
                 })
+                ->addColumn('image', function ($row) {
+                    if (!empty($row->image) && file_exists(public_path('cms_images/' . $row->image))) {
+                        return '<img src="' . asset('cms_images/' . $row->image) . '" width="50" height="50" class="img-thumbnail" />';
+                    } else {
+                        return '<img src="' . asset('admin/img/shop-img/no_image.png') . '" width="50" height="50" class="img-thumbnail" />';
+                    }
+                })
                 ->addColumn('embed_link', function ($row) {
-                    return '<span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span>';
+                    // return '<span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span>';
+                    return $row->linked_name ? '<a href="' . $row->embed_link . '" target="_blank"><span style="width: 100%;max-width:300px;display:block">' . $row->linked_name . '</span></a>' : '<a href="' . $row->embed_link . '" target="_blank"><span style="width: 100%;max-width:300px;display:block">' . $row->embed_link . '</span></a>';
                 })
                 ->addColumn('menu_type', function ($row) {
                     $types = [
                         'lexicon' => 'Lexicon',
                         'weight_classes' => 'Weight Classes',
-                        'tools_of_trades' => 'Tools of the Trade',
+                        'vendors' => 'Vendors',
+                        'youtube_channel' => 'Youtube Channel',
+                        'notable_community_members' => 'Notable Community Members',
                     ];
-                
+
                     return $types[$row->menu_type] ?? ucfirst(str_replace('_', ' ', $row->menu_type));
                 })
                 ->addColumn('action', function ($row) {
@@ -48,7 +58,7 @@ class EmbedController extends Controller
                      </div>';
                     return $btn;
                 })
-                ->rawColumns(['embed_link', 'action'])
+                ->rawColumns(['image','embed_link', 'action'])
                 ->make(true);
         }
 
@@ -68,18 +78,37 @@ class EmbedController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->has('embed_link') && !preg_match('/^https?:\/\//', $request->embed_link)) {
+            $request->merge([
+                'embed_link' => 'https://' . $request->embed_link
+            ]);
+        }
+
         $request->validate([
             'title' => 'required|string|max:150',
             'type' => 'required|in:doc,slide',
-            'menu_type' => 'required|in:lexicon,weight_classes,tools_of_trades',
+            'menu_type' => 'required|in:lexicon,weight_classes,vendors,youtube_channel,notable_community_members',
             'embed_link' => 'required|url',
+            'linked_name' => 'nullable|string|max:100',
+            'image' => 'nullable|image|max:2048',
         ]);
+
+        $image = '';
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('cms_images/'), $fileName);
+
+            $image = $fileName;
+        }
 
         $isInserted = Embed::insert([
             'title' => $request->title,
             'type' => $request->type,
             'menu_type' => $request->menu_type,
             'embed_link' => $request->embed_link,
+            'linked_name' => $request->linked_name,
+            'image' => $image
         ]);
 
         if ($isInserted) {
@@ -111,12 +140,20 @@ class EmbedController extends Controller
      */
     public function update(Request $request)
     {
+        if ($request->has('embed_link') && !preg_match('/^https?:\/\//', $request->embed_link)) {
+            $request->merge([
+                'embed_link' => 'https://' . $request->embed_link
+            ]);
+        }
+
         $request->validate([
             'id' => 'required', // Ensure an id is provided for updating
             'title' => 'required|string|max:150',
             'type' => 'required|in:doc,slide',
-            'menu_type' => 'required|in:lexicon,weight_classes,tools_of_trades',
-            'embed_link' => 'required|url',
+            'menu_type' => 'required|in:lexicon,weight_classes,vendors,youtube_channel,notable_community_members',
+            'embed_link' => 'required',
+            'linked_name' => 'nullable|string|max:100',
+            'image' => 'nullable|image|max:2048',
         ]);
 
         $id = $request->id;
@@ -133,7 +170,23 @@ class EmbedController extends Controller
             'type' => $request->type,
             'menu_type' => $request->menu_type,
             'embed_link' => $request->embed_link,
+            'linked_name' => $request->linked_name
         ];
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $fileName = uniqid() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('cms_images/'), $fileName);
+
+            // Delete the old image if it exists
+            $oldImage = $existingData->image;
+            $oldImagePath = public_path('cms_images/' . $oldImage);
+            if (file_exists($oldImagePath) && !empty($oldImage)) {
+                unlink($oldImagePath);
+            }
+
+            $updateData['image'] = $fileName;
+        }
 
         // Perform the update
         $isUpdated = Embed::where('id', $id)->update($updateData);
@@ -153,6 +206,12 @@ class EmbedController extends Controller
         $result = Embed::where('id', $request->id)->first();
 
         if ($result) {
+            if (!empty($result->image)) {
+                $imagePath = public_path('cms_images/' . $result->image);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
             Embed::where('id', $request->id)->delete();
             return response()->json(['success' => true, 'message' => 'Data deleted successfully.'], 200);
         } else {

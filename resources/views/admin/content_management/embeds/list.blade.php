@@ -27,10 +27,11 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Image</th>
                                                 <th>Title</th>
                                                 <th>Type(Doc/Slide)</th>
                                                 <th>Menu</th>
-                                                <th>Embed Link</th>
+                                                <th>Embed Link/Linked Name</th>
                                                 <th width="100px">Action</th>
                                             </tr>
                                         </thead>
@@ -58,6 +59,10 @@
                     data: 'serial_number',
                     name: 'serial_number'
                 }, // Change 'id' to 'serial_number'
+                {
+                    data: 'image',
+                    name: 'image'
+                },
                 {
                     data: 'title',
                     name: 'title'

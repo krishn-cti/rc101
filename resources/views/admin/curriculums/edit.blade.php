@@ -142,7 +142,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group mb-3">
                                                 <label for="number_of_days" class="mb-2">Number of Days</label>
-                                                <input type="number" class="form-control ct_input" name="number_of_days" placeholder="Number of Days" min="1" value="{{ old('number_of_days', $curriculumsData->number_of_days) }}">
+                                                <input type="text" class="form-control ct_input" name="number_of_days" placeholder="Number of Days" value="{{ old('number_of_days', $curriculumsData->number_of_days) }}">
                                                 @error('number_of_days')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
@@ -186,6 +186,9 @@
                     required: true,
                     maxlength: 255,
                 },
+                number_of_days: {
+                    maxlength: 25
+                }
             },
             messages: {
                 title: {
@@ -196,6 +199,9 @@
                     required: "The description is required.",
                     maxlength: "The description must not exceed 255 characters.",
                 },
+                number_of_days: {
+                    maxlength: "The number of days must not exceed 25 characters.",
+                }
             },
             submitHandler: function(form) {
                 form.submit();

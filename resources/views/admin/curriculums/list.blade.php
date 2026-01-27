@@ -26,11 +26,13 @@
                                     <table class="table curriculum-data-table table-responsive table-bordered table-hover mb-0" id="curriculumTable">
                                         <thead>
                                             <tr>
+                                                <th width="40">Order</th>
                                                 <th>No</th>
                                                 <th>Title</th>
                                                 <th>Category</th>
-                                                <th>Type(Doc/Slide)</th>
+                                                <th>Type (Doc/Slide)</th>
                                                 <th>File Type</th>
+                                                <th># of Days</th>
                                                 <th>Embed Link</th>
                                                 <th width="100px">Action</th>
                                             </tr>
@@ -51,14 +53,21 @@
 
 <script type="text/javascript">
     $(function() {
-        var table = $('.curriculum-data-table').DataTable({
+
+        var table = $('#curriculumTable').DataTable({
             processing: true,
             serverSide: true,
             ajax: "{{ url('curriculums/unit-list') }}",
+            rowId: 'DT_RowId',
             columns: [{
+                    data: 'drag',
+                    orderable: false,
+                    searchable: false
+                },
+                {
                     data: 'serial_number',
                     name: 'serial_number'
-                }, // Change 'id' to 'serial_number'
+                },
                 {
                     data: 'title',
                     name: 'title'
@@ -76,17 +85,61 @@
                     name: 'file_type'
                 },
                 {
+                    data: 'number_of_days',
+                    name: 'number_of_days'
+                },
+                {
                     data: 'embed_link',
                     name: 'embed_link'
                 },
                 {
                     data: 'action',
-                    name: 'action',
                     orderable: false,
                     searchable: false
-                },
-            ]
+                }
+            ],
+            drawCallback: function() {
+                enableDragDrop();
+            }
         });
+
+        function enableDragDrop() {
+            $("#curriculumTable tbody").sortable({
+                handle: '.drag-handle',
+                axis: 'y',
+                update: function() {
+                    updateSequence();
+                }
+            }).disableSelection();
+        }
+
+        function updateSequence() {
+            let items = [];
+
+            $('#curriculumTable tbody tr').each(function(index) {
+                items.push({
+                    id: this.id.replace('row_', ''),
+                    sequence: index + 1
+                });
+            });
+
+            $.ajax({
+                url: "{{ url('curriculums/update-sequence') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    items: items
+                },
+                success: function(res) {
+                    $('#curriculumTable').DataTable().ajax.reload(null, false);
+                    toastr.success(res.message);
+                },
+                error: function() {
+                    toastr.error('Failed to update order');
+                }
+            });
+        }
+
     });
 </script>
 <script>

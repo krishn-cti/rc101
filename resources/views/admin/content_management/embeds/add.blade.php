@@ -55,9 +55,20 @@
                                                     <option value="" disabled selected>Select Menu</option>
                                                     <option value="lexicon" {{ old('menu_type') == 'lexicon' ? 'selected' : '' }}>Lexicon</option>
                                                     <option value="weight_classes" {{ old('menu_type') == 'weight_classes' ? 'selected' : '' }}>Weight Classes</option>
-                                                    <option value="tools_of_trades" {{ old('menu_type') == 'tools_of_trades' ? 'selected' : '' }}>Tools of the Trade</option>
+                                                    <option value="vendors" {{ old('menu_type') == 'vendors' ? 'selected' : '' }}>Vendors</option>
+                                                    <option value="youtube_channel" {{ old('menu_type') == 'youtube_channel' ? 'selected' : '' }}>Youtube Channel</option>
+                                                    <option value="notable_community_members" {{ old('menu_type') == 'notable_community_members' ? 'selected' : '' }}>Notable Community Members</option>
                                                 </select>
                                                 @error('menu_type')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
+                                                <label for="linked_name" class="mb-2">Linked Name</label>
+                                                <input type="text" class="form-control ct_input" name="linked_name" placeholder="Linked Name" value="{{ old('linked_name')}}">
+                                                @error('linked_name')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
                                             </div>
@@ -67,6 +78,20 @@
                                                 <label for="embed_link" class="mb-2">Embed Link</label>
                                                 <input type="text" class="form-control ct_input" name="embed_link" placeholder="Embed Link" value="{{ old('embed_link')}}">
                                                 @error('embed_link')
+                                                <div class="text text-danger mt-2">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group mb-3">
+                                                <label for="image" class="mb-2">Image</label>
+                                                <input name="image" type="file" class="form-control ct_input" onchange="loadImage(event)" accept="image/*">
+
+                                                <!-- Display the selected image preview here -->
+                                                <div id="imagePreview" class="mt-2" style="display: none;">
+                                                    <img id="image" src="" alt="Image Preview" style="width: 100px; height: 100px; border-radius: 8px;">
+                                                </div>
+                                                @error('image')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
                                                 @enderror
                                             </div>
@@ -95,11 +120,17 @@
                     required: true,
                     maxlength: 150, // Ensure the length is within 150 characters
                 },
+                linked_name: {
+                    maxlength: 100, // Ensure the length is within 100 characters
+                },
             },
             messages: {
                 title: {
                     required: "The title is required.",
                     maxlength: "The title must not exceed 150 characters.",
+                },
+                linked_name: {
+                    maxlength: "The linked name must not exceed 100 characters.",
                 },
             },
             submitHandler: function(form) {
@@ -107,5 +138,17 @@
             }
         });
     });
+</script>
+<script>
+    var loadImage = function(event) {
+        var image = document.getElementById('image');
+        var imagePreview = document.getElementById('imagePreview');
+
+        if (event.target.files && event.target.files[0]) {
+            image.src = URL.createObjectURL(event.target.files[0]);
+            image.style.display = 'block';
+            imagePreview.style.display = 'block';
+        }
+    };
 </script>
 @endsection

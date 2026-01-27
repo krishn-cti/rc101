@@ -79,8 +79,32 @@ class ContentManagementController extends Controller
             $id = DB::table('cms_home_page')->insertGetId($cmsHomeData);
             $message = 'New home banner section added successfully!';
         }
+        
+        $combinedContent =
+            $cmsHomeData['banner_text'] . ' ' .
+            $cmsHomeData['media_content'];
+
+        CmsHelper::cleanupCkeditorImages($combinedContent);
 
         return redirect('cms/home')->with($id ? 'success_msg' : 'error_msg', $message);
+    }
+
+    public function uploadCkEditorImageForHome(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/ckeditor'), $filename);
+
+            $url = asset('uploads/ckeditor/' . $filename);
+
+            return response()->json([
+                'uploaded' => true,
+                'url' => $url
+            ]);
+        }
+
+        return response()->json(['uploaded' => false, 'error' => ['message' => 'No file uploaded.']]);
     }
 
     // this method is used to view for about section
@@ -123,7 +147,28 @@ class ContentManagementController extends Controller
             $message = 'New curriculum overview added successfully!';
         }
 
+        // Cleanup orphaned CKEditor images (after saving)
+        CmsHelper::cleanupCkeditorImages($cmsCurriculumContentData['description']);
+
         return redirect('curriculums/overview')->with('success_msg', $message);
+    }
+
+    public function uploadCkEditorImageForCurriculum(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $file = $request->file('upload');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/ckeditor'), $filename);
+
+            $url = asset('uploads/ckeditor/' . $filename);
+
+            return response()->json([
+                'uploaded' => true,
+                'url' => $url
+            ]);
+        }
+
+        return response()->json(['uploaded' => false, 'error' => ['message' => 'No file uploaded.']]);
     }
 
     // this method is used to view for about section

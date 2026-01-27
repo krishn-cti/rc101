@@ -80,7 +80,12 @@
         Link,
         Table,
         TableToolbar,
-        Heading
+        Image,
+        ImageUpload,
+        ImageCaption,
+        ImageStyle,
+        Heading,
+        CKFinderUploadAdapter
     } = CKEDITOR;
 
     ClassicEditor.create(document.querySelector('#description'), {
@@ -97,7 +102,16 @@
 
             // Table
             Table,
-            TableToolbar
+            TableToolbar,
+
+            // Image
+            Image,
+            ImageUpload,
+            ImageCaption,
+            ImageStyle,
+
+            // Upload Adapter
+            CKFinderUploadAdapter
         ],
 
         toolbar: [
@@ -111,24 +125,56 @@
             '|',
             'link',
             'insertTable',
+            'imageUpload',
             '|',
             'bulletedList', 'numberedList'
         ],
 
+        // Image upload API
+        ckfinder: {
+            uploadUrl: "{{ route('curriculum.content.image') }}?_token={{ csrf_token() }}"
+        },
+
         heading: {
-            options: [
-                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
-                { model: 'heading1', view: 'h1', title: 'Heading 1' },
-                { model: 'heading2', view: 'h2', title: 'Heading 2' },
-                { model: 'heading3', view: 'h3', title: 'Heading 3' },
-                { model: 'heading4', view: 'h4', title: 'Heading 4' },
-                { model: 'heading5', view: 'h5', title: 'Heading 5' },
-                { model: 'heading6', view: 'h6', title: 'Heading 6' }
+            options: [{
+                    model: 'paragraph',
+                    title: 'Paragraph'
+                },
+                {
+                    model: 'heading1',
+                    view: 'h1',
+                    title: 'Heading 1'
+                },
+                {
+                    model: 'heading2',
+                    view: 'h2',
+                    title: 'Heading 2'
+                },
+                {
+                    model: 'heading3',
+                    view: 'h3',
+                    title: 'Heading 3'
+                },
+                {
+                    model: 'heading4',
+                    view: 'h4',
+                    title: 'Heading 4'
+                },
+                {
+                    model: 'heading5',
+                    view: 'h5',
+                    title: 'Heading 5'
+                },
+                {
+                    model: 'heading6',
+                    view: 'h6',
+                    title: 'Heading 6'
+                }
             ]
         },
 
         fontSize: {
-            options: [10, 12, 14, 'default', 18, 20, 24, 28]
+            options: [10, 12, 14, 'default', 18, 20, 24, 28, 32, 36]
         },
 
         table: {

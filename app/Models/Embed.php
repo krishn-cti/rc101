@@ -24,6 +24,8 @@ class Embed extends Model
     protected $fillable = [
         'title',
         'embed_link',
+        'linked_name',
+        'image',
         'type',
         'menu_type',
         'created_at'

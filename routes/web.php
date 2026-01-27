@@ -194,6 +194,7 @@ Route::group(['middleware' => ['admin']], function () {
             // route for curriculum content page
             Route::get('/overview', 'editCurriculumContent');
             Route::post('/update-overview', 'updateCurriculumContent');
+            Route::post('/curriculum-content-image', 'uploadCkEditorImageForCurriculum')->name('curriculum.content.image');
         });
 
         // route for curriculum units
@@ -204,6 +205,7 @@ Route::group(['middleware' => ['admin']], function () {
             Route::get('/unit-edit/{id}', 'edit');
             Route::post('/unit-update', 'update');
             Route::post('/unit-delete', 'destroy');
+            Route::post('/update-sequence', 'updateCurriculumSequence');
         });
     });
 
@@ -796,11 +798,12 @@ Route::group(['middleware' => ['admin']], function () {
             // route for home page
             Route::get('/home', 'editHome');
             Route::post('/update-home', 'updateHome');
+            Route::post('/home-content-image', 'uploadCkEditorImageForHome')->name('home.content.image');
 
             // route for about page
             Route::get('/about', 'editAbout');
             Route::post('/update-about', 'updateAbout');
-            Route::post('/ckeditor/upload', 'uploadCkEditorImageForAboutUs')->name('ckeditor.upload');
+            Route::post('/aboutus-content-image', 'uploadCkEditorImageForAboutUs')->name('aboutus.content.image');
 
             // route for league page
             Route::get('/league', 'editLeague');

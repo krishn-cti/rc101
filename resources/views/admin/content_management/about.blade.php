@@ -68,21 +68,6 @@
 
 @endsection
 @section('script')
-<!-- <script>
-    ClassicEditor
-        .create(document.querySelector('#about_content'), {
-            ckfinder: {
-                uploadUrl: "{{ route('ckeditor.upload') }}?_token={{ csrf_token() }}"
-            },
-            toolbar: [
-                'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList',
-                'insertTable', '|', 'undo', 'redo', '|', 'imageUpload'
-            ],
-        })
-        .catch(error => {
-            console.error(error);
-        });
-</script> -->
 
 <script>
     const {
@@ -149,23 +134,49 @@
 
         // Image upload API
         ckfinder: {
-            uploadUrl: "{{ route('ckeditor.upload') }}?_token={{ csrf_token() }}"
+            uploadUrl: "{{ route('aboutus.content.image') }}?_token={{ csrf_token() }}"
         },
 
         heading: {
-            options: [
-                { model: 'paragraph', title: 'Paragraph' },
-                { model: 'heading1', view: 'h1', title: 'Heading 1' },
-                { model: 'heading2', view: 'h2', title: 'Heading 2' },
-                { model: 'heading3', view: 'h3', title: 'Heading 3' },
-                { model: 'heading4', view: 'h4', title: 'Heading 4' },
-                { model: 'heading5', view: 'h5', title: 'Heading 5' },
-                { model: 'heading6', view: 'h6', title: 'Heading 6' }
+            options: [{
+                    model: 'paragraph',
+                    title: 'Paragraph'
+                },
+                {
+                    model: 'heading1',
+                    view: 'h1',
+                    title: 'Heading 1'
+                },
+                {
+                    model: 'heading2',
+                    view: 'h2',
+                    title: 'Heading 2'
+                },
+                {
+                    model: 'heading3',
+                    view: 'h3',
+                    title: 'Heading 3'
+                },
+                {
+                    model: 'heading4',
+                    view: 'h4',
+                    title: 'Heading 4'
+                },
+                {
+                    model: 'heading5',
+                    view: 'h5',
+                    title: 'Heading 5'
+                },
+                {
+                    model: 'heading6',
+                    view: 'h6',
+                    title: 'Heading 6'
+                }
             ]
         },
 
         fontSize: {
-            options: [10, 12, 14, 'default', 18, 20, 24, 28]
+            options: [10, 12, 14, 'default', 18, 20, 24, 28, 32, 36]
         },
 
         table: {

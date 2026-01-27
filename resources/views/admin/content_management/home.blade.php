@@ -103,28 +103,6 @@
 
 @endsection
 @section('script')
-<!-- <script>
-    ClassicEditor
-        .create(document.querySelector('#banner_text'), {
-            toolbar: [
-                'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', '|', 'undo', 'redo'
-                // Add other items as needed, but exclude 'imageUpload' and 'mediaEmbed'
-            ],
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    ClassicEditor
-        .create(document.querySelector('#media_content'), {
-            toolbar: [
-                'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', '|', 'undo', 'redo'
-                // Add other items as needed, but exclude 'imageUpload' and 'mediaEmbed'
-            ],
-        })
-        .catch(error => {
-            console.error(error);
-        });
-</script> -->
 
 <script>
     const {
@@ -139,7 +117,16 @@
         Link,
         Table,
         TableToolbar,
-        Heading
+        Heading,
+
+        // Image plugins
+        Image,
+        ImageUpload,
+        ImageCaption,
+        ImageStyle,
+
+        // Upload adapter
+        CKFinderUploadAdapter
     } = CKEDITOR;
 
     const editorConfig = {
@@ -156,7 +143,16 @@
 
             // Table
             Table,
-            TableToolbar
+            TableToolbar,
+
+            // Image
+            Image,
+            ImageUpload,
+            ImageCaption,
+            ImageStyle,
+
+            // Upload adapter
+            CKFinderUploadAdapter
         ],
 
         toolbar: [
@@ -170,13 +166,19 @@
             '|',
             'link',
             'insertTable',
+            'imageUpload',
             '|',
             'bulletedList', 'numberedList'
         ],
 
+        // Image upload API
+        ckfinder: {
+            uploadUrl: "{{ route('home.content.image') }}?_token={{ csrf_token() }}"
+        },
+
         heading: {
             options: [
-                { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                { model: 'paragraph', title: 'Paragraph' },
                 { model: 'heading1', view: 'h1', title: 'Heading 1' },
                 { model: 'heading2', view: 'h2', title: 'Heading 2' },
                 { model: 'heading3', view: 'h3', title: 'Heading 3' },
@@ -187,7 +189,7 @@
         },
 
         fontSize: {
-            options: [10, 12, 14, 'default', 18, 20, 24, 28]
+            options: [10, 12, 14, 'default', 18, 20, 24, 28, 32, 36]
         },
 
         table: {
@@ -199,7 +201,7 @@
         }
     };
 
-    // Initialize editors
+    // Initialize multiple editors safely
     ['#banner_text', '#media_content'].forEach(selector => {
         const el = document.querySelector(selector);
         if (el) {
@@ -207,6 +209,7 @@
         }
     });
 </script>
+
 <script>
     $(document).ready(function() {
         // Add custom validation method for YouTube links

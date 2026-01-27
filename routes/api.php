@@ -136,23 +136,22 @@ Route::middleware('google.auth:student')->group(function () {
 
 // private route for teachers
 Route::middleware(['google.auth:teacher'])->group(function () {
-Route::prefix('teacher')->group(function () {
-    Route::controller(PaymentController::class)->group(function () {
-        Route::get('subscriptions', 'getSubscriptions');
-        Route::post('checkout', 'checkout');
-        Route::post('payment-success', 'success');
-        Route::post('cancel-subscription', 'cancelSubscription');
-    });
+    Route::prefix('teacher')->group(function () {
+        Route::controller(PaymentController::class)->group(function () {
+            Route::get('subscriptions', 'getSubscriptions');
+            Route::post('checkout', 'checkout');
+            Route::post('payment-success', 'success');
+            Route::post('cancel-subscription', 'cancelSubscription');
+        });
 
-    Route::controller(ContentManagementController::class)->group(function () {
-        Route::get('get-unit-categories', 'getUnitCategories');
-        Route::get('get-all-curriculums', 'getAllCurriculums');
-        // Route::get('get-all-curriculum-assignments', 'getAllCurriculumAssignments');
-        Route::get('curriculum/pdf-download/{id}', 'downloadPdf')->name('curriculum.pdf.download');
-        Route::post('update-curriculum-sequence', 'updateCurriculumSequence');
-
+        Route::controller(ContentManagementController::class)->group(function () {
+            Route::get('get-unit-categories', 'getUnitCategories');
+            Route::get('get-all-curriculums', 'getAllCurriculums');
+            // Route::get('get-all-curriculum-assignments', 'getAllCurriculumAssignments');
+            Route::get('curriculum/pdf-download/{id}', 'downloadPdf')->name('curriculum.pdf.download');
+            Route::post('update-curriculum-sequence', 'updateCurriculumSequence');
+        });
     });
-});
 });
 
 Route::controller(PaymentController::class)->group(function () {

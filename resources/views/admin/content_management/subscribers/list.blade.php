@@ -95,42 +95,6 @@
                 // },
             ]
         });
-        // // Handle Edit button click
-        // $(document).on('click', '.edit-end-date', function() {
-        //     $('#subscription_id').val($(this).data('id'));
-        //     $('#end_date').val($(this).data('end-date'));
-        //     console.log("jhfhfhfhf")
-        //     $('#editEndDateModal').modal('show');
-        // });
-
-        // // Handle form submit
-        // $('#editEndDateForm').on('submit', function(e) {
-        //     e.preventDefault();
-        //     var id = $('#subscription_id').val();
-        //     var endDate = $('#end_date').val();
-
-        //     $.ajax({
-        //         url: "{{ url('update-end-date') }}",
-        //         method: 'POST',
-        //         data: {
-        //             _token: '{{ csrf_token() }}',
-        //             id: id,
-        //             end_date: endDate
-        //         },
-        //         success: function(res) {
-        //             if (res.success) {
-        //                 toastr.success(res.message);
-        //                 $('#editEndDateModal').modal('hide');
-        //                 $('#nhrlTable').DataTable().ajax.reload(null, false);
-        //             } else {
-        //                 toastr.error(res.message);
-        //             }
-        //         },
-        //         error: function() {
-        //             toastr.error('Something went wrong.');
-        //         }
-        //     });
-        // });
     });
 </script>
 <script>

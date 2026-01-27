@@ -16,18 +16,22 @@ class CurriculumController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Curriculum::with('category')->orderBy('id', 'DESC')->get();
+            $data = Curriculum::with('category')->orderBy('sequence', 'ASC')->get();
             return DataTables::of($data)
+                ->setRowId(fn($row) => 'row_' . $row->id)
                 ->addIndexColumn()
+                ->addColumn('drag', function () {
+                    return '<i class="fa fa-bars drag-handle" style="cursor: move;"></i>';
+                })
                 ->addColumn('serial_number', function ($row) {
                     static $index = 0;
                     return ++$index;
                 })
                 ->addColumn('embed_link', function ($row) {
                     if ($row->type == 'pdf') {
-                        return '<a href="' . url('uploads/curriculum_pdfs/' . $row->embed_link) . '" target="_blank"><span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span></a>';
+                        return '<a href="' . url('uploads/curriculum_pdfs/' . $row->embed_link) . '" target="_blank"><span style="width: 100%;max-width:270px;display:block">' . $row->embed_link . '</span></a>';
                     } else {
-                        return '<a href="' .  $row->embed_link . '" target="_blank"><span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span></a>';
+                        return '<a href="' .  $row->embed_link . '" target="_blank"><span style="width: 100%;max-width:270px;display:block">' . $row->embed_link . '</span></a>';
                     }
                 })
                 ->addColumn('file_type', function ($row) {
@@ -61,7 +65,7 @@ class CurriculumController extends Controller
                      </div>';
                     return $btn;
                 })
-                ->rawColumns(['embed_link', 'category', 'action'])
+                ->rawColumns(['drag', 'embed_link', 'category', 'action'])
                 ->make(true);
         }
 
@@ -117,7 +121,7 @@ class CurriculumController extends Controller
             'title'          => 'required|string|max:150',
             'type'           => 'required|in:doc,slide,pdf',
             'file_type'      => 'required|in:slide_decks,student_pages,instructions,samples',
-            'number_of_days' => 'required|numeric',
+            'number_of_days' => 'required|string|max:25',
             'description'    => 'required|string|max:255',
         ];
 
@@ -153,7 +157,7 @@ class CurriculumController extends Controller
             'embed_link'     => $embedLink,
             'number_of_days' => $request->number_of_days,
             'description'    => $request->description,
-            'sequence'       => $nextSequence, // 🔥 Important
+            'sequence'       => $nextSequence,
         ]);
 
         return redirect('curriculums/unit-list')
@@ -232,7 +236,7 @@ class CurriculumController extends Controller
             'title'           => 'required|string|max:150',
             'type'            => 'required|in:doc,slide,pdf',
             'file_type'       => 'required|in:slide_decks,student_pages,instructions,samples',
-            'number_of_days'  => 'required|numeric',
+            'number_of_days'  => 'required|string|max:25',
             'description'     => 'required|string|max:255',
         ];
 
@@ -318,5 +322,27 @@ class CurriculumController extends Controller
             'success' => true,
             'message' => 'Data deleted successfully.',
         ], 200);
+    }
+
+    /**
+     * Update curriculum sequence.
+     */
+    public function updateCurriculumSequence(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:cms_curriculums,id',
+            'items.*.sequence' => 'required|integer',
+        ]);
+
+        foreach ($request->items as $item) {
+            Curriculum::where('id', $item['id'])
+                ->update(['sequence' => $item['sequence']]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Curriculum order updated successfully'
+        ]);
     }
 }

@@ -1918,8 +1918,12 @@ class ContentManagementController extends Controller
 
     public function getAllCurriculums()
     {
-        $curriculums = Curriculum::with('category')
-            ->orderBy('sequence', 'ASC')
+        $curriculums = Curriculum::query()
+            ->join('categories', 'categories.id', '=', 'cms_curriculums.category_id')
+            ->orderBy('categories.category_name', 'ASC')
+            ->orderBy('cms_curriculums.sequence', 'ASC')
+            ->select('cms_curriculums.*')
+            ->with('category')
             ->get();
 
         if ($curriculums->isNotEmpty()) {
