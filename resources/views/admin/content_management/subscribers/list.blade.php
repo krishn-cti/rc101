@@ -32,6 +32,7 @@
                                             <th>Amount</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
+                                            <th>User Access Count</th>
                                             <th>Status</th>
                                             <!-- <th>Action</th> -->
                                         </tr>
@@ -82,6 +83,10 @@
                 {
                     data: 'end_date',
                     name: 'end_date'
+                },
+                {
+                    data: 'user_access_count',
+                    name: 'user_access_count'
                 },
                 {
                     data: 'status',
@@ -264,4 +269,138 @@
         buttonEl.css('pointer-events', 'auto');
     }
 </script>
+
+<script>
+    /* ===========================
+   USER ACCESS COUNT INLINE EDIT
+   =========================== */
+
+    $(document).on('click', '.edit-user-count', function() {
+        const parent = $(this).closest('.editable-user-count');
+        const countText = parent.find('.count-text');
+        const currentCount = countText.text().trim();
+        const id = parent.data('id');
+
+        const inputHtml = `
+        <input type="number"
+            min="1"
+            class="form-control form-control-sm new-user-count"
+            value="${currentCount}"
+            style="width:120px; display:inline-block;">
+        <a href="javascript:void(0)"
+            class="save-user-count"
+            data-id="${id}"
+            data-old-count="${currentCount}"
+            style="margin-left:6px; font-size:18px; color:#d78d2e;">
+            <i class="fas fa-check"></i>
+        </a>
+    `;
+
+        parent.html(inputHtml);
+        parent.find('input').focus();
+    });
+
+    /* Save on Enter key */
+    $(document).on('keypress', '.new-user-count', function(e) {
+        if (e.which === 13) {
+            $(this).siblings('.save-user-count').trigger('click');
+        }
+    });
+
+    /* Save user access count */
+    $(document).on('click', '.save-user-count', function() {
+        const $this = $(this);
+        const parent = $this.closest('.editable-user-count');
+        const id = $this.data('id');
+        const oldCount = $this.data('old-count');
+        const newCount = parent.find('.new-user-count').val();
+
+        if (!newCount || newCount == oldCount) {
+            revertUserCount(parent, oldCount);
+            return;
+        }
+
+        bootbox.confirm({
+            closeButton: false,
+            message: '<p class="text-center mb-0" style="font-size:18px;">Are you sure you want to update user access count?</p>',
+            buttons: {
+                cancel: {
+                    label: 'No',
+                    className: 'btn-danger'
+                },
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                }
+            },
+            callback: function(result) {
+                if (result) {
+                    $this.find('i')
+                        .removeClass('fa-check')
+                        .addClass('fa-spinner fa-spin');
+
+                    updateUserCount(id, newCount, parent, $this);
+                }
+            }
+        });
+    });
+
+    function updateUserCount(id, count, parent, buttonEl) {
+        $.ajax({
+            url: "{{ url('update-user-access-count') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                id: id,
+                user_access_count: count
+            },
+            success: function(response) {
+                if (response.success) {
+                    parent.html(`
+                    <span class="count-text">${count}</span>
+                        <a href="javascript:void(0)" class="edit-user-count">
+                            <lord-icon
+                                src="https://cdn.lordicon.com/wuvorxbv.json"
+                                trigger="hover"
+                                colors="primary:#333333,secondary:#333333"
+                                style="width:20px;height:20px">
+                            </lord-icon>
+                        </a>
+                    `);
+
+                    parent.css('background', '#d4edda');
+                    setTimeout(() => parent.css('background', ''), 1200);
+                } else {
+                    toastr.error(response.message || 'Update failed');
+                    resetUserCountIcon(buttonEl);
+                }
+            },
+            error: function() {
+                toastr.error('Failed to update user access count');
+                resetUserCountIcon(buttonEl);
+            }
+        });
+    }
+
+    function revertUserCount(parent, count) {
+        parent.html(`
+        <span class="count-text">${count}</span>
+            <a href="javascript:void(0)" class="edit-user-count">
+                <lord-icon
+                    src="https://cdn.lordicon.com/wuvorxbv.json"
+                    trigger="hover"
+                    colors="primary:#333333,secondary:#333333"
+                    style="width:20px;height:20px">
+                </lord-icon>
+            </a>
+        `);
+    }
+
+    function resetUserCountIcon(buttonEl) {
+        buttonEl.find('i')
+            .removeClass('fa-spinner fa-spin')
+            .addClass('fa-check');
+    }
+</script>
+
 @endsection

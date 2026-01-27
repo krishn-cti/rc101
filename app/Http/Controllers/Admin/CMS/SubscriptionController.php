@@ -259,6 +259,38 @@ class SubscriptionController extends Controller
                         ';
                     }
                 })
+                ->addColumn('user_access_count', function ($row) {
+
+                    $count = $row->user_access_count ?? $row->subscription->user_access_count;
+
+                    if ($row->type === 'free') {
+                        return '
+                            <div class="editable-user-count"
+                                data-id="' . $row->id . '"
+                                style="display:flex; align-items:center; gap:8px;">
+                                
+                                <span class="count-text">' . e($count) . '</span>
+
+                                <a href="javascript:void(0)" class="edit-user-count">
+                                    <lord-icon
+                                        src="https://cdn.lordicon.com/wuvorxbv.json"
+                                        trigger="hover"
+                                        colors="primary:#333333,secondary:#333333"
+                                        style="width:20px;height:20px">
+                                    </lord-icon>
+                                </a>
+                            </div>
+                        ';
+                    }
+
+                    return '
+                        <div class="editable-user-count"
+                            style="display:flex; align-items:center; gap:8px;">
+                            <span class="count-text">' . e($count) . '</span>
+                        </div>
+                    ';
+                })
+
 
                 ->addColumn('amount', function ($row) {
                     $amount = 0;
@@ -278,7 +310,7 @@ class SubscriptionController extends Controller
                         return '<span style="color:red; font-weight:bold;">Expired</span>';
                     }
                 })
-                ->rawColumns(['user_name', 'subscription_name', 'amount', 'end_date', 'status', 'actions'])
+                ->rawColumns(['user_name', 'subscription_name', 'amount', 'end_date', 'user_access_count', 'status', 'actions'])
                 ->make(true);
         }
 
@@ -362,5 +394,22 @@ class SubscriptionController extends Controller
         $subscription->save();
 
         return response()->json(['success' => true, 'message' => 'End date updated successfully']);
+    }
+
+    public function updateUserAccessCount(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:user_subscriptions,id',
+            'user_access_count' => 'required|integer|min:1',
+        ]);
+
+        UserSubscription::where('id', $request->id)->update([
+            'user_access_count' => $request->user_access_count
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User access count updated successfully'
+        ]);
     }
 }

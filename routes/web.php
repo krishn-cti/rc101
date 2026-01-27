@@ -822,4 +822,5 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('list-order', [OrderController::class, 'listOrder']);
     Route::get('list-subscriber', [SubscriptionController::class, 'listSubscriber']);
     Route::post('update-end-date', [SubscriptionController::class, 'updateEndDate']);
+    Route::post('update-user-access-count', [SubscriptionController::class, 'updateUserAccessCount']);
 });
