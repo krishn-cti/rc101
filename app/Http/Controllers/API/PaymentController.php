@@ -192,6 +192,7 @@ class PaymentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Free 3-day trial activated successfully',
+                'type' => 'free',
                 'data' => [
                     'start_date' => now()->toDateTimeString(),
                     'end_date' => now()->addDays(3)->toDateTimeString(),
@@ -331,31 +332,38 @@ class PaymentController extends Controller
             return response()->json(['success' => false, 'message' => 'Subscription not found or does not belong to this user'], 404);
         }
 
-        if ($userSubscription->status == 0) {
+        if ($userSubscription->status == 2) {
             return response()->json(['success' => false, 'message' => 'Subscription is already canceled'], 400);
         }
 
         try {
-            Stripe::setApiKey(env('STRIPE_SECRET'));
+            if ($userSubscription->type == 'free') {
+                $userSubscription->update(['status' => 0]);
 
-            if (!$userSubscription->stripe_subscription_id) {
-                return response()->json(['success' => false, 'message' => 'Invalid Stripe subscription ID'], 400);
+                return response()->json(['success' => true, 'message' => 'Free Subscription canceled successfully']);
+            } else {
+                
+                Stripe::setApiKey(env('STRIPE_SECRET'));
+
+                if (!$userSubscription->stripe_subscription_id) {
+                    return response()->json(['success' => false, 'message' => 'Invalid Stripe subscription ID'], 400);
+                }
+
+                // Retrieve subscription
+                $subscription = \Stripe\Subscription::retrieve($userSubscription->stripe_subscription_id);
+
+                if (!$subscription || $subscription->status === 'canceled') {
+                    return response()->json(['success' => false, 'message' => 'Subscription already canceled or not found in Stripe'], 400);
+                }
+
+                // Cancel the subscription
+                $subscription->cancel();
+
+                // Update subscription status in the database
+                $userSubscription->update(['status' => 0]);
+
+                return response()->json(['success' => true, 'message' => 'Subscription canceled successfully']);
             }
-
-            // Retrieve subscription
-            $subscription = \Stripe\Subscription::retrieve($userSubscription->stripe_subscription_id);
-
-            if (!$subscription || $subscription->status === 'canceled') {
-                return response()->json(['success' => false, 'message' => 'Subscription already canceled or not found in Stripe'], 400);
-            }
-
-            // Cancel the subscription
-            $subscription->cancel();
-
-            // Update subscription status in the database
-            $userSubscription->update(['status' => 0]);
-
-            return response()->json(['success' => true, 'message' => 'Subscription canceled successfully']);
         } catch (\Stripe\Exception\InvalidRequestException $e) {
             return response()->json(['success' => false, 'message' => 'Stripe error: ' . $e->getMessage()], 400);
         } catch (\Exception $e) {

@@ -223,6 +223,7 @@
                     // Optional subtle highlight animation
                     parent.css('background', '#d4edda');
                     setTimeout(() => parent.css('background', ''), 1200);
+                    table.ajax.reload(null, false);
                 } else {
                     // Show server validation message in Bootbox
                     let message = response.message || 'Something went wrong.';
@@ -282,19 +283,19 @@
         const id = parent.data('id');
 
         const inputHtml = `
-        <input type="number"
-            min="1"
-            class="form-control form-control-sm new-user-count"
-            value="${currentCount}"
-            style="width:120px; display:inline-block;">
-        <a href="javascript:void(0)"
-            class="save-user-count"
-            data-id="${id}"
-            data-old-count="${currentCount}"
-            style="margin-left:6px; font-size:18px; color:#d78d2e;">
-            <i class="fas fa-check"></i>
-        </a>
-    `;
+            <input type="number"
+                min="1"
+                class="form-control form-control-sm new-user-count"
+                value="${currentCount}"
+                style="width:120px; display:inline-block;">
+            <a href="javascript:void(0)"
+                class="save-user-count"
+                data-id="${id}"
+                data-old-count="${currentCount}"
+                style="margin-left:6px; font-size:18px; color:#d78d2e;">
+                <i class="fas fa-check"></i>
+            </a>
+        `;
 
         parent.html(inputHtml);
         parent.find('input').focus();
@@ -370,6 +371,7 @@
 
                     parent.css('background', '#d4edda');
                     setTimeout(() => parent.css('background', ''), 1200);
+                    table.ajax.reload(null, false);
                 } else {
                     toastr.error(response.message || 'Update failed');
                     resetUserCountIcon(buttonEl);
