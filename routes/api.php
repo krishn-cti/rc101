@@ -44,7 +44,7 @@ Route::controller(GoogleController::class)->prefix('auth/google')->group(functio
 
 Route::prefix('google-classroom')->group(function () {
     // Routes for Teachers
-    // Route::middleware(['google.auth:teacher'])->group(function () {
+    Route::middleware(['google.auth:teacher'])->group(function () {
         Route::get('list-courses', [GoogleClassroomController::class, 'listCourses']);
         Route::post('create-course', [GoogleClassroomController::class, 'createCourse']);
         Route::get('list-students', [GoogleClassroomController::class, 'listStudents']);
@@ -64,8 +64,8 @@ Route::prefix('google-classroom')->group(function () {
         Route::post('import-selected-courses', [GoogleClassroomController::class, 'importSelectedCourses']);
         Route::get('get-all-assignments', [GoogleClassroomController::class, 'getAllAssignments']);
 
-        Route::get('remove-teacher-account', [GoogleController::class, 'removeAccount']);
-    // });
+        Route::delete('remove-teacher-account', [GoogleController::class, 'removeAccount']);
+    });
 
     // Routes for Students
     Route::middleware(['google.auth:student'])->group(function () {

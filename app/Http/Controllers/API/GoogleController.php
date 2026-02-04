@@ -11,7 +11,7 @@ use App\Models\UserSubscription;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class GoogleController extends Controller
@@ -192,8 +192,8 @@ class GoogleController extends Controller
         if (!$accessToken) {
             return response()->json([
                 'success' => false,
-                'message' => 'Google token not found'
-            ], 400);
+                'message' => 'Authorization token not found'
+            ], 401);
         }
 
         $user = User::where('google_token', $accessToken)->first();
@@ -210,13 +210,11 @@ class GoogleController extends Controller
         try {
             $userId = $user->id;
 
-            // Delete related data
             GoogleCourse::where('owner_id', $userId)->delete();
             ClassroomStudent::where('teacher_id', $userId)->delete();
             GoogleAssignment::where('owner_id', $userId)->delete();
             UserSubscription::where('user_id', $userId)->delete();
 
-            // Delete user
             $user->delete();
 
             DB::commit();
@@ -225,13 +223,12 @@ class GoogleController extends Controller
                 'success' => true,
                 'message' => 'Teacher account removed successfully'
             ], 200);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to remove account',
-                'error'   => $e->getMessage()
+                'message' => 'Failed to remove account'
             ], 500);
         }
     }
