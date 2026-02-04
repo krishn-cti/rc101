@@ -86,7 +86,7 @@ class EmbedController extends Controller
 
         $request->validate([
             'title' => 'required|string|max:150',
-            'type' => 'required|in:doc,slide',
+            'type' => 'required|in:doc,slide,link',
             'menu_type' => 'required|in:lexicon,weight_classes,vendors,youtube_channel,notable_community_members',
             'embed_link' => 'required|url',
             'linked_name' => 'nullable|string|max:100',
@@ -149,7 +149,7 @@ class EmbedController extends Controller
         $request->validate([
             'id' => 'required', // Ensure an id is provided for updating
             'title' => 'required|string|max:150',
-            'type' => 'required|in:doc,slide',
+            'type' => 'required|in:doc,slide,link',
             'menu_type' => 'required|in:lexicon,weight_classes,vendors,youtube_channel,notable_community_members',
             'embed_link' => 'required',
             'linked_name' => 'nullable|string|max:100',

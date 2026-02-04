@@ -29,7 +29,7 @@
                                                 <th>No</th>
                                                 <th>Image</th>
                                                 <th>Title</th>
-                                                <th>Type(Doc/Slide)</th>
+                                                <th>Type (Doc/Slide/Link)</th>
                                                 <th>Menu</th>
                                                 <th>Embed Link/Linked Name</th>
                                                 <th width="100px">Action</th>

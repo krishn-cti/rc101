@@ -3,11 +3,16 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClassroomStudent;
+use App\Models\GoogleAssignment;
+use App\Models\GoogleCourse;
 use App\Models\User;
 use App\Models\UserSubscription;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\DB;
 
 class GoogleController extends Controller
 {
@@ -176,6 +181,57 @@ class GoogleController extends Controller
                 'success' => false,
                 'message' => 'Google login failed',
                 'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function removeAccount(Request $request)
+    {
+        $accessToken = $request->bearerToken();
+
+        if (!$accessToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Google token not found'
+            ], 400);
+        }
+
+        $user = User::where('google_token', $accessToken)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $userId = $user->id;
+
+            // Delete related data
+            GoogleCourse::where('owner_id', $userId)->delete();
+            ClassroomStudent::where('teacher_id', $userId)->delete();
+            GoogleAssignment::where('owner_id', $userId)->delete();
+            UserSubscription::where('user_id', $userId)->delete();
+
+            // Delete user
+            $user->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Teacher account removed successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to remove account',
+                'error'   => $e->getMessage()
             ], 500);
         }
     }

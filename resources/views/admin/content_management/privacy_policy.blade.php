@@ -54,18 +54,6 @@
 
 @endsection
 @section('script')
-<!-- <script>
-    ClassicEditor
-        .create(document.querySelector('#privacy_policy_description'), {
-            toolbar: [
-                'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', '|', 'undo', 'redo'
-                // Add other items as needed, but exclude 'imageUpload' and 'mediaEmbed'
-            ],
-        })
-        .catch(error => {
-            console.error(error);
-        });
-</script> -->
 
 <script>
     const {
@@ -80,7 +68,8 @@
         Link,
         Table,
         TableToolbar,
-        Heading
+        Heading,
+        Alignment
     } = CKEDITOR;
 
     ClassicEditor.create(document.querySelector('#privacy_policy_description'), {
@@ -94,6 +83,7 @@
             Font,
             List,
             Link,
+            Alignment,
 
             // Table
             Table,
@@ -109,6 +99,11 @@
             '|',
             'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor',
             '|',
+            'alignment:left',
+            'alignment:center',
+            'alignment:right',
+            'alignment:justify',
+            '|',
             'link',
             'insertTable',
             '|',
@@ -118,38 +113,44 @@
         heading: {
             options: [{
                     model: 'paragraph',
-                    title: 'Paragraph',
+                    title: 'Normal text',
                     class: 'ck-heading_paragraph'
                 },
                 {
                     model: 'heading1',
                     view: 'h1',
-                    title: 'Heading 1'
+                    title: 'Title',
+                    class: 'ck-heading_heading1'
                 },
                 {
                     model: 'heading2',
                     view: 'h2',
-                    title: 'Heading 2'
+                    title: 'Subtitle',
+                    class: 'ck-heading_heading2'
                 },
                 {
                     model: 'heading3',
                     view: 'h3',
-                    title: 'Heading 3'
+                    title: 'Heading 1',
+                    class: 'ck-heading_heading3'
                 },
                 {
                     model: 'heading4',
                     view: 'h4',
-                    title: 'Heading 4'
+                    title: 'Heading 2',
+                    class: 'ck-heading_heading4'
                 },
                 {
                     model: 'heading5',
                     view: 'h5',
-                    title: 'Heading 5'
+                    title: 'Heading 3',
+                    class: 'ck-heading_heading5'
                 },
                 {
                     model: 'heading6',
                     view: 'h6',
-                    title: 'Heading 6'
+                    title: 'Heading 4',
+                    class: 'ck-heading_heading6'
                 }
             ]
         },

@@ -84,9 +84,11 @@
         TableToolbar,
         Image,
         ImageUpload,
-        ImageCaption,
         ImageStyle,
+        ImageResize,
+        ImageToolbar,
         Heading,
+        Alignment,
         CKFinderUploadAdapter
     } = CKEDITOR;
 
@@ -101,18 +103,17 @@
             Font,
             List,
             Link,
+            Alignment,
 
-            // Table
             Table,
             TableToolbar,
 
-            // Image
             Image,
             ImageUpload,
-            ImageCaption,
             ImageStyle,
+            ImageResize,
+            ImageToolbar,
 
-            // Upload Adapter
             CKFinderUploadAdapter
         ],
 
@@ -125,52 +126,101 @@
             '|',
             'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor',
             '|',
+            'alignment:left',
+            'alignment:center',
+            'alignment:right',
+            'alignment:justify',
+            '|',
             'link',
             'insertTable',
             'imageUpload',
+            'imageResize',
             '|',
             'bulletedList', 'numberedList'
         ],
 
-        // Image upload API
-        ckfinder: {
-            uploadUrl: "{{ route('aboutus.content.image') }}?_token={{ csrf_token() }}"
+        image: {
+            styles: [
+                'alignLeft',
+                'alignCenter',
+                'alignRight'
+            ],
+            resizeOptions: [{
+                    name: 'resizeImage:original',
+                    label: 'Original',
+                    value: null
+                },
+                {
+                    name: 'resizeImage:25',
+                    label: '25%',
+                    value: '25'
+                },
+                {
+                    name: 'resizeImage:50',
+                    label: '50%',
+                    value: '50'
+                },
+                {
+                    name: 'resizeImage:75',
+                    label: '75%',
+                    value: '75'
+                },
+                {
+                    name: 'resizeImage:100',
+                    label: '100%',
+                    value: '100'
+                }
+            ],
+            toolbar: [
+                'imageStyle:alignLeft',
+                'imageStyle:alignCenter',
+                'imageStyle:alignRight',
+                '|',
+                'resizeImage'
+            ]
         },
 
         heading: {
             options: [{
                     model: 'paragraph',
-                    title: 'Paragraph'
+                    title: 'Normal text',
+                    class: 'ck-heading_paragraph'
                 },
                 {
                     model: 'heading1',
                     view: 'h1',
-                    title: 'Heading 1'
+                    title: 'Title',
+                    class: 'ck-heading_heading1'
                 },
                 {
                     model: 'heading2',
                     view: 'h2',
-                    title: 'Heading 2'
+                    title: 'Subtitle',
+                    class: 'ck-heading_heading2'
                 },
                 {
                     model: 'heading3',
                     view: 'h3',
-                    title: 'Heading 3'
+                    title: 'Heading 1',
+                    class: 'ck-heading_heading3'
                 },
                 {
                     model: 'heading4',
                     view: 'h4',
-                    title: 'Heading 4'
+                    title: 'Heading 2',
+                    class: 'ck-heading_heading4'
                 },
                 {
                     model: 'heading5',
                     view: 'h5',
-                    title: 'Heading 5'
+                    title: 'Heading 3',
+                    class: 'ck-heading_heading5'
                 },
                 {
                     model: 'heading6',
                     view: 'h6',
-                    title: 'Heading 6'
+                    title: 'Heading 4',
+                    class: 'ck-heading_heading6'
                 }
             ]
         },
@@ -185,7 +235,11 @@
                 'tableRow',
                 'mergeTableCells'
             ]
-        }
+        },
+        
+        ckfinder: {
+            uploadUrl: "{{ route('aboutus.content.image') }}?_token={{ csrf_token() }}"
+        },
     }).catch(console.error);
 </script>
 

@@ -40,9 +40,10 @@
                                             <div class="form-group mb-3">
                                                 <label for="type" class="mb-2">Select Type</label>
                                                 <select name="type" class="form-control ct_input">
-                                                    <option value="" disabled>Select Doc/Slide</option>
+                                                    <option value="" disabled>Select Doc/Slide/Link</option>
                                                     <option value="doc" {{ (old('type', $embedsData->type ?? '') == 'doc') ? 'selected' : '' }}>Doc</option>
                                                     <option value="slide" {{ (old('type', $embedsData->type ?? '') == 'slide') ? 'selected' : '' }}>Slide</option>
+                                                    <option value="link" {{ (old('type', $embedsData->type ?? '') == 'link') ? 'selected' : '' }}>Link</option>
                                                 </select>
                                                 @error('type')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
@@ -76,7 +77,7 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group mb-3">
-                                                <label for="embed_link" class="mb-2">Embed Link</label>
+                                                <label for="embed_link" class="mb-2">Embed Link/URL</label>
                                                 <input type="text" class="form-control ct_input" name="embed_link" placeholder="Embed Link" value="{{ old('title', $embedsData->embed_link) }}">
                                                 @error('embed_link')
                                                 <div class="text text-danger mt-2">{{ $message }}</div>
