@@ -1,6 +1,5 @@
 @extends('admin.layouts.app')
 @section('content')
-
 <div class="main-content introduction-farm">
     <div class="content-wraper-area">
         <div class="dashboard-area">
@@ -17,22 +16,19 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="card-title border-bootom-none mb-30 d-flex align-items-center justify-content-between">
-                                    <h6 class="mb-0">All Knowledgebase Articles</h6>
-                                    <a href="{{ url('cms/embeds-add') }}">
-                                        <button class="ct_custom_btn1 mx-auto">Add New Knowledgebase Article</button>
+                                    <h6 class="mb-0">All Dashboard Content</h6>
+                                    <a href="{{ url('cms/dashboard-content-add') }}">
+                                        <button class="ct_custom_btn1 mx-auto">Add New Dashboard Content</button>
                                     </a>
                                 </div>
 
                                 <div class="">
-                                    <table class="table embeds-data-table table-responsive table-bordered table-hover mb-0" id="battlebotTable">
+                                    <table class="table dashboard-content-data-table table-responsive table-bordered table-hover mb-0" id="battlebotTable">
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Image</th>
                                                 <th>Title</th>
-                                                <th>Type (Doc/Slide/Link)</th>
-                                                <th>Menu</th>
-                                                <th>Embed Link/Linked Name</th>
+                                                <th>Link/URL</th>
                                                 <th width="100px">Action</th>
                                             </tr>
                                         </thead>
@@ -51,79 +47,22 @@
 </div>
 
 <script type="text/javascript">
-    // $(function() {
-    //     var table = $('.embeds-data-table').DataTable({
-    //         processing: true,
-    //         serverSide: true,
-    //         ajax: "{{ url('cms/embeds-list') }}",
-    //         columns: [{
-    //                 data: 'serial_number',
-    //                 name: 'serial_number'
-    //             }, // Change 'id' to 'serial_number'
-    //             {
-    //                 data: 'image',
-    //                 name: 'image'
-    //             },
-    //             {
-    //                 data: 'title',
-    //                 name: 'title'
-    //             },
-    //             {
-    //                 data: 'type',
-    //                 name: 'type'
-    //             },
-    //             {
-    //                 data: 'menu_type',
-    //                 name: 'menu_type'
-    //             },
-    //             {
-    //                 data: 'embed_link',
-    //                 name: 'embed_link'
-    //             },
-    //             {
-    //                 data: 'action',
-    //                 name: 'action',
-    //                 orderable: false,
-    //                 searchable: false
-    //             },
-    //         ]
-    //     });
-    // });
-
     $(function() {
-        var table = $('.embeds-data-table').DataTable({
+        var table = $('.dashboard-content-data-table').DataTable({
             processing: true,
             serverSide: true,
-            ajax: {
-                url: "{{ url('cms/embeds-list') }}",
-                data: function(d) {
-                    d.menu_type = $('#menuFilter').val(); // send filter value to backend
-                }
-            },
-            dom: '<"d-flex align-items-center justify-content-between mb-3 gap-3"lf>rtip',
+            ajax: "{{ url('cms/dashboard-content-list') }}",
             columns: [{
                     data: 'serial_number',
                     name: 'serial_number'
-                },
-                {
-                    data: 'image',
-                    name: 'image'
-                },
+                }, // Change 'id' to 'serial_number'
                 {
                     data: 'title',
                     name: 'title'
                 },
                 {
-                    data: 'type',
-                    name: 'type'
-                },
-                {
-                    data: 'menu_type',
-                    name: 'menu_type'
-                },
-                {
-                    data: 'embed_link',
-                    name: 'embed_link'
+                    data: 'link',
+                    name: 'link'
                 },
                 {
                     data: 'action',
@@ -131,31 +70,7 @@
                     orderable: false,
                     searchable: false
                 },
-            ],
-            initComplete: function() {
-
-                // Create filter dropdown
-                var filterHtml = `
-                    <div class="dataTables_length menu-filter">
-                        <label>Filter by Menu:</label>
-                        <select id="menuFilter" class="form-control form-control-sm">
-                            <option value="">All Menus</option>
-                            <option value="lexicon">Lexicon</option>
-                            <option value="weight_classes">Weight Classes</option>
-                            <option value="vendors">Vendors</option>
-                            <option value="youtube_channel">Youtube Channel</option>
-                        </select>
-                    </div>
-                `;
-
-                // Insert filter BEFORE the search box
-                $('.dataTables_filter').before(filterHtml);
-
-                // Reload table on filter change
-                $('#menuFilter').on('change', function() {
-                    table.ajax.reload();
-                });
-            }
+            ]
         });
     });
 </script>
@@ -177,7 +92,7 @@
             callback: function(result) {
                 if (result) {
                     $.ajax({
-                        url: "{{ url('cms/embeds-delete') }}",
+                        url: "{{ url('cms/dashboard-content-delete') }}",
                         type: "POST",
                         cache: false,
                         data: {

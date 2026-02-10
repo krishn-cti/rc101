@@ -8478,3 +8478,38 @@ p.ct_para_description {
         font-size: 11px;
     }
 }
+
+#menuFilter {
+    min-width: 100%;
+    height: 45px;
+}
+
+.menu-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-filter label {
+    margin-bottom: 0;
+}
+
+.dataTables_filter input {
+    height: 45px;
+}
+
+.dataTables_filter label {
+    margin-bottom: 0;
+}
+
+.dataTables_length label {
+    margin-bottom: 0;
+}
+
+@media screen and (max-width: 1024px) {
+    #menuFilter {
+        min-width: auto;
+        height: 45px;
+    }
+
+}

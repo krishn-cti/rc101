@@ -48,6 +48,7 @@ use App\Models\PowerTool;
 use App\Models\PrintedCircuitBoard;
 use App\Models\Rcl;
 use App\Models\Ssp;
+use App\Models\TeacherDashboardContent;
 use App\Models\ToolsTrade;
 use App\Models\Tournament;
 use App\Models\TurnaBot;
@@ -2059,6 +2060,16 @@ class ContentManagementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Curriculum order updated successfully.',
+        ], 200);
+    }
+
+    public function teacherDashboardData()
+    {
+        $data = TeacherDashboardContent::all();
+        return response()->json([
+            'success' => true,
+            'message' => 'Teacher dashboard data fetched successfully.',
+            'data' => $data,
         ], 200);
     }
 }

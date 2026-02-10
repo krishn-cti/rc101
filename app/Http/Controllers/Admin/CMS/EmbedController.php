@@ -15,8 +15,15 @@ class EmbedController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Embed::orderBy('title', 'ASC')->get();
-            return DataTables::of($data)
+
+            $query = Embed::orderBy('title', 'ASC');
+
+            // Apply menu filter
+            if (!empty($request->menu_type)) {
+                $query->where('menu_type', $request->menu_type);
+            }
+
+            return DataTables::of($query)
                 ->addIndexColumn()
                 ->addColumn('serial_number', function ($row) {
                     static $index = 0;
@@ -25,13 +32,13 @@ class EmbedController extends Controller
                 ->addColumn('image', function ($row) {
                     if (!empty($row->image) && file_exists(public_path('cms_images/' . $row->image))) {
                         return '<img src="' . asset('cms_images/' . $row->image) . '" width="50" height="50" class="img-thumbnail" />';
-                    } else {
-                        return '<img src="' . asset('admin/img/shop-img/no_image.png') . '" width="50" height="50" class="img-thumbnail" />';
                     }
+                    return '<img src="' . asset('admin/img/shop-img/no_image.png') . '" width="50" height="50" class="img-thumbnail" />';
                 })
                 ->addColumn('embed_link', function ($row) {
-                    // return '<span style="width: 100%;max-width:350px;display:block">' . $row->embed_link . '</span>';
-                    return $row->linked_name ? '<a href="' . $row->embed_link . '" target="_blank"><span style="width: 100%;max-width:300px;display:block">' . $row->linked_name . '</span></a>' : '<a href="' . $row->embed_link . '" target="_blank"><span style="width: 100%;max-width:300px;display:block">' . $row->embed_link . '</span></a>';
+                    return $row->linked_name
+                        ? '<a href="' . $row->embed_link . '" target="_blank"><span style="max-width:300px;display:block">' . $row->linked_name . '</span></a>'
+                        : '<a href="' . $row->embed_link . '" target="_blank"><span style="max-width:300px;display:block">' . $row->embed_link . '</span></a>';
                 })
                 ->addColumn('menu_type', function ($row) {
                     $types = [
@@ -41,24 +48,28 @@ class EmbedController extends Controller
                         'youtube_channel' => 'Youtube Channel',
                         'notable_community_members' => 'Notable Community Members',
                     ];
-
                     return $types[$row->menu_type] ?? ucfirst(str_replace('_', ' ', $row->menu_type));
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<div class="d-flex align-items-center gap-3">
-                        <a href="' . url('cms/embeds-edit/' . $row->id) . '">
-                                        <lord-icon data-bs-toggle="modal" data-bs-target="#ct_edit_product" src="https://cdn.lordicon.com/wuvorxbv.json" trigger="hover" colors="primary:#333333,secondary:#333333" style="width:20px;height:20px">
-                                        </lord-icon>
-                                    </a>
-                        <a href="javascript:;"  title="Delete" onclick="deleteConfirm(' . $row->id . ')"><lord-icon src="https://cdn.lordicon.com/drxwpfop.json"
-                        trigger="hover"
-                        colors="primary:#ff0000,secondary:#ff0000"
-                        style="width:20px;height:20px">
-                    </lord-icon></a>
-                     </div>';
-                    return $btn;
+                    return '
+                <div class="d-flex align-items-center gap-3">
+                    <a href="' . url('cms/embeds-edit/' . $row->id) . '">
+                        <lord-icon src="https://cdn.lordicon.com/wuvorxbv.json"
+                            trigger="hover"
+                            colors="primary:#333333,secondary:#333333"
+                            style="width:20px;height:20px">
+                        </lord-icon>
+                    </a>
+                    <a href="javascript:;" onclick="deleteConfirm(' . $row->id . ')">
+                        <lord-icon src="https://cdn.lordicon.com/drxwpfop.json"
+                            trigger="hover"
+                            colors="primary:#ff0000,secondary:#ff0000"
+                            style="width:20px;height:20px">
+                        </lord-icon>
+                    </a>
+                </div>';
                 })
-                ->rawColumns(['image','embed_link', 'action'])
+                ->rawColumns(['image', 'embed_link', 'action'])
                 ->make(true);
         }
 

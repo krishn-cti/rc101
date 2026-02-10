@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\CMS\ControlBotController;
 use App\Http\Controllers\Admin\CMS\DriveSystemController;
 use App\Http\Controllers\Admin\CMS\DrumSpinnerController;
 use App\Http\Controllers\Admin\CMS\EmbedController;
+use App\Http\Controllers\Admin\CMS\TeacherDashboardContentController;
 use App\Http\Controllers\Admin\CMS\FireBotController;
 use App\Http\Controllers\Admin\CMS\FlipperBotController;
 use App\Http\Controllers\Admin\CMS\GearboxController;
@@ -71,6 +72,7 @@ use App\Http\Controllers\Admin\CurriculumController;
 use App\Http\Controllers\Admin\MediaContentController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TeamMemberController;
+use Google\Service\Classroom\Teacher;
 
 /*
 |--------------------------------------------------------------------------
@@ -250,6 +252,16 @@ Route::group(['middleware' => ['admin']], function () {
             Route::get('/embeds-edit/{id}', 'edit');
             Route::post('/embeds-update', 'update');
             Route::post('/embeds-delete', 'destroy');
+        });
+        
+        // route for teacher's dashboard information
+        Route::controller(TeacherDashboardContentController::class)->group(function () {
+            Route::get('/dashboard-content-list', 'index');
+            Route::get('/dashboard-content-add', 'create');
+            Route::post('/dashboard-content-save', 'store');
+            Route::get('/dashboard-content-edit/{id}', 'edit');
+            Route::post('/dashboard-content-update', 'update');
+            Route::post('/dashboard-content-delete', 'destroy');
         });
 
         // route for tournaments

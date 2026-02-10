@@ -147,11 +147,37 @@ class GoogleController extends Controller
                 ]);
             }
 
-            // Auto-expire old subscriptions
-            UserSubscription::where('status', 1)
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+            $expiredSubscriptions = UserSubscription::where('status', 1)
                 ->whereNotNull('end_date')
                 ->where('end_date', '<', now())
-                ->update(['status' => 2]);
+                ->get();
+
+            foreach ($expiredSubscriptions as $expired) {
+
+                // If Stripe subscription exists, cancel it
+                if (!empty($expired->stripe_subscription_id)) {
+                    try {
+                        $stripeSubscription = \Stripe\Subscription::retrieve(
+                            $expired->stripe_subscription_id
+                        );
+
+                        if ($stripeSubscription && $stripeSubscription->status !== 'canceled') {
+                            $stripeSubscription->cancel();
+                        }
+                    } catch (\Exception $e) {
+                        // Stripe subscription may already be canceled/deleted
+                        // Do not stop DB expiration
+                    }
+                }
+
+                // Expire subscription in DB
+                $expired->update([
+                    'status' => 2, // expired
+                    'stripe_subscription_id' => null
+                ]);
+            }
 
             // Fetch only valid active subscription
             $subscription = UserSubscription::where('user_id', $user->id)

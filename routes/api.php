@@ -65,6 +65,8 @@ Route::prefix('google-classroom')->group(function () {
         Route::get('get-all-assignments', [GoogleClassroomController::class, 'getAllAssignments']);
 
         Route::delete('remove-teacher-account', [GoogleController::class, 'removeAccount']);
+
+        Route::get('teacher-dashboard-data', [ContentManagementController::class, 'teacherDashboardData']);
     });
 
     // Routes for Students
@@ -75,6 +77,7 @@ Route::prefix('google-classroom')->group(function () {
         Route::post('delete-invitation', [GoogleClassroomController::class, 'deleteInvitation']);
         Route::post('join-class', [GoogleClassroomController::class, 'joinClass']);
         Route::get('courses', [GoogleClassroomController::class, 'getStudentCourses']);
+        Route::get('assignments/{course_id}', [GoogleClassroomController::class, 'getStudentAssignments']);
     });
 });
 

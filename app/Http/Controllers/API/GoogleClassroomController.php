@@ -303,7 +303,7 @@ class GoogleClassroomController extends Controller
         }
 
         // Define student limits based on subscription type
-        $maxStudents = $subscription->subscription->user_access_count;
+        $maxStudents = $subscription->type === 'free' ? $subscription->user_access_count : $subscription->subscription->user_access_count;
         $currentStudents = ClassroomStudent::where('teacher_id', $teacher->id)->count();
 
         if ($currentStudents >= $maxStudents) {
@@ -634,13 +634,11 @@ class GoogleClassroomController extends Controller
                 return $course->assignments->count();
             })->sum();
 
-            // $studentCount = $courses->map(function ($course) {
-            //     return $course->participants->pluck('user_id')->unique('user_id')->count();
-            // })->sum();
+            // $studentCount = User::where('google_classroom_role', 'student')
+            //     ->whereNotNull('google_id')
+            //     ->count();
 
-            $studentCount = User::where('google_classroom_role', 'student')
-                ->whereNotNull('google_id')
-                ->count();
+            $studentCount = ClassroomStudent::where('teacher_id', $teacher->id)->count();
 
             $activeAssignments = $courses->map(function ($course) {
                 return $course->assignments->where('due_date', '>', now())->count();
@@ -869,6 +867,101 @@ class GoogleClassroomController extends Controller
 
     // this method is used to get the courses of student
     public function getStudentCourses(Request $request)
+    {
+        $accessToken = $request->bearerToken();
+
+        if (!$accessToken) {
+            return response()->json(['success' => false, 'message' => 'Google token not found'], 400);
+        }
+
+        // Validate if the Google token is valid for a student
+        $student = User::where('google_token', $accessToken)->first();
+
+        if (!$student) {
+            return response()->json(['success' => false, 'message' => 'Student not found or invalid token'], 404);
+        }
+
+        $this->client->setAccessToken($accessToken);
+
+        // $student = User::where('email', 'testing100cti@gmail.com')->first();
+
+        try {
+            // Fetch the courses the student is enrolled in
+            $courses = ClassroomStudent::where('student_id', $student->google_id)->get();
+
+            if (empty($courses)) {
+                return response()->json(['success' => false, 'message' => 'No courses available.'], 404);
+            }
+
+            $courseData = [];
+            foreach ($courses as $course) {
+                // fetch inviter's name
+                $courseDetails = GoogleCourse::where('course_id', $course->course_id)->first();
+                if ($courseDetails) {
+                    $courseData[] = [
+                        'course_name' => $courseDetails->name,
+                        'section' => $courseDetails->section,
+                        'description' => $courseDetails->description,
+                        'course_id' => $course->course_id,
+                        'created_by' => $course->name,
+                    ];
+                }
+            }
+
+            return response()->json(['success' => true, 'courses' => $courseData], 200);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error fetching courses: ' . $e->getMessage()], 500);
+        }
+    }
+
+    // this method is used to get the assignments of student
+    public function getStudentAssignments($course_id, Request $request)
+    {
+        $accessToken = $request->bearerToken();
+
+        if (!$accessToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Google token not found'
+            ], 400);
+        }
+
+        // Validate student using Google token
+        $student = User::where('google_token', $accessToken)->first();
+
+        if (!$student) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Student not found or invalid token'
+            ], 404);
+        }
+
+        $this->client->setAccessToken($accessToken);
+
+        // Fetch course using route parameter
+        $course = GoogleCourse::where('course_id', $course_id)->first();
+
+        if (!$course) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Course not found.'
+            ], 404);
+        }
+
+        // Get assignments for the course
+        $assignments = GoogleAssignment::where('course_id', $course_id)
+            ->with('course')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'assignments' => $assignments
+        ], 200);
+    }
+
+    // this method is used to get the courses of student
+    public function getStudentCourses_old(Request $request)
     {
         $accessToken = $request->bearerToken();
 
