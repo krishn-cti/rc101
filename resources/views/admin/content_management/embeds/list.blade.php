@@ -144,6 +144,7 @@
                             <option value="weight_classes">Weight Classes</option>
                             <option value="vendors">Vendors</option>
                             <option value="youtube_channel">Youtube Channel</option>
+                            <option value="notable_community_members">Notable Community Members</option>
                         </select>
                     </div>
                 `;
