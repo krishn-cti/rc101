@@ -638,7 +638,9 @@ class GoogleClassroomController extends Controller
             //     ->whereNotNull('google_id')
             //     ->count();
 
-            $studentCount = ClassroomStudent::where('teacher_id', $teacher->id)->count();
+            $studentCount = ClassroomStudent::where('teacher_id', $teacher->id)
+                ->distinct('student_id')
+                ->count('student_id');
 
             $activeAssignments = $courses->map(function ($course) {
                 return $course->assignments->where('due_date', '>', now())->count();
