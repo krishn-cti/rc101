@@ -51,45 +51,6 @@
 </div>
 
 <script type="text/javascript">
-    // $(function() {
-    //     var table = $('.embeds-data-table').DataTable({
-    //         processing: true,
-    //         serverSide: true,
-    //         ajax: "{{ url('cms/embeds-list') }}",
-    //         columns: [{
-    //                 data: 'serial_number',
-    //                 name: 'serial_number'
-    //             }, // Change 'id' to 'serial_number'
-    //             {
-    //                 data: 'image',
-    //                 name: 'image'
-    //             },
-    //             {
-    //                 data: 'title',
-    //                 name: 'title'
-    //             },
-    //             {
-    //                 data: 'type',
-    //                 name: 'type'
-    //             },
-    //             {
-    //                 data: 'menu_type',
-    //                 name: 'menu_type'
-    //             },
-    //             {
-    //                 data: 'embed_link',
-    //                 name: 'embed_link'
-    //             },
-    //             {
-    //                 data: 'action',
-    //                 name: 'action',
-    //                 orderable: false,
-    //                 searchable: false
-    //             },
-    //         ]
-    //     });
-    // });
-
     $(function() {
         var table = $('.embeds-data-table').DataTable({
             processing: true,
