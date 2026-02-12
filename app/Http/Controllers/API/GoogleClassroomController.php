@@ -899,13 +899,14 @@ class GoogleClassroomController extends Controller
             foreach ($courses as $course) {
                 // fetch inviter's name
                 $courseDetails = GoogleCourse::where('course_id', $course->course_id)->first();
+                $teachers = User::where('id', $courseDetails->owner_id)->first();
                 if ($courseDetails) {
                     $courseData[] = [
                         'course_name' => $courseDetails->name,
                         'section' => $courseDetails->section,
                         'description' => $courseDetails->description,
                         'course_id' => $course->course_id,
-                        'created_by' => $course->name,
+                        'created_by' => $teachers->name,
                     ];
                 }
             }
